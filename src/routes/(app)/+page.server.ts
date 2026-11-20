@@ -5,7 +5,7 @@ import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = ({ locals }) => {
 	const { season, daysToGo } = christmasCountdown(new Date());
-	// A short "I'm getting" summary for the wide layout's side column.
+	// A short "I'm buying" summary for the wide layout's side column.
 	const mine = getMyClaims(locals.user!, season).filter((c) => !c.removed);
 	const getting = {
 		count: mine.length,

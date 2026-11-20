@@ -48,7 +48,7 @@ export function setPurchased(viewer: User, itemId: number, purchased: boolean) {
 
 export type MyClaim = ItemView & { ownerId: number; ownerName: string; removed: boolean; changed: boolean };
 
-/** Gifts I'm getting this season, from other people's lists, including ones since removed. */
+/** Gifts I'm buying this season, from other people's lists, including ones since removed. */
 export function getMyClaims(viewer: User, season = currentSeason(new Date())): MyClaim[] {
 	const rows = getDb()
 		.select({ claim: claims, item: items, ownerId: lists.ownerId, ownerName: users.displayName })

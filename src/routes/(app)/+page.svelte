@@ -39,8 +39,8 @@
 				{/each}
 			</div>
 		</div>
-		<aside class="side" aria-label="Gifts I’m getting">
-			<div class="secthd"><b>I’m getting</b><span class="num">{data.getting.count} {data.getting.count === 1 ? 'gift' : 'gifts'}{data.getting.total ? ` · ${formatMoney(data.getting.total, 'USD')}` : ''}</span></div>
+		<aside class="side" aria-label="Gifts I’m buying">
+			<div class="secthd"><b>I’m buying</b><span class="num">{data.getting.count} {data.getting.count === 1 ? 'gift' : 'gifts'}{data.getting.total ? ` · ${formatMoney(data.getting.total, 'USD')}` : ''}</span></div>
 			{#each data.getting.recent as g (g.id)}
 				<a class="grow" href="/items/{g.id}">
 					<span class="gth"><GiftArt src={g.imageUrl} store={g.store} title={g.title} height={52} /></span>
@@ -50,7 +50,7 @@
 			{:else}
 				<p class="gsm">Nothing yet. Open someone’s list and tap “I’ll get this”.</p>
 			{/each}
-			<a class="more" href="/getting">See everything I’m getting</a>
+			<a class="more" href="/getting">See everything I’m buying</a>
 		</aside>
 	</div>
 </main>

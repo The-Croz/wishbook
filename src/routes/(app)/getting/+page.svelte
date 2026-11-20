@@ -4,10 +4,10 @@
 	let { data } = $props();
 </script>
 
-<svelte:head><title>I'm getting · Wishbook</title></svelte:head>
+<svelte:head><title>I'm buying · Wishbook</title></svelte:head>
 
 <header class="hdr">
-	<h1>I’m getting</h1>
+	<h1>I’m buying</h1>
 	<p class="meta">{data.count} {data.count === 1 ? 'gift' : 'gifts'}{data.grandTotal ? ` · ${formatMoney(data.grandTotal, 'USD')} so far` : ''}</p>
 </header>
 
