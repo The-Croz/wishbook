@@ -1,0 +1,12 @@
+node_modules/
+.svelte-kit/
+build/
+data/
+*.db
+*.db-*
+.env
+.superpowers/
+.impeccable/review/
+.impeccable/hook.cache.json
+.DS_Store
+test-results/

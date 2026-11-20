@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wishbook Mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Atkinson+Hyperlegible:wght@400;700&family=Caveat:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{--red:#C8102E;--red-deep:#9A0C23;--ink:#1A1A1A;--page:#FFFFFF;--mustard:#F2B705;--pine:#2E7D5B;--rule:#E4E1DA;--muted:#5C5A55;--wash:#F4F2EE;--pink:#FFE3E7}
+*{box-sizing:border-box;margin:0}
+::selection{background:var(--mustard);color:var(--ink)}
+body{background:#2B2422;color:#fff;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;line-height:1.45}
+.intro{max-width:1240px;margin:0 auto;padding:44px 24px 12px}
+.intro h1{font-family:'Archivo Black';font-size:clamp(34px,5vw,56px);line-height:1;letter-spacing:-.02em}
+.intro p{max-width:68ch;margin-top:12px;color:#E8DCD8;font-size:17px}
+.board{max-width:1240px;margin:0 auto;padding:28px 24px 80px;display:grid;grid-template-columns:repeat(auto-fill,minmax(390px,1fr));gap:44px 28px;justify-items:center}
+figure{display:flex;flex-direction:column;gap:12px;width:390px}
+figcaption b{font-family:'Archivo Black';font-size:18px;display:block}
+figcaption{font-size:15px;color:#E8DCD8;max-width:390px}
+.phone{position:relative;width:390px;height:844px;border-radius:46px;overflow:hidden;background:var(--page);color:var(--ink);box-shadow:0 0 0 10px #0f0c0b,0 24px 60px rgba(0,0,0,.45)}
+.status{height:47px;display:flex;justify-content:space-between;align-items:flex-end;padding:0 30px 6px;font-weight:700;font-size:15px}
+.on-red{background:var(--red);color:#fff}
+/* header */
+.hdr{padding:10px 20px 18px}
+.hdr .row{display:flex;justify-content:space-between;align-items:center}
+.wm{font-family:'Archivo Black';font-size:20px;letter-spacing:-.01em;display:flex;align-items:center;gap:6px}
+.av{width:36px;height:36px;border-radius:50%;background:var(--mustard);color:var(--ink);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:15px}
+.hdr h2{font-family:'Archivo Black';font-size:32px;line-height:1.02;margin-top:14px;letter-spacing:-.015em;text-wrap:balance}
+.hdr .meta{font-size:15px;margin-top:6px;color:var(--pink);font-weight:700}
+.back{display:flex;align-items:center;gap:6px;font-weight:700;font-size:16px}
+/* page */
+.pg{color:var(--ink);background:var(--page);border-radius:22px 22px 0 0;padding:16px 16px 120px;min-height:100%}
+.secthd{display:flex;justify-content:space-between;align-items:baseline;border-bottom:3px solid var(--ink);padding-bottom:6px;margin-bottom:14px}
+.secthd b{font-family:'Archivo Black';font-size:18px}
+.secthd span{font-size:14px;font-weight:700;color:var(--muted)}
+.chips{display:flex;gap:8px;margin-bottom:14px}
+.chip{padding:8px 14px;border-radius:99px;border:2px solid var(--ink);font-weight:700;font-size:14px;background:#fff}
+.chip.on{background:var(--ink);color:#fff}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 12px}
+.it{position:relative;padding-bottom:4px}
+.ph{height:132px;background:var(--wash);display:flex;align-items:center;justify-content:center;margin-bottom:8px;border-radius:4px}
+.no{font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--muted)}
+.t{font-weight:700;font-size:15px;line-height:1.2;margin-top:2px}
+.pr{font-family:'Archivo Black';font-size:21px;color:var(--red);margin-top:4px;font-variant-numeric:tabular-nums}
+.pr s{color:var(--muted);font-family:'Atkinson Hyperlegible';font-size:13px;font-weight:400;margin-left:4px}
+.hand{font-family:'Caveat',cursive;font-size:22px;line-height:1;color:var(--pine);margin-top:4px}
+.mark{position:absolute;pointer-events:none}
+.it.claimed .ph{opacity:.5}
+/* tab bar */
+.tabs{position:absolute;left:0;right:0;bottom:0;height:84px;background:#fff;border-top:2px solid var(--ink);display:flex;justify-content:space-around;padding-top:10px}
+.tab{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;font-weight:700;color:var(--muted)}
+.tab.on{color:var(--red)}
+.tab svg{width:26px;height:26px}
+.fab{position:absolute;right:16px;bottom:100px;height:56px;padding:0 22px 0 18px;border-radius:28px;background:var(--ink);color:#fff;font-weight:700;font-size:17px;display:flex;align-items:center;gap:8px;box-shadow:0 6px 16px rgba(0,0,0,.25)}
+/* family list */
+.person{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--rule)}
+.pav{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Archivo Black';font-size:20px;flex:none}
+.person .nm{font-weight:700;font-size:18px}
+.person .sm{font-size:14px;color:var(--muted)}
+.bar{height:8px;background:var(--wash);border-radius:4px;margin-top:6px;overflow:hidden;width:150px}
+.bar i{display:block;height:100%;background:var(--pine)}
+.go{margin-left:auto;color:var(--muted)}
+.tag{font-size:12px;font-weight:700;letter-spacing:.06em;background:var(--mustard);padding:2px 6px;border-radius:4px;margin-left:6px;vertical-align:2px}
+/* notes */
+.note{display:flex;gap:10px;align-items:flex-start;background:var(--wash);border-radius:10px;padding:12px;font-size:14px;margin-bottom:14px}
+.note svg{flex:none;margin-top:1px}
+/* sheet */
+.scrim{position:absolute;inset:0;background:rgba(26,26,26,.5)}
+.sheet{color:var(--ink);position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:22px 22px 0 0;padding:10px 20px 34px}
+.grab{width:40px;height:5px;border-radius:3px;background:var(--rule);margin:0 auto 14px}
+.sheet h3{font-family:'Archivo Black';font-size:24px}
+label{display:block;font-weight:700;font-size:14px;margin:14px 0 6px}
+.field{border:2px solid var(--ink);border-radius:10px;padding:12px;font-size:16px;display:flex;align-items:center;gap:8px;background:#fff}
+.field.ok{border-color:var(--pine)}
+.preview{display:flex;gap:12px;border:2px solid var(--rule);border-radius:12px;padding:12px;margin-top:14px}
+.preview .ph{width:96px;height:96px;margin:0;flex:none}
+.small{font-size:13px;color:var(--muted)}
+.btn{height:56px;border-radius:14px;background:var(--red);color:#fff;font-weight:700;font-size:18px;display:flex;align-items:center;justify-content:center;margin-top:16px}
+.btn.ghost{background:#fff;color:var(--ink);border:2px solid var(--ink)}
+.btn.pine{background:var(--pine)}
+.seg{display:flex;border:2px solid var(--ink);border-radius:10px;overflow:hidden}
+.seg span{flex:1;text-align:center;padding:10px 0;font-weight:700;font-size:14px}
+.seg .on{background:var(--ink);color:#fff}
+/* detail */
+.hero{height:330px;background:var(--wash);display:flex;align-items:center;justify-content:center;position:relative}
+.dt{padding:18px 20px 0}
+.dt h3{font-family:'Archivo Black';font-size:26px;line-height:1.08;letter-spacing:-.01em}
+.dt .pr{font-size:32px}
+.kv{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--rule);font-size:15px}
+.kv span:first-child{color:var(--muted)}
+.claimbox{border:2px dashed var(--pine);border-radius:12px;padding:12px;margin-top:14px;font-size:14px}
+/* login */
+.login{position:absolute;inset:0;background:var(--red);color:#fff;padding:70px 28px 0}.login>svg{display:block;margin:0 auto 18px}
+.login .field{border-color:#fff;background:#fff;color:var(--ink)}
+.login label{color:#fff}
+.login .btn{background:var(--ink)}
+.icon{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:440px){.board{padding:20px 0 60px;grid-template-columns:1fr}figure{transform:scale(.88);transform-origin:top center;margin-bottom:-100px}.intro{padding:32px 16px 0}figcaption{padding:0 8px}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- product illustrations (synthetic placeholders) -->
+    <symbol id="p-oven" viewBox="0 0 120 90"><ellipse cx="60" cy="74" rx="44" ry="8" fill="#0002"/><path d="M18 38h84v22c0 10-10 16-20 16H38c-10 0-20-6-20-16z" fill="#C8102E"/><rect x="14" y="32" width="92" height="9" rx="4" fill="#9A0C23"/><rect x="52" y="22" width="16" height="10" rx="3" fill="#1A1A1A"/><rect x="6" y="44" width="12" height="7" rx="3" fill="#9A0C23"/><rect x="102" y="44" width="12" height="7" rx="3" fill="#9A0C23"/></symbol>
+    <symbol id="p-kindle" viewBox="0 0 120 90"><rect x="36" y="6" width="48" height="78" rx="6" fill="#1A1A1A"/><rect x="41" y="13" width="38" height="58" rx="1" fill="#EDEBE4"/><path d="M46 22h28M46 29h28M46 36h22M46 43h28M46 50h18" stroke="#9a978f" stroke-width="2"/></symbol>
+    <symbol id="p-socks" viewBox="0 0 120 90"><path d="M34 8h22v46l16 16c6 6 2 16-8 16H40c-6 0-10-4-10-10V8z" fill="#3A5A8C"/><path d="M34 8h22v10H34z" fill="#E4E1DA"/><path d="M64 14h22v40l14 14c6 6 2 16-8 16H70c-6 0-10-4-10-10V14z" fill="#4C70A8"/><path d="M64 14h22v10H64z" fill="#fff"/></symbol>
+    <symbol id="p-book" viewBox="0 0 120 90"><path d="M22 14h38v64H22z" fill="#F2B705"/><path d="M60 14h38v64H60z" fill="#E0A800"/><rect x="30" y="24" width="22" height="18" fill="#fff"/><rect x="68" y="24" width="22" height="18" fill="#fff"/><circle cx="41" cy="33" r="5" fill="#2E7D5B"/><circle cx="79" cy="33" r="5" fill="#C8102E"/><path d="M30 52h22M30 58h16M68 52h22" stroke="#7a5c00" stroke-width="2"/></symbol>
+    <symbol id="p-lego" viewBox="0 0 120 90"><rect x="18" y="34" width="84" height="44" rx="3" fill="#2E7D5B"/><g fill="#256A4C"><rect x="24" y="24" width="14" height="12" rx="2"/><rect x="46" y="24" width="14" height="12" rx="2"/><rect x="68" y="24" width="14" height="12" rx="2"/><rect x="86" y="24" width="12" height="12" rx="2"/></g><text x="60" y="64" text-anchor="middle" font-family="Archivo Black" font-size="13" fill="#fff">1,240 pcs</text></symbol>
+    <symbol id="p-head" viewBox="0 0 120 90"><path d="M30 56V44a30 30 0 0160 0v12" fill="none" stroke="#1A1A1A" stroke-width="7"/><rect x="22" y="50" width="18" height="30" rx="7" fill="#F4A6B4"/><rect x="80" y="50" width="18" height="30" rx="7" fill="#F4A6B4"/></symbol>
+    <symbol id="p-bike" viewBox="0 0 120 90"><circle cx="32" cy="60" r="20" fill="none" stroke="#1A1A1A" stroke-width="5"/><circle cx="88" cy="60" r="20" fill="none" stroke="#1A1A1A" stroke-width="5"/><path d="M32 60l20-30h24l12 30M52 30l10 30h26M46 24h14" fill="none" stroke="#C8102E" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="p-mug" viewBox="0 0 120 90"><rect x="34" y="18" width="44" height="58" rx="6" fill="#F2B705"/><path d="M78 32h8a10 10 0 010 20h-8" fill="none" stroke="#E0A800" stroke-width="7"/><path d="M44 8c0 6 6 6 6 12M58 6c0 6 6 6 6 12" stroke="#c9c5bc" stroke-width="3" fill="none" stroke-linecap="round"/></symbol>
+    <!-- marks -->
+    <symbol id="loop" viewBox="0 0 180 160"><path d="M30 70C34 30 70 10 104 12c42 3 66 30 64 68-2 40-34 68-80 66C42 144 10 118 14 78c3-26 22-44 52-52" fill="none" stroke="#C8102E" stroke-width="5" stroke-linecap="round"/></symbol>
+    <symbol id="check" viewBox="0 0 60 50"><path d="M6 26l16 16L54 6" fill="none" stroke="#2E7D5B" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <!-- icons -->
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2zM4 21V5M8 7h7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-gift" viewBox="0 0 24 24"><path d="M3 8h18v4H3zM5 12v9h14v-9M12 8v13M12 8C10 4 6 4 7 7c.5 1 3 1 5 1zm0 0c2-4 6-4 5-1-.5 1-3 1-5 1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M3 3l18 18M10.6 6.1A10 10 0 0112 6c5 0 9 4 10 6-.4.9-1.3 2.2-2.6 3.4M6.6 6.6C4.4 8 2.8 10.2 2 12c1 2 5 6 10 6 1.8 0 3.4-.5 4.8-1.3M9.9 9.9a3 3 0 004.2 4.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 006 0l3-3a4 4 0 00-6-6l-1 1M14 10a4 4 0 00-6 0l-3 3a4 4 0 006 6l1-1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-ok" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#2E7D5B"/><path d="M8 12l3 3 5-6" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="stack" viewBox="0 0 72 72"><rect x="14" y="44" width="44" height="22" fill="#2E7D5B"/><rect x="33" y="44" width="6" height="22" fill="#F2B705"/><rect x="20" y="28" width="32" height="16" fill="#fff"/><rect x="33" y="28" width="6" height="16" fill="#C8102E"/><rect x="26" y="14" width="20" height="14" fill="#F2B705"/><rect x="33" y="14" width="6" height="14" fill="#C8102E"/><path d="M36 14c-4-8-11-6.5-9.5-2.5 1 2.5 5.5 2.5 9.5 2.5zM36 14c4-8 11-6.5 9.5-2.5-1 2.5-5.5 2.5-9.5 2.5z" fill="#fff"/></symbol>
+  </defs>
+</svg>
+
+<div class="intro">
+  <h1>Wishbook on your phone</h1>
+  <p>Seven key screens for the Crosby Family Wishbook. Names, gifts, and prices are made-up examples. Product pictures are placeholders; the real app pulls them from the link.</p>
+</div>
+
+<div class="board">
+
+<!-- 1 FAMILY -->
+<figure>
+<div class="phone on-red">
+  <div class="status"><span>9:41</span><span>●●● ▮</span></div>
+  <div class="hdr">
+    <div class="row"><span class="wm"><svg width="26" height="26" aria-hidden="true"><use href="#stack"/></svg>Wishbook</span><span class="av">JC</span></div>
+    <h2>Who’s on the list this year</h2>
+    <div class="meta">Christmas 2026 · 36 days to go</div>
+  </div>
+  <div class="pg">
+    <div class="secthd"><b>Family</b><span>7 lists</span></div>
+    <div class="person"><div class="pav" style="background:var(--mustard)">GJ</div><div><div class="nm">Grandma June</div><div class="sm">9 wants · 4 claimed</div><div class="bar"><i style="width:44%"></i></div></div><svg class="icon go"><use href="#i-chev"/></svg></div>
+    <div class="person"><div class="pav" style="background:#F4A6B4">KC</div><div><div class="nm">Kate</div><div class="sm">12 wants · 2 claimed</div><div class="bar"><i style="width:17%"></i></div></div><svg class="icon go"><use href="#i-chev"/></svg></div>
+    <div class="person"><div class="pav" style="background:#A9D3BE">MC</div><div><div class="nm">Milo<span class="tag">KID</span></div><div class="sm">You manage · 8 wants · 5 claimed</div><div class="bar"><i style="width:62%"></i></div></div><svg class="icon go"><use href="#i-chev"/></svg></div>
+    <div class="person"><div class="pav" style="background:#BFD0EE">RC</div><div><div class="nm">Rob</div><div class="sm">6 wants · 0 claimed</div><div class="bar"><i style="width:0"></i></div></div><svg class="icon go"><use href="#i-chev"/></svg></div>
+    <div class="person"><div class="pav" style="background:var(--wash)">AN</div><div><div class="nm">Aunt Nora</div><div class="sm">No list yet</div></div><svg class="icon go"><use href="#i-chev"/></svg></div>
+  </div>
+  <nav class="tabs"><span class="tab on"><svg><use href="#i-book"/></svg>Family</span><span class="tab"><svg><use href="#i-star"/></svg>My list</span><span class="tab"><svg><use href="#i-gift"/></svg>I'm getting</span><span class="tab"><svg><use href="#i-user"/></svg>Me</span></nav>
+</div>
+<figcaption><b>1 · Family home</b>Everyone's list in one place, with how much of each is covered. Your own row isn't here: you'd see a progress bar and that would spoil it.</figcaption>
+</figure>
+
+<!-- 2 GIVER VIEW -->
+<figure>
+<div class="phone on-red">
+  <div class="status"><span>9:41</span><span>●●● ▮</span></div>
+  <div class="hdr">
+    <div class="back"><svg class="icon"><use href="#i-back"/></svg>Family</div>
+    <h2>Grandma June</h2>
+    <div class="meta">9 wants · 4 claimed · 5 still open</div>
+  </div>
+  <div class="pg">
+    <div class="chips"><span class="chip on">All</span><span class="chip">Still open</span><span class="chip">Under $50</span></div>
+    <div class="grid">
+      <div class="it claimed"><div class="ph"><svg width="110" height="84"><use href="#p-oven"/></svg></div><div class="no">NO. 01 · LODGE</div><div class="t">6-qt Dutch oven, Island Spice Red</div><div class="pr">$79.90</div><div class="hand">Josh has it</div><svg class="mark" width="44" height="38" style="top:6px;right:6px"><use href="#check"/></svg></div>
+      <div class="it"><div class="ph"><svg width="110" height="84"><use href="#p-kindle"/></svg></div><div class="no">NO. 02 · AMAZON</div><div class="t">Kindle Paperwhite Signature</div><div class="pr">$149.99<s>$189.99</s></div><svg class="mark" width="190" height="160" style="top:-14px;left:-12px"><use href="#loop"/></svg></div>
+      <div class="it"><div class="ph"><svg width="110" height="84"><use href="#p-socks"/></svg></div><div class="no">NO. 03 · ETSY</div><div class="t">Merino slipper socks, size M</div><div class="pr">$24.00</div></div>
+      <div class="it claimed"><div class="ph"><svg width="110" height="84"><use href="#p-book"/></svg></div><div class="no">NO. 04 · SHUTTERFLY</div><div class="t">Grandkids photo book 2026</div><div class="pr">$45.00</div><div class="hand">Kate has it</div><svg class="mark" width="44" height="38" style="top:6px;right:6px"><use href="#check"/></svg></div>
+    </div>
+  </div>
+  <nav class="tabs"><span class="tab on"><svg><use href="#i-book"/></svg>Family</span><span class="tab"><svg><use href="#i-star"/></svg>My list</span><span class="tab"><svg><use href="#i-gift"/></svg>I'm getting</span><span class="tab"><svg><use href="#i-user"/></svg>Me</span></nav>
+</div>
+<figcaption><b>2 · Someone else's list</b>Red circle = Grandma's most wanted. Green check + name = already claimed, so nobody doubles up. Price drops show the old price struck through.</figcaption>
+</figure>
+
+<!-- 3 OWNER VIEW -->
+<figure>
+<div class="phone on-red">
+  <div class="status"><span>9:41</span><span>●●● ▮</span></div>
+  <div class="hdr">
+    <div class="row"><span class="wm"><svg width="26" height="26" aria-hidden="true"><use href="#stack"/></svg>Wishbook</span><span class="av">JC</span></div>
+    <h2>My wishlist</h2>
+    <div class="meta">7 wants · shared with 6 family</div>
+  </div>
+  <div class="pg">
+    <div class="note"><svg width="20" height="20" style="color:var(--muted)"><use href="#i-eye"/></svg><span>Claims on your list are hidden from you, so the surprise stays a surprise.</span></div>
+    <div class="grid">
+      <div class="it"><div class="ph"><svg width="110" height="84"><use href="#p-head"/></svg></div><div class="no">NO. 01 · AMAZON</div><div class="t">Sony WH-1000XM6 headphones</div><div class="pr">$398.00</div><svg class="mark" width="190" height="160" style="top:-14px;left:-12px"><use href="#loop"/></svg></div>
+      <div class="it"><div class="ph"><svg width="110" height="84"><use href="#p-lego"/></svg></div><div class="no">NO. 02 · LEGO</div><div class="t">Botanical Bonsai set</div><div class="pr">$49.99</div></div>
+      <div class="it"><div class="ph"><svg width="110" height="84"><use href="#p-mug"/></svg></div><div class="no">NO. 03 · FELLOW</div><div class="t">Stagg EKG kettle, matte black</div><div class="pr">$165.00</div></div>
+      <div class="it"><div class="ph"><svg width="110" height="84"><use href="#p-socks"/></svg></div><div class="no">NO. 04 · BOMBAS</div><div class="t">Wool socks 4-pack, L</div><div class="pr">$68.00</div></div>
+    </div>
+  </div>
+  <div class="fab"><svg class="icon"><use href="#i-plus"/></svg>Add a gift</div>
+  <nav class="tabs"><span class="tab"><svg><use href="#i-book"/></svg>Family</span><span class="tab on"><svg><use href="#i-star"/></svg>My list</span><span class="tab"><svg><use href="#i-gift"/></svg>I'm getting</span><span class="tab"><svg><use href="#i-user"/></svg>Me</span></nav>
+</div>
+<figcaption><b>3 · Your own list</b>No checks, no names, no progress. Tap a gift to edit, delete, circle it as most wanted, or mark it received after Christmas.</figcaption>
+</figure>
+
+<!-- 4 ADD BY LINK -->
+<figure>
+<div class="phone on-red">
+  <div class="status"><span>9:41</span><span>●●● ▮</span></div>
+  <div class="hdr"><div class="row"><span class="wm"><svg width="26" height="26" aria-hidden="true"><use href="#stack"/></svg>Wishbook</span><span class="av">JC</span></div><h2>My wishlist</h2></div>
+  <div class="scrim"></div>
+  <div class="sheet">
+    <div class="grab"></div>
+    <h3>Add a gift</h3>
+    <label for="u">Paste a link</label>
+    <div class="field ok" id="u"><svg class="icon" style="color:var(--muted)"><use href="#i-link"/></svg><span style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis">amazon.com/dp/B0D7HXJ8QK</span><svg width="22" height="22" style="margin-left:auto;flex:none"><use href="#i-ok"/></svg></div>
+    <div class="preview">
+      <div class="ph"><svg width="90" height="70"><use href="#p-kindle"/></svg></div>
+      <div><div class="no">FOUND ON AMAZON</div><div class="t">Kindle Paperwhite Signature Edition, 32 GB</div><div class="pr">$149.99</div><div class="small">Price checked just now</div></div>
+    </div>
+    <label>Options (size, color, notes)</label>
+    <div class="field" style="color:var(--muted)">Metallic Jade, please</div>
+    <label>How much do you want it?</label>
+    <div class="seg"><span>Nice to have</span><span>Want</span><span class="on">Most wanted</span></div>
+    <div class="btn">Add to my list</div>
+  </div>
+</div>
+<figcaption><b>4 · Paste a link</b>Paste from Amazon or any store; the app fills in the picture, name, and price. Use the Share button from the Amazon app to skip copy-paste. Type it in yourself if a site won't cooperate.</figcaption>
+</figure>
+
+<!-- 5 GIFT DETAIL (giver) -->
+<figure>
+<div class="phone">
+  <div class="status on-red"><span>9:41</span><span>●●● ▮</span></div>
+  <div class="hero"><svg width="250" height="190"><use href="#p-kindle"/></svg><div class="back" style="position:absolute;top:14px;left:16px;background:#fff;padding:8px 12px 8px 8px;border-radius:20px"><svg class="icon"><use href="#i-back"/></svg>Grandma June</div></div>
+  <div class="dt">
+    <div class="no">NO. 02 · AMAZON · MOST WANTED</div>
+    <h3>Kindle Paperwhite Signature Edition, 32 GB</h3>
+    <div class="pr">$149.99 <s>$189.99</s></div>
+    <div class="kv"><span>Her note</span><span>Metallic Jade, please</span></div>
+    <div class="kv"><span>Price</span><span style="display:flex;gap:6px;align-items:center"><svg class="icon" style="width:16px;height:16px"><use href="#i-clock"/></svg>checked 2 hours ago</span></div>
+    <div class="btn pine">I'll get this</div>
+    <div class="btn ghost">Open on Amazon</div>
+  </div>
+</div>
+<figcaption><b>5 · Claiming a gift</b>One big button. Everyone except Grandma then sees "Josh has it." You can un-claim if plans change.</figcaption>
+</figure>
+
+<!-- 6 KID LIST (manager) -->
+<figure>
+<div class="phone on-red">
+  <div class="status"><span>9:41</span><span>●●● ▮</span></div>
+  <div class="hdr">
+    <div class="back"><svg class="icon"><use href="#i-back"/></svg>Family</div>
+    <h2>Milo’s page</h2>
+    <div class="meta">Age 8 · you and Kate manage this list</div>
+  </div>
+  <div class="pg">
+    <div class="note"><span>You manage Milo’s list <b>and</b> shop for him, so you see claims here. Milo never logs in.</span></div>
+    <div class="grid">
+      <div class="it"><div class="ph"><svg width="110" height="84"><use href="#p-bike"/></svg></div><div class="no">NO. 01 · REI</div><div class="t">Co-op REV 20" kids bike</div><div class="pr">$329.00</div><svg class="mark" width="190" height="160" style="top:-14px;left:-12px"><use href="#loop"/></svg></div>
+      <div class="it claimed"><div class="ph"><svg width="110" height="84"><use href="#p-lego"/></svg></div><div class="no">NO. 02 · LEGO</div><div class="t">City Fire Station</div><div class="pr">$99.99</div><div class="hand">Grandma has it</div><svg class="mark" width="44" height="38" style="top:6px;right:6px"><use href="#check"/></svg></div>
+    </div>
+  </div>
+  <div class="fab"><svg class="icon"><use href="#i-plus"/></svg>Add for Milo</div>
+  <nav class="tabs"><span class="tab on"><svg><use href="#i-book"/></svg>Family</span><span class="tab"><svg><use href="#i-star"/></svg>My list</span><span class="tab"><svg><use href="#i-gift"/></svg>I'm getting</span><span class="tab"><svg><use href="#i-user"/></svg>Me</span></nav>
+</div>
+<figcaption><b>6 · A kid’s list you manage</b>Parents add and edit for the kid and can still see who's buying what.</figcaption>
+</figure>
+
+<!-- 7 SIGN IN -->
+<figure>
+<div class="phone">
+  <div class="login">
+    <svg width="300" height="204" viewBox="0 0 310 210" role="img" aria-label="Crosby Family"><rect x="16" y="130" width="90" height="62" fill="#2E7D5B"/><rect x="56" y="130" width="10" height="62" fill="#F2B705"/><rect x="28" y="84" width="66" height="46" fill="#fff"/><rect x="56" y="84" width="10" height="46" fill="#C8102E"/><rect x="40" y="50" width="42" height="34" fill="#F2B705"/><rect x="56" y="50" width="10" height="34" fill="#C8102E"/><path d="M61 50c-8-16-22-13-19-5 2 5 11 5 19 5zM61 50c8-16 22-13 19-5-2 5-11 5-19 5z" fill="#fff"/><text x="120" y="122" font-family="Archivo Black" font-size="46" fill="#fff" letter-spacing="-1">Crosby</text><text x="121" y="164" font-family="Archivo Black" font-size="34" fill="#F2B705" letter-spacing=".5">Family</text></svg><p style="font-family:'Archivo Black';font-size:28px;text-align:center;margin:-6px 0 6px">Wishbook</p>
+    
+    <label>Username</label>
+    <div class="field">josh</div>
+    <label>Password</label>
+    <div class="field">••••••••••</div>
+    <div class="btn">Sign in</div>
+    <p style="margin-top:18px;font-size:15px;color:var(--pink)">Forgot it? Ask Josh to reset your password.</p>
+  </div>
+</div>
+<figcaption><b>7 · Sign in</b>Accounts are made by you (the admin), so there's no public sign-up. Stays signed in on each phone, and can be added to the home screen.</figcaption>
+</figure>
+
+</div>
+</body>
+</html>
