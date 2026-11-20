@@ -165,3 +165,27 @@ export function setPriority(viewer: User, itemId: number, priority: Priority) {
 	if (!(priority in PRIORITY_RANK)) error(400, 'Unknown priority');
 	updateItem(viewer, itemId, { priority });
 }
+
+export function markReceived(viewer: User, itemId: number, received: boolean) {
+	const { item, list } = loadItem(itemId);
+	requireEditor(viewer, list.ownerId);
+	if (item.deletedAt) error(404, 'Gift not found');
+	getDb().update(items).set({ status: received ? 'received' : 'active', updatedAt: new Date() }).where(eq(items.id, itemId)).run();
+}
+
+/** Everything on a season's list that wasn't removed, received gifts first. Same claim rules as the live list. */
+export function getArchive(viewer: User, ownerId: number, season: number): ItemView[] {
+	const list = getDb().select().from(lists).where(and(eq(lists.ownerId, ownerId), eq(lists.season, season))).get();
+	if (!list) return [];
+	const rows = getDb().select().from(items).where(and(eq(items.listId, list.id), isNull(items.deletedAt))).all()
+		.sort((a, b) => Number(b.status === 'received') - Number(a.status === 'received') || sortItems(a, b));
+	const cl = claimsFor(rows.map((r) => r.id));
+	return rows.map((r) => toItemView(viewer, ownerId, r, cl.get(r.id) ?? null));
+}
+
+export function getSeasons(ownerId: number): { season: number; count: number }[] {
+	const db = getDb();
+	return db.select().from(lists).where(eq(lists.ownerId, ownerId)).all()
+		.map((l) => ({ season: l.season, count: db.select({ id: items.id }).from(items).where(and(eq(items.listId, l.id), isNull(items.deletedAt))).all().length }))
+		.sort((a, b) => b.season - a.season);
+}

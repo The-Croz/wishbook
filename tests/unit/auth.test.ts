@@ -74,3 +74,16 @@ describe('seedAdmin', () => {
 		expect(all[0]).toMatchObject({ username: 'josh', isAdmin: true });
 	});
 });
+
+import { changePassword } from '../../src/lib/server/auth';
+describe('changePassword', () => {
+	it('needs the current password and 8+ characters, and signs out other sessions', async () => {
+		const u = makeUser('josh', { passwordHash: await hashPassword('oldpassword') });
+		const { token } = await createSession(u.id);
+		expect(await changePassword(u.id, 'wrong', 'newpassword1')).toBe("Your current password isn't right.");
+		expect(await changePassword(u.id, 'oldpassword', 'short')).toBe('Use at least 8 characters.');
+		expect(await changePassword(u.id, 'oldpassword', 'newpassword1')).toBeNull();
+		expect(await validateSession(token)).toBeNull();
+		expect((await authenticate('josh', 'newpassword1'))?.id).toBe(u.id);
+	});
+});

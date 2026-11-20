@@ -26,6 +26,7 @@
 			<p class="pr num">{formatMoney(item.priceCents, item.currency)}{#if item.listPriceCents && item.listPriceCents > item.priceCents}<s>{formatMoney(item.listPriceCents, item.currency)}</s>{/if}</p>
 		{/if}
 		{#if item.deleted}<p class="note">This gift was removed from the list.</p>{/if}
+		{#if item.status === 'received'}<p class="note">Received. It’s in the {data.season} archive now.</p>{/if}
 		{#if item.notes}<div class="kv"><span>{data.owner.id === data.me.id ? 'Your note' : 'Note'}</span><span>{item.notes}</span></div>{/if}
 		{#if item.priceCents != null}
 			<div class="kv"><span>Price</span><span class="when"><Icon name="clock" size={16} />{item.priceCheckedAt ? `checked ${timeAgo(item.priceCheckedAt)}` : 'entered by hand'}</span></div>
@@ -56,6 +57,12 @@
 				<form method="POST" action="?/priority" use:enhance class="seg" role="group" aria-label="How much is it wanted">
 					{#each PRI as [v, l]}<button name="priority" value={v} class:on={item.priority === v} aria-pressed={item.priority === v}>{l}</button>{/each}
 				</form>
+				{#if data.receivedTime || item.status === 'received'}
+					<form method="POST" action="?/received" use:enhance>
+						<input type="hidden" name="received" value={item.status === 'received' ? 'no' : 'yes'} />
+						<button class="btn pine">{item.status === 'received' ? 'Not received after all' : 'Mark received'}</button>
+					</form>
+				{/if}
 				<a class="btn ghost" href="/add?edit={item.id}"><Icon name="edit" size={18} />Edit details</a>
 				{#if !confirmDelete}
 					<button class="btn danger" onclick={() => (confirmDelete = true)}><Icon name="trash" size={18} />Remove gift</button>

@@ -1,5 +1,6 @@
 import { error, fail, redirect } from '@sveltejs/kit';
-import { deleteItem, getItemForViewer, setPriority, type Priority } from '$lib/server/lists';
+import { deleteItem, getItemForViewer, markReceived, setPriority, type Priority } from '$lib/server/lists';
+import { showReceived } from '$lib/season';
 import { claimItem, setPurchased, unclaimItem } from '$lib/server/claims';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -9,7 +10,7 @@ const idOf = (p: string) => {
 	return id;
 };
 
-export const load: PageServerLoad = ({ locals, params }) => getItemForViewer(locals.user!, idOf(params.itemId));
+export const load: PageServerLoad = ({ locals, params }) => ({ ...getItemForViewer(locals.user!, idOf(params.itemId)), receivedTime: showReceived(new Date()) });
 
 export const actions: Actions = {
 	claim: ({ locals, params }) => {
@@ -28,6 +29,9 @@ export const actions: Actions = {
 		const p = String((await request.formData()).get('priority')) as Priority;
 		if (!['nice', 'want', 'most'].includes(p)) return fail(400, { message: 'Pick a priority' });
 		setPriority(locals.user!, idOf(params.itemId), p);
+	},
+	received: async ({ locals, params, request }) => {
+		markReceived(locals.user!, idOf(params.itemId), (await request.formData()).get('received') === 'yes');
 	},
 	delete: ({ locals, params }) => {
 		const id = idOf(params.itemId);

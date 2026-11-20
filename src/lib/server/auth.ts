@@ -97,3 +97,15 @@ export async function seedAdmin(username?: string, password?: string) {
 		avatarColor: '#F2B705'
 	}).run();
 }
+
+export const MIN_PASSWORD = 8;
+
+/** Returns an error message, or null on success. Signs out every session for the user. */
+export async function changePassword(userId: number, current: string, next: string): Promise<string | null> {
+	const u = getDb().select().from(users).where(eq(users.id, userId)).get();
+	if (!u?.passwordHash || !(await verifyPassword(u.passwordHash, current))) return "Your current password isn't right.";
+	if (next.length < MIN_PASSWORD) return `Use at least ${MIN_PASSWORD} characters.`;
+	getDb().update(users).set({ passwordHash: await hashPassword(next) }).where(eq(users.id, userId)).run();
+	invalidateUserSessions(userId);
+	return null;
+}
