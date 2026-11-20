@@ -7,33 +7,8 @@ import type { Claim, Item, User } from './db/schema';
 
 export type ClaimWithName = Claim & { claimerName: string };
 
-export type ItemView = {
-	id: number;
-	title: string;
-	url: string | null;
-	imageUrl: string | null;
-	store: string | null;
-	priceCents: number | null;
-	listPriceCents: number | null;
-	currency: string;
-	priceCheckedAt: number | null;
-	notes: string;
-	priority: Item['priority'];
-	status: Item['status'];
-	scrapeStatus: Item['scrapeStatus'];
-	deleted: boolean;
-	claim?: { claimerId: number; claimerName: string; isMine: boolean; purchased: boolean };
-};
-
-export type ListSummary = {
-	ownerId: number;
-	displayName: string;
-	avatarColor: string;
-	isManaged: boolean;
-	managedByMe: boolean;
-	wantCount: number;
-	claimedCount?: number;
-};
+import type { ItemView, ListSummary } from '$lib/types';
+export type { ItemView, ListSummary };
 
 export function canSeeClaims(viewer: User, ownerId: number): boolean {
 	return viewer.id !== ownerId;
