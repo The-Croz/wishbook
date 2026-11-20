@@ -3,7 +3,7 @@ import type { Item, User } from './db/schema';
 import { createItem, updateItem, type ItemInput, type Priority } from './lists';
 import { parsePrice } from '$lib/money';
 import { storeFromHost } from './scrape/generic';
-import { isAmazon } from './scrape/extractUrl';
+import { isAmazon, placeholderTitle } from './scrape/extractUrl';
 
 const STATUSES = ['ok', 'blocked', 'failed', 'manual'] as const;
 
@@ -29,7 +29,7 @@ export function saveGift(viewer: User, target: { ownerId: number; editId?: numbe
 	const s = (k: string) => String(form.get(k) ?? '');
 	const url = webUrl(s('url'));
 	let title = s('title').trim();
-	if (!title && url) title = `Gift from ${new URL(url).hostname.replace(/^www\./, '')}`;
+	if (!title && url) title = placeholderTitle(url);
 	const priceText = s('price').trim();
 	const price = priceText ? parsePrice(priceText) : null;
 	const listCents = Number(s('listPriceCents')) || null;

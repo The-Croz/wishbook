@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { canonicalize, extractUrl } from '../../src/lib/server/scrape/extractUrl';
+import { canonicalize, extractUrl, isPlaceholderTitle, placeholderTitle, titleFromShareText } from '../../src/lib/server/scrape/extractUrl';
 import { parseHtml, scrape } from '../../src/lib/server/scrape';
 import { storeFromHost } from '../../src/lib/server/scrape/generic';
 
@@ -11,6 +11,25 @@ describe('extractUrl', () => {
 		expect(extractUrl('Check out this deal https://a.co/d/3xYz9Q. Thanks')).toBe('https://a.co/d/3xYz9Q'));
 	it('returns null with no link', () => expect(extractUrl('socks please')).toBeNull());
 	it('accepts a bare domain link', () => expect(extractUrl('www.rei.com/product/123')).toBe('https://www.rei.com/product/123'));
+});
+
+describe('titleFromShareText', () => {
+	it('keeps the product name from a share message', () =>
+		expect(titleFromShareText('Check out LEGO Icons Bonsai Tree 10281 on Amazon https://a.co/d/abc')).toBe('LEGO Icons Bonsai Tree 10281'));
+	it('drops an “Amazon.com:” lead-in', () =>
+		expect(titleFromShareText('Amazon.com: Kindle Paperwhite 16GB https://a.co/d/xyz')).toBe('Kindle Paperwhite 16GB'));
+	it('gives nothing for a bare link', () => expect(titleFromShareText('https://a.co/d/xyz')).toBeUndefined());
+	it('gives nothing when only pleasantries are left', () =>
+		expect(titleFromShareText('Check out this deal https://a.co/d/3xYz9Q. Thanks')).toBeUndefined());
+});
+
+describe('placeholder titles', () => {
+	it('names a gift after its site', () => expect(placeholderTitle('https://www.amazon.com/dp/B0D7HXJ8QK')).toBe('Gift from amazon.com'));
+	it('recognises its own placeholders only', () => {
+		expect(isPlaceholderTitle('Gift from amazon.com')).toBe(true);
+		expect(isPlaceholderTitle('Gift from Grandma')).toBe(false);
+		expect(isPlaceholderTitle('My Kindle')).toBe(false);
+	});
 });
 
 describe('canonicalize', () => {
@@ -85,6 +104,11 @@ describe('scrape', () => {
 		const r = await scrape('look https://a.co/d/abc', fake);
 		expect(r.url).toBe('https://www.amazon.com/dp/B0D7HXJ8QK');
 		expect(r.priceCents).toBe(14999);
+	});
+	it('offers the name from the share text when Amazon blocks the page', async () => {
+		const fake = async () => ({ ok: false, status: 503, url: 'https://www.amazon.com/dp/B0X', text: async () => '' }) as unknown as Response;
+		const r = await scrape('Check out LEGO Icons Bonsai Tree 10281 on Amazon https://www.amazon.com/dp/B0X', fake);
+		expect(r).toMatchObject({ status: 'blocked', title: 'LEGO Icons Bonsai Tree 10281' });
 	});
 	it('treats a 503 from Amazon as blocked', async () => {
 		const fake = async () => ({ ok: false, status: 503, url: 'https://www.amazon.com/dp/B0X', text: async () => '' }) as unknown as Response;

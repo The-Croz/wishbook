@@ -83,7 +83,7 @@
 </div>
 
 <style>
-	.detail { max-width: 640px; margin: 0 auto; background: #fff; min-height: 100dvh; padding-bottom: calc(var(--tabbar) + 40px); }
+	.detail { width: 100%; max-width: 640px; margin: 0 auto; background: #fff; min-height: 100dvh; padding-bottom: calc(var(--tabbar) + 40px); }
 	.hero { position: relative; padding-top: env(safe-area-inset-top); background: var(--wash); }
 	.back { position: absolute; top: calc(env(safe-area-inset-top) + 12px); left: 14px; display: inline-flex; align-items: center; gap: 4px; background: #fff; color: var(--ink); text-decoration: none; font-weight: 700; padding: 8px 14px 8px 8px; border-radius: 22px; min-height: 44px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12); }
 	.dt { padding: 18px 20px 0; display: flex; flex-direction: column; gap: 10px; }

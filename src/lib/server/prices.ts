@@ -3,7 +3,7 @@ import cron from 'node-cron';
 import { getDb } from './db';
 import { items, lists, priceHistory } from './db/schema';
 import { scrape, type ScrapeResult } from './scrape';
-import { isAmazon } from './scrape/extractUrl';
+import { isAmazon, isPlaceholderTitle } from './scrape/extractUrl';
 import { currentSeason } from '$lib/season';
 import { notifyPriceDrop } from './notify';
 
@@ -26,6 +26,7 @@ export async function refreshItem(itemId: number, fetchImpl: typeof fetch = fetc
 		patch.priceCheckedAt = now;
 		if (r.priceCents !== item.priceCents) db.insert(priceHistory).values({ itemId, priceCents: r.priceCents, checkedAt: now }).run();
 	}
+	if (r.title && isPlaceholderTitle(item.title)) patch.title = r.title;
 	if (!item.imageUrl && r.imageUrl) patch.imageUrl = r.imageUrl;
 	if (!item.store && r.store) patch.store = r.store;
 	db.update(items).set(patch).where(eq(items.id, itemId)).run();

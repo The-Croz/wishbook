@@ -53,6 +53,11 @@ describe('refreshItem', () => {
 		await refreshItem(i.id, page(fx('amazon-noprice.html')));
 		expect(get(i.id).priceCents).toBe(18999);
 	});
+	it('replaces the “Gift from amazon.com” placeholder with the real name', async () => {
+		const i = createItem(josh, josh.id, { title: 'Gift from amazon.com', url: 'https://www.amazon.com/dp/B0D7HXJ8QK', scrapeStatus: 'blocked' }, 2026);
+		await refreshItem(i.id, page(fx('amazon-product.html')));
+		expect(get(i.id).title).toBe('Amazon Kindle Paperwhite Signature Edition (32 GB) – Metallic Jade');
+	});
 	it('fills a missing image', async () => {
 		const i = createItem(josh, josh.id, { title: 'K', url: 'https://www.amazon.com/dp/B0D7HXJ8QK', scrapeStatus: 'blocked' }, 2026);
 		await refreshItem(i.id, page(fx('amazon-product.html')));

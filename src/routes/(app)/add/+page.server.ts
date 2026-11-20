@@ -22,7 +22,7 @@ export const load: PageServerLoad = ({ locals, url }) => {
 	const list = getListForViewer(me, forId);
 	if (!list.canEdit) error(403, 'Only the list owner can add gifts here');
 	const shareText = [url.searchParams.get('url'), url.searchParams.get('share'), url.searchParams.get('title')].filter(Boolean).join(' ');
-	return { mode: 'add' as const, ownerId: forId, ownerName: list.owner.displayName, isMe: forId === me.id, item: null, shared: shareText ? extractUrl(shareText) ?? null : null };
+	return { mode: 'add' as const, ownerId: forId, ownerName: list.owner.displayName, isMe: forId === me.id, item: null, shared: shareText && extractUrl(shareText) ? shareText : null };
 };
 
 export const actions: Actions = {

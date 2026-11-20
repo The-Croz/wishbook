@@ -1,5 +1,5 @@
 import { load } from 'cheerio';
-import { canonicalize, extractUrl, isAmazon } from './extractUrl';
+import { canonicalize, extractUrl, isAmazon, titleFromShareText } from './extractUrl';
 import { parseAmazon } from './amazon';
 import { parseGeneric } from './generic';
 
@@ -28,6 +28,13 @@ export function parseHtml(url: string, html: string): ScrapeResult {
 
 /** Fetches a pasted link and reads gift details from it. Never throws. */
 export async function scrape(rawText: string, fetchImpl: typeof fetch = fetch): Promise<ScrapeResult> {
+	const r = await scrapePage(rawText, fetchImpl);
+	if (r.status === 'ok' || r.title) return r;
+	const shared = titleFromShareText(rawText);
+	return shared ? { ...r, title: shared } : r;
+}
+
+async function scrapePage(rawText: string, fetchImpl: typeof fetch): Promise<ScrapeResult> {
 	const found = extractUrl(rawText);
 	if (!found) return { status: 'failed', url: rawText.trim() };
 	let url = found;

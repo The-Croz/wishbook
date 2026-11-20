@@ -30,3 +30,27 @@ export function canonicalize(raw: string): string {
 	u.hash = '';
 	return u.toString();
 }
+
+/** The stand-in name for a gift saved before its page could be read. */
+export function placeholderTitle(url: string): string {
+	return `Gift from ${new URL(url).hostname.replace(/^www\./, '')}`;
+}
+
+export const isPlaceholderTitle = (title: string): boolean => /^Gift from [^\s/]+\.[a-z.]+$/i.test(title.trim());
+
+/**
+ * The product name from a share message ("Check out LEGO Bonsai on Amazon https://a.co/…"),
+ * for when the page itself can't be read. Undefined unless something name-like is left.
+ */
+export function titleFromShareText(text: string): string | undefined {
+	const prose = text
+		.replace(/https?:\/\/[^\s<>"']+/gi, ' ')
+		.replace(/\bwww\.[^\s<>"']+/gi, ' ')
+		.replace(/\s+/g, ' ')
+		.trim()
+		.replace(/^(check out|look at|take a look at)\b\s*(this|these)?\s*(deal|item|product|find|one)?\s*:?\s*/i, '')
+		.replace(/^amazon(\.com)?\s*:\s*/i, '')
+		.replace(/\s+(on|at|from)\s+amazon(\.com)?\s*$/i, '')
+		.replace(/^["“'\s:,-]+|["”'\s:,-]+$/g, '');
+	return prose.length >= 8 ? prose.slice(0, 200) : undefined;
+}
