@@ -1,6 +1,7 @@
 import { error, fail, isHttpError, redirect } from '@sveltejs/kit';
 import { getItemForViewer, getListForViewer } from '$lib/server/lists';
 import { saveGift } from '$lib/server/addGift';
+import { retrySoon } from '$lib/server/prices';
 import { extractUrl } from '$lib/server/scrape/extractUrl';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -33,6 +34,7 @@ export const actions: Actions = {
 		let item;
 		try {
 			item = saveGift(me, { ownerId: forId, editId }, form);
+			if (!editId && item.url && (item.scrapeStatus === 'blocked' || item.scrapeStatus === 'failed')) retrySoon(item.id);
 		} catch (e) {
 			if (isHttpError(e) && e.status === 400) return fail(400, { message: e.body.message });
 			throw e;

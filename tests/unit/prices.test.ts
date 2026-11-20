@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { eq } from 'drizzle-orm';
 import { createTestDb, getDb } from '../../src/lib/server/db';
 import { items, priceHistory } from '../../src/lib/server/db/schema';
-import { refreshItem, refreshPrices } from '../../src/lib/server/prices';
+import { refreshItem, refreshPrices, retryIncomplete } from '../../src/lib/server/prices';
 import { createItem, deleteItem } from '../../src/lib/server/lists';
 import { makeUser } from './helpers';
 
@@ -75,5 +75,25 @@ describe('refreshPrices', () => {
 		expect(r).toEqual({ checked: 1, changed: 1, blocked: 0, failed: 0 });
 		expect(get(a.id).priceCents).toBe(14999);
 		expect(get(gone.id).priceCents).toBe(18999);
+	});
+});
+
+describe('retryIncomplete', () => {
+	it('retries only blocked gifts still missing details, and fills them in', async () => {
+		const stuck = createItem(josh, josh.id, { title: 'Gift from amazon.com', url: 'https://www.amazon.com/dp/B0D7HXJ8QK', scrapeStatus: 'blocked' }, 2026);
+		const done = amazonItem();
+		const r = await retryIncomplete(page(fx('amazon-product.html')), { season: 2026, delayMs: () => 0 });
+		expect(r).toEqual({ checked: 1, fixed: 1 });
+		expect(get(stuck.id)).toMatchObject({ title: 'Amazon Kindle Paperwhite Signature Edition (32 GB) – Metallic Jade', priceCents: 14999, scrapeStatus: 'ok' });
+		expect(get(done.id).priceCents).toBe(18999);
+	});
+	it('skips a blocked gift the owner already filled in by hand', async () => {
+		createItem(josh, josh.id, { title: 'Kindle', url: 'https://www.amazon.com/dp/B0D7HXJ8QK', imageUrl: 'https://img/x.jpg', priceCents: 100, scrapeStatus: 'blocked' }, 2026);
+		expect(await retryIncomplete(page(fx('amazon-product.html')), { season: 2026, delayMs: () => 0 })).toEqual({ checked: 0, fixed: 0 });
+	});
+	it('checks at most the limit per run', async () => {
+		for (let n = 0; n < 4; n++) createItem(josh, josh.id, { title: 'Gift from amazon.com', url: 'https://www.amazon.com/dp/B0D7HXJ8QK', scrapeStatus: 'blocked' }, 2026);
+		const r = await retryIncomplete(page(fx('amazon-captcha.html')), { season: 2026, limit: 2, delayMs: () => 0 });
+		expect(r).toEqual({ checked: 2, fixed: 0 });
 	});
 });

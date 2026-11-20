@@ -1,4 +1,4 @@
-import { and, eq, isNotNull, isNull } from 'drizzle-orm';
+import { and, eq, inArray, isNotNull, isNull } from 'drizzle-orm';
 import cron from 'node-cron';
 import { getDb } from './db';
 import { items, lists, priceHistory } from './db/schema';
@@ -59,6 +59,42 @@ export async function refreshPrices(
 	return out;
 }
 
+/**
+ * Amazon lets an occasional request through, so gifts saved while blocked get a few
+ * more chances during the day instead of waiting for the nightly run. Only gifts still
+ * missing a real name, price or picture are retried, a handful at a time, spaced out.
+ */
+export async function retryIncomplete(
+	fetchImpl: typeof fetch = fetch,
+	opts: { season?: number; limit?: number; delayMs?: () => number } = {}
+): Promise<{ checked: number; fixed: number }> {
+	const season = opts.season ?? currentSeason(new Date());
+	const limit = opts.limit ?? 5;
+	const delay = opts.delayMs ?? (() => 4000 + Math.random() * 5000);
+	const db = getDb();
+	const rows = db.select({ id: items.id, title: items.title, price: items.priceCents, image: items.imageUrl }).from(items)
+		.innerJoin(lists, eq(lists.id, items.listId))
+		.where(and(eq(lists.season, season), eq(items.status, 'active'), isNull(items.deletedAt), isNotNull(items.url),
+			inArray(items.scrapeStatus, ['blocked', 'failed'])))
+		.all()
+		.filter((r) => isPlaceholderTitle(r.title) || r.price == null || !r.image)
+		.slice(0, limit);
+	let fixed = 0;
+	for (const [n, row] of rows.entries()) {
+		if (n > 0) await sleep(delay());
+		if ((await refreshItem(row.id, fetchImpl)) === 'ok') fixed++;
+	}
+	return { checked: rows.length, fixed };
+}
+
+/** One quiet retry a couple of minutes after a gift is saved without its details. */
+export function retrySoon(itemId: number, afterMs = 2 * 60_000) {
+	if (process.env.DISABLE_PRICE_REFRESH === '1') return;
+	setTimeout(() => {
+		refreshItem(itemId).catch((e) => console.error('[wishbook] retry failed', e));
+	}, afterMs).unref?.();
+}
+
 let started = false;
 let running = false;
 
@@ -74,6 +110,19 @@ export function startPriceScheduler() {
 			console.log(`[wishbook] price refresh: ${JSON.stringify(r)}`);
 		} catch (e) {
 			console.error('[wishbook] price refresh failed', e);
+		} finally {
+			running = false;
+		}
+	});
+	// Catch-up for gifts still missing details: every 2 hours, 9am–9pm.
+	cron.schedule('0 9-21/2 * * *', async () => {
+		if (running) return;
+		running = true;
+		try {
+			const r = await retryIncomplete();
+			if (r.checked) console.log(`[wishbook] catch-up: ${JSON.stringify(r)}`);
+		} catch (e) {
+			console.error('[wishbook] catch-up failed', e);
 		} finally {
 			running = false;
 		}
