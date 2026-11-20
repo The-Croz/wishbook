@@ -46,7 +46,7 @@ export function setPurchased(viewer: User, itemId: number, purchased: boolean) {
 	getDb().update(claims).set({ purchased }).where(eq(claims.itemId, itemId)).run();
 }
 
-export type MyClaim = ItemView & { ownerId: number; ownerName: string; removed: boolean };
+export type MyClaim = ItemView & { ownerId: number; ownerName: string; removed: boolean; changed: boolean };
 
 /** Gifts I'm getting this season, from other people's lists, including ones since removed. */
 export function getMyClaims(viewer: User, season = currentSeason(new Date())): MyClaim[] {
@@ -64,7 +64,8 @@ export function getMyClaims(viewer: User, season = currentSeason(new Date())): M
 			...toItemView(viewer, r.ownerId, r.item, { ...r.claim, claimerName: viewer.displayName }),
 			ownerId: r.ownerId,
 			ownerName: r.ownerName,
-			removed: r.item.deletedAt != null
+			removed: r.item.deletedAt != null,
+			changed: r.item.contentChangedAt != null && r.item.contentChangedAt.getTime() > r.claim.createdAt.getTime()
 		}))
 		.sort((a, b) => a.ownerName.localeCompare(b.ownerName) || a.id - b.id);
 }

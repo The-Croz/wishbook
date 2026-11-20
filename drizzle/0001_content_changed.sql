@@ -1,0 +1,1 @@
+ALTER TABLE `items` ADD `content_changed_at` integer;

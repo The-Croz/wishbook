@@ -39,6 +39,7 @@
 			{:else if item.claim.isMine}
 				<div class="mine">
 					<p class="hand">You’re getting this</p>
+					{#if item.claim.changedSinceClaim}<p class="changed">{data.owner.displayName} changed this gift after you claimed it. Check the name and link before buying.</p>{/if}
 					<form method="POST" action="?/purchased" use:enhance class="bought">
 						<label><input type="checkbox" name="purchased" checked={item.claim.purchased} onchange={(e) => e.currentTarget.form?.requestSubmit()} /> Bought it</label>
 					</form>
@@ -48,7 +49,10 @@
 				<p class="taken"><span class="hand">{item.claim.claimerName} has it</span> Pick something else so nobody doubles up.</p>
 			{/if}
 		{/if}
-		{#if item.deleted && item.claim?.isMine}<p class="note">You claimed this before it was removed. Check with {data.owner.displayName} before buying.</p>{/if}
+		{#if item.deleted && item.claim?.isMine}
+			<p class="note">You claimed this before it was removed. Check with {data.owner.displayName} before buying.</p>
+			<form method="POST" action="?/unclaim" use:enhance><button class="btn ghost">Take it off my list</button></form>
+		{/if}
 
 		{#if item.url}<a class="btn ghost" href={item.url} target="_blank" rel="noopener noreferrer">Open on {item.store ?? 'the store site'}<Icon name="ext" size={18} /></a>{/if}
 
@@ -101,6 +105,7 @@
 	.bought label { display: flex; align-items: center; gap: 10px; font-weight: 700; min-height: 44px; }
 	.bought input { width: 24px; height: 24px; accent-color: var(--pine); }
 	.link { background: none; border: 0; padding: 0; color: var(--red); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; min-height: 44px; }
+	.changed { background: #fff7d6; border-radius: 8px; padding: 8px 10px; font-size: 15px; }
 	.taken { background: var(--wash); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 4px; }
 	.confirm { background: var(--wash); border-radius: 12px; padding: 14px; }
 	.confirm p { font-weight: 700; margin-bottom: 10px; }

@@ -67,3 +67,32 @@ describe('getMyClaims', () => {
 		expect(getMyClaims(josh, 2026).map((c) => c.title).sort()).toEqual(['Bike', 'Mug']);
 	});
 });
+
+import { getItemForViewer, updateItem } from '../../src/lib/server/lists';
+describe('after the owner changes a claimed gift', () => {
+	it('the claimer can still open a removed gift and unclaim it', () => {
+		const i = createItem(josh, josh.id, { title: 'Headphones' }, 2026);
+		claimItem(kate, i.id);
+		deleteItem(josh, i.id);
+		expect(getItemForViewer(kate, i.id).item).toMatchObject({ deleted: true, claim: { isMine: true } });
+		expect(() => getItemForViewer(june, i.id)).toThrow(expect.objectContaining({ status: 404 }));
+		unclaimItem(kate, i.id);
+		expect(getMyClaims(kate, 2026)).toHaveLength(0);
+	});
+	it('the claimer sees that the gift changed, the owner learns nothing', async () => {
+		const i = createItem(josh, josh.id, { title: 'Sony headphones' }, 2026);
+		claimItem(kate, i.id);
+		await new Promise((r) => setTimeout(r, 5));
+		updateItem(josh, i.id, { title: 'Bose headphones' });
+		expect(getMyClaims(kate, 2026)[0]).toMatchObject({ title: 'Bose headphones', changed: true });
+		expect(getItemForViewer(kate, i.id).item.claim?.changedSinceClaim).toBe(true);
+		expect(JSON.stringify(getItemForViewer(josh, i.id))).not.toContain('changed');
+	});
+	it('a priority change alone does not count as a change', async () => {
+		const i = createItem(josh, josh.id, { title: 'Mug' }, 2026);
+		claimItem(kate, i.id);
+		await new Promise((r) => setTimeout(r, 5));
+		updateItem(josh, i.id, { priority: 'most' });
+		expect(getMyClaims(kate, 2026)[0].changed).toBe(false);
+	});
+});

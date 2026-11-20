@@ -16,7 +16,8 @@ export type ItemView = {
 	status: Item['status'];
 	scrapeStatus: Item['scrapeStatus'];
 	deleted: boolean;
-	claim?: { claimerId: number; claimerName: string; isMine: boolean; purchased: boolean };
+	/** Only present for givers. changedSinceClaim: the owner changed name, link, or note after it was claimed. */
+	claim?: { claimerId: number; claimerName: string; isMine: boolean; purchased: boolean; changedSinceClaim: boolean };
 };
 
 export type ListSummary = {

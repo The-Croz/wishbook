@@ -89,3 +89,10 @@ describe('season rollover', () => {
 		expect(getListForViewer(josh, josh.id, 2027).items).toHaveLength(1);
 	});
 });
+
+describe('family after New Year', () => {
+	it('counts carried-over gifts before anyone opens the list', () => {
+		createItem(kate, kate.id, { title: 'Mug' }, 2026);
+		expect(getFamily(josh, 2027).find((f) => f.ownerId === kate.id)?.wantCount).toBe(1);
+	});
+});

@@ -60,6 +60,7 @@ export const items = sqliteTable('items', {
 	createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull().default(now),
 	updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull().default(now),
 	deletedAt: integer('deleted_at', { mode: 'timestamp_ms' }),
+	contentChangedAt: integer('content_changed_at', { mode: 'timestamp_ms' }),
 	scrapeStatus: text('scrape_status', { enum: ['ok', 'blocked', 'failed', 'manual'] }).notNull().default('manual')
 });
 

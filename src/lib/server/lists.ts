@@ -68,8 +68,8 @@ export function getFamily(viewer: User, season = currentSeason(new Date())): Lis
 	const db = getDb();
 	const people = db.select().from(users).where(and(ne(users.id, viewer.id), eq(users.isActive, true))).all();
 	const summaries = people.map((owner) => {
-		const list = db.select().from(lists).where(and(eq(lists.ownerId, owner.id), eq(lists.season, season))).get();
-		const its = list ? db.select().from(items).where(eq(items.listId, list.id)).all() : [];
+		const list = ensureSeasonList(owner.id, season);
+		const its = db.select().from(items).where(eq(items.listId, list.id)).all();
 		const cl = its.length ? db.select({ itemId: claims.itemId }).from(claims).where(inArray(claims.itemId, its.map((i) => i.id))).all() : [];
 		return toListSummary(viewer, owner, its, cl, owner.isManaged ? getManagerIds(owner.id) : []);
 	});
@@ -108,9 +108,10 @@ export function getItemForViewer(viewer: User, itemId: number): {
 	const owner = list.ownerId === viewer.id ? viewer : getUser(list.ownerId);
 	const managerIds = getManagerIds(owner.id);
 	const canEdit = canEditList(viewer, owner.id, managerIds);
-	if (item.deletedAt && !canEdit) error(404, 'Gift not found');
+	const claim = claimsFor([item.id]).get(item.id) ?? null;
+	if (item.deletedAt && !canEdit && claim?.claimerId !== viewer.id) error(404, 'Gift not found');
 	return {
-		item: toItemView(viewer, owner.id, item, claimsFor([item.id]).get(item.id) ?? null),
+		item: toItemView(viewer, owner.id, item, claim),
 		owner: { id: owner.id, displayName: owner.displayName, isManaged: owner.isManaged },
 		canEdit,
 		showClaims: canSeeClaims(viewer, owner.id),
@@ -151,7 +152,10 @@ export function updateItem(viewer: User, itemId: number, patch: Partial<ItemInpu
 	const { item, list } = loadItem(itemId);
 	requireEditor(viewer, list.ownerId);
 	if (item.deletedAt) error(404, 'Gift not found');
-	const [row] = getDb().update(items).set({ ...clean(patch), updatedAt: new Date() }).where(eq(items.id, itemId)).returning().all();
+	const data = clean(patch);
+	const contentChanged = (['title', 'url', 'notes'] as const).some((k) => data[k] !== undefined && (data[k] ?? null) !== (item[k] ?? null));
+	const now = new Date();
+	const [row] = getDb().update(items).set({ ...data, updatedAt: now, ...(contentChanged ? { contentChangedAt: now } : {}) }).where(eq(items.id, itemId)).returning().all();
 	return row;
 }
 

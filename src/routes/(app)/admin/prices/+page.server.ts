@@ -3,6 +3,7 @@ import { getDb } from '$lib/server/db';
 import { items, lists } from '$lib/server/db/schema';
 import { isRefreshRunning, refreshNow } from '$lib/server/prices';
 import { currentSeason } from '$lib/season';
+import { requireAdmin } from '$lib/server/admin';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = () => {
@@ -15,5 +16,8 @@ export const load: PageServerLoad = () => {
 };
 
 export const actions: Actions = {
-	refresh: () => ({ started: refreshNow() })
+	refresh: ({ locals }) => {
+		requireAdmin(locals.user!);
+		return { started: refreshNow() };
+	}
 };

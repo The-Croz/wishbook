@@ -40,7 +40,8 @@ export function toItemView(viewer: User, ownerId: number, item: Item, claim: Cla
 			claimerId: claim.claimerId,
 			claimerName: claim.claimerName,
 			isMine: claim.claimerId === viewer.id,
-			purchased: claim.purchased
+			purchased: claim.purchased,
+			changedSinceClaim: item.contentChangedAt != null && item.contentChangedAt.getTime() > claim.createdAt.getTime()
 		};
 	}
 	return view;

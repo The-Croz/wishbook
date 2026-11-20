@@ -10,7 +10,7 @@ const josh = u(1, 'Josh'), kate = u(2, 'Kate'), milo = u(3, 'Milo', { isManaged:
 const item = (id: number, extra: Partial<Item> = {}): Item => ({
 	id, listId: 1, title: 'Socks', url: null, imageUrl: null, store: null, priceCents: 2400, listPriceCents: null,
 	currency: 'USD', priceCheckedAt: null, notes: '', priority: 'want', status: 'active', sortOrder: 0, createdBy: 1,
-	createdAt: new Date(), updatedAt: new Date(), deletedAt: null, scrapeStatus: 'manual', ...extra
+	createdAt: new Date(), updatedAt: new Date(), deletedAt: null, contentChangedAt: null, scrapeStatus: 'manual', ...extra
 });
 const claimBy = (who: User, itemId = 1) => ({ itemId, claimerId: who.id, claimerName: who.displayName, createdAt: new Date(), purchased: false });
 

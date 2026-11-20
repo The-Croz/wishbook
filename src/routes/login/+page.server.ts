@@ -5,10 +5,10 @@ import { getDb } from '$lib/server/db';
 import { users } from '$lib/server/db/schema';
 import type { Actions, PageServerLoad } from './$types';
 
-const safeNext = (n: string | null) => (n && n.startsWith('/') && !n.startsWith('//') ? n : '/');
+import { safeNext } from '$lib/server/guard';
 
 export const load: PageServerLoad = ({ locals, url }) => {
-	if (locals.user) redirect(303, safeNext(url.searchParams.get('next')));
+	if (locals.user) redirect(303, safeNext(url.searchParams.get('next'), url.origin));
 	const admin = getDb().select({ name: users.displayName }).from(users).where(eq(users.isAdmin, true)).limit(1).get();
 	return { adminName: admin?.name ?? 'your admin' };
 };
@@ -25,6 +25,6 @@ export const actions: Actions = {
 		clearLoginRate(key);
 		const { token, expiresAt } = await createSession(user.id);
 		cookies.set(SESSION_COOKIE, token, { path: '/', httpOnly: true, secure: url.protocol === 'https:', sameSite: 'lax', expires: expiresAt });
-		redirect(303, safeNext(url.searchParams.get('next')));
+		redirect(303, safeNext(url.searchParams.get('next'), url.origin));
 	}
 };

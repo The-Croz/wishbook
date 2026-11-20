@@ -1,5 +1,5 @@
 import { fail } from '@sveltejs/kit';
-import { listPeople } from '$lib/server/admin';
+import { listPeople, requireAdmin } from '$lib/server/admin';
 import { fetchElfsterWishes, importWishes, parseElfsterLink, toImportRows } from '$lib/server/elfster';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -12,7 +12,8 @@ async function rowsFor(link: string) {
 }
 
 export const actions: Actions = {
-	preview: async ({ request }) => {
+	preview: async ({ request, locals }) => {
+		requireAdmin(locals.user!);
 		const f = await request.formData();
 		const link = String(f.get('link') ?? '');
 		const ownerId = Number(f.get('ownerId'));
@@ -24,6 +25,7 @@ export const actions: Actions = {
 		}
 	},
 	import: async ({ request, locals }) => {
+		requireAdmin(locals.user!);
 		const f = await request.formData();
 		const link = String(f.get('link') ?? '');
 		const ownerId = Number(f.get('ownerId'));

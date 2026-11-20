@@ -24,7 +24,7 @@
 					<span class="body">
 						<span class="t">{c.title}</span>
 						<span class="sm">
-							{#if c.removed}<span class="badge">Removed from the list</span>{:else if c.claim?.purchased}<span class="bought">Bought</span>{:else}Not bought yet{/if}
+							{#if c.removed}<span class="badge">Removed from the list</span>{:else if c.changed}<span class="badge chg">Changed since you claimed it</span>{:else if c.claim?.purchased}<span class="bought">Bought</span>{:else}Not bought yet{/if}
 						</span>
 					</span>
 					{#if c.priceCents != null}<span class="pr num">{formatMoney(c.priceCents, c.currency)}</span>{/if}
@@ -43,6 +43,7 @@
 	.sm { font-size: 14px; color: var(--muted); }
 	.bought { color: var(--pine); font-weight: 700; }
 	.badge { background: var(--pink); color: var(--red-deep); font-weight: 700; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+	.badge.chg { background: #fff7d6; color: var(--ink); }
 	.removed .t { text-decoration: line-through; color: var(--muted); }
 	.pr { font-family: var(--display); color: var(--red); font-size: 17px; flex: none; }
 </style>
