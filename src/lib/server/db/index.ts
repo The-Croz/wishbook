@@ -13,9 +13,18 @@ function migrationsFolder(): string {
 	return candidates.find((p) => existsSync(p)) ?? candidates[0];
 }
 
-function open(path: string): DB {
-	if (path !== ':memory:') mkdirSync(dirname(path), { recursive: true });
-	const sqlite = new Database(path);
+/** Opens (creating if needed) and migrates a database file. */
+export function openDatabase(path: string): DB {
+	let sqlite: Database.Database;
+	try {
+		if (path !== ':memory:') mkdirSync(dirname(path), { recursive: true });
+		sqlite = new Database(path);
+	} catch (e) {
+		throw new Error(
+			`Wishbook can’t write to ${dirname(path)} (${(e as Error).message}). ` +
+				`Give the container’s user ownership of your data folder, e.g. chown -R 1000:1000 ./data, or set PUID/PGID.`
+		);
+	}
 	sqlite.pragma('journal_mode = WAL');
 	sqlite.pragma('foreign_keys = ON');
 	const db = drizzle(sqlite, { schema });
@@ -27,12 +36,12 @@ let current: DB | null = null;
 
 /** The app database, opened (and migrated) on first use. */
 export function getDb(): DB {
-	current ??= open(process.env.DATABASE_PATH ?? '/data/wishbook.db');
+	current ??= openDatabase(process.env.DATABASE_PATH ?? '/data/wishbook.db');
 	return current;
 }
 
 /** Fresh migrated in-memory database; also becomes the app database for the test. */
 export function createTestDb(): DB {
-	current = open(':memory:');
+	current = openDatabase(':memory:');
 	return current;
 }

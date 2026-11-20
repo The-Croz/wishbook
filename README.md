@@ -16,6 +16,7 @@ Every push to `main` builds and publishes `ghcr.io/the-croz/wishbook:latest` (am
    - `ORIGIN`: the exact public address, e.g. `https://wishbook.crosby.family`. Form posts from any other address are rejected.
    - `ADMIN_USERNAME` / `ADMIN_PASSWORD`: your account. Only used the first time the app starts with an empty database; change the password later from the **Me** tab.
    - `TZ`: your time zone, for the 3am price check and the Christmas reminders.
+   - `PUID` / `PGID` (optional): who should own `./data` on the host. Defaults to 1000; on Unraid use 99 and 100. The container fixes the folder's ownership on start.
 2. Start it:
 
    ```bash

@@ -41,6 +41,31 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build for the boot test
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          load: true
+          tags: wishbook:test
+          cache-from: type=gha
+      - name: Boot test with a root-owned data folder
+        run: |
+          set -e
+          check() {
+            name=$1; shift
+            sudo rm -rf "/tmp/$name" && sudo mkdir -p "/tmp/$name" && sudo chown root:root "/tmp/$name"
+            docker run -d --name "$name" -p 0:3000 -v "/tmp/$name:/data" -e ORIGIN=http://localhost -e ADMIN_USERNAME=ci -e ADMIN_PASSWORD=ci-password-123 "$@" wishbook:test
+            port=$(docker port "$name" 3000/tcp | head -1 | cut -d: -f2)
+            for i in $(seq 1 30); do curl -fs "http://localhost:$port/api/health" && break; sleep 1; done
+            curl -fs "http://localhost:$port/api/health" || { docker logs "$name"; exit 1; }
+            sudo test -f "/tmp/$name/wishbook.db" || { docker logs "$name"; exit 1; }
+            echo; echo "$name ok: $(sudo stat -c %u:%g /tmp/$name/wishbook.db)"
+            docker rm -f "$name"
+          }
+          check default
+          check unraid -e PUID=99 -e PGID=100
+          test "$(sudo stat -c %u:%g /tmp/unraid/wishbook.db)" = "99:100"
       - id: meta
         uses: docker/metadata-action@v5
         with:
