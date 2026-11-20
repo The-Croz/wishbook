@@ -5,6 +5,7 @@ import { items, lists, priceHistory } from './db/schema';
 import { scrape, type ScrapeResult } from './scrape';
 import { isAmazon } from './scrape/extractUrl';
 import { currentSeason } from '$lib/season';
+import { notifyPriceDrop } from './notify';
 
 /** Re-reads one gift's link. Only updates price/image on a clean read; a blocked or failed read changes nothing but the status. */
 export async function refreshItem(itemId: number, fetchImpl: typeof fetch = fetch): Promise<ScrapeResult['status']> {
@@ -28,6 +29,7 @@ export async function refreshItem(itemId: number, fetchImpl: typeof fetch = fetc
 	if (!item.imageUrl && r.imageUrl) patch.imageUrl = r.imageUrl;
 	if (!item.store && r.store) patch.store = r.store;
 	db.update(items).set(patch).where(eq(items.id, itemId)).run();
+	if (r.priceCents != null && item.priceCents != null && r.priceCents < item.priceCents) notifyPriceDrop(itemId, item.priceCents, r.priceCents, r.currency ?? item.currency);
 	return 'ok';
 }
 

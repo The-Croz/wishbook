@@ -1,11 +1,21 @@
 import { fail } from '@sveltejs/kit';
 import { changePassword, createSession, SESSION_COOKIE } from '$lib/server/auth';
 import { getSeasons } from '$lib/server/lists';
+import { getPrefs, getVapidKeys, setPrefs } from '$lib/server/notify';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = ({ locals }) => ({ seasons: getSeasons(locals.user!.id) });
+export const load: PageServerLoad = ({ locals }) => ({
+	seasons: getSeasons(locals.user!.id),
+	prefs: getPrefs(locals.user!.id),
+	vapidKey: getVapidKeys().publicKey
+});
 
 export const actions: Actions = {
+	prefs: async ({ locals, request }) => {
+		const f = await request.formData();
+		setPrefs(locals.user!.id, { newGifts: f.has('newGifts'), claimChanged: f.has('claimChanged'), priceDrop: f.has('priceDrop'), reminders: f.has('reminders') });
+		return { prefsSaved: true };
+	},
 	password: async ({ locals, request, cookies, url }) => {
 		const f = await request.formData();
 		const current = String(f.get('current') ?? '');

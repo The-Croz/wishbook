@@ -61,6 +61,7 @@ export const items = sqliteTable('items', {
 	updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull().default(now),
 	deletedAt: integer('deleted_at', { mode: 'timestamp_ms' }),
 	contentChangedAt: integer('content_changed_at', { mode: 'timestamp_ms' }),
+	announcedAt: integer('announced_at', { mode: 'timestamp_ms' }),
 	scrapeStatus: text('scrape_status', { enum: ['ok', 'blocked', 'failed', 'manual'] }).notNull().default('manual')
 });
 
@@ -82,6 +83,28 @@ export const loginAttempts = sqliteTable('login_attempts', {
 	key: text('key').primaryKey(),
 	count: integer('count').notNull(),
 	windowStart: integer('window_start', { mode: 'timestamp_ms' }).notNull()
+});
+
+export const appSettings = sqliteTable('app_settings', {
+	key: text('key').primaryKey(),
+	value: text('value').notNull()
+});
+
+export const pushSubscriptions = sqliteTable('push_subscriptions', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	userId: integer('user_id').notNull().references(() => users.id),
+	endpoint: text('endpoint').notNull().unique(),
+	p256dh: text('p256dh').notNull(),
+	auth: text('auth').notNull(),
+	createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull().default(now)
+});
+
+export const notifyPrefs = sqliteTable('notify_prefs', {
+	userId: integer('user_id').primaryKey().references(() => users.id),
+	newGifts: integer('new_gifts', { mode: 'boolean' }).notNull().default(true),
+	claimChanged: integer('claim_changed', { mode: 'boolean' }).notNull().default(true),
+	priceDrop: integer('price_drop', { mode: 'boolean' }).notNull().default(true),
+	reminders: integer('reminders', { mode: 'boolean' }).notNull().default(true)
 });
 
 export type User = typeof users.$inferSelect;

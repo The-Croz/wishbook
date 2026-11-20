@@ -15,6 +15,13 @@
       "when": 1795152622435,
       "tag": "0001_content_changed",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1795153535999,
+      "tag": "0002_push",
+      "breakpoints": true
     }
   ]
 }

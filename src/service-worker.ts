@@ -32,3 +32,33 @@ sw.addEventListener('fetch', (event) => {
 		event.respondWith(fetch(req).catch(async () => (await caches.match('/offline.html')) ?? Response.error()));
 	}
 });
+
+sw.addEventListener('push', (event) => {
+	let data: { title?: string; body?: string; url?: string; tag?: string } = {};
+	try {
+		data = event.data?.json() ?? {};
+	} catch {
+		data = { title: event.data?.text() };
+	}
+	event.waitUntil(
+		sw.registration.showNotification(data.title ?? 'Wishbook', {
+			body: data.body,
+			tag: data.tag,
+			icon: '/icons/icon-192.png',
+			badge: '/icons/icon-192.png',
+			data: { url: data.url ?? '/' }
+		})
+	);
+});
+
+sw.addEventListener('notificationclick', (event) => {
+	event.notification.close();
+	const target = new URL((event.notification.data as { url?: string })?.url ?? '/', sw.location.origin).href;
+	event.waitUntil(
+		sw.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((wins) => {
+			const open = wins.find((w) => w.url.startsWith(sw.location.origin));
+			if (open) return open.navigate(target).then((w) => w?.focus());
+			return sw.clients.openWindow(target);
+		})
+	);
+});

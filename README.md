@@ -42,6 +42,19 @@ docker exec wishbook node -e "require('better-sqlite3')('/data/wishbook.db').bac
 
 **Me → Import from Elfster.** Pick the person, paste the address of their Elfster wish list (it contains `wish-lists`), review, and import. The list must be public on Elfster. Who-bought-what on Elfster is not brought over.
 
+## Notifications
+
+Each person turns them on under **Me → Notifications**, once per phone, and picks which kinds they want:
+
+- **New gifts:** "Kate added 3 gifts", bundled 10 minutes after the last one so a big batch is one notification. Not sent to the list's owner or to whoever added them.
+- **A gift you're getting changed or was removed:** only to the person who claimed it.
+- **Price drop on a gift you're getting:** from the nightly price check, only to the person who claimed it.
+- **Christmas reminders:** Dec 1 (your list is empty) and Dec 27 (mark what you received; sent to everyone with gifts, so it gives nothing away).
+
+Nobody is ever notified about claims on their own list.
+
+Requirements: the site must be on HTTPS. On iPhone (iOS 16.4 or later), notifications only work after Wishbook is added to the Home Screen and opened from there. The signing keys are created automatically on first start and stored in the database, so back up `wishbook.db` to keep existing phones subscribed.
+
 ## Prices
 
 Amazon sometimes blocks automated checks from home internet connections. When that happens the gift keeps its last known price, and **Me → Prices** shows how many checks were blocked. Some stores (Target, Walmart) give a name and picture but no price; type the price in when adding.

@@ -4,6 +4,7 @@ import { getDb } from './db';
 import { claims, items, lists, managers, users, type Item, type List, type User } from './db/schema';
 import { canEditList, canSeeClaims, toItemView, toListSummary, type ClaimWithName, type ItemView, type ListSummary } from './visibility';
 import { currentSeason } from '$lib/season';
+import { notifyClaimChanged } from './notify';
 
 export type Priority = Item['priority'];
 export type ItemInput = {
@@ -43,7 +44,7 @@ export function ensureSeasonList(ownerId: number, season: number): List {
 			const carry = tx.select().from(items)
 				.where(and(eq(items.listId, prev.id), eq(items.status, 'active'), isNull(items.deletedAt))).all();
 			for (const { id: _id, listId: _l, createdAt: _c, updatedAt: _u, ...rest } of carry) {
-				tx.insert(items).values({ ...rest, listId: list.id }).run();
+				tx.insert(items).values({ ...rest, listId: list.id, announcedAt: new Date() }).run();
 			}
 		}
 		return list;
@@ -156,13 +157,15 @@ export function updateItem(viewer: User, itemId: number, patch: Partial<ItemInpu
 	const contentChanged = (['title', 'url', 'notes'] as const).some((k) => data[k] !== undefined && (data[k] ?? null) !== (item[k] ?? null));
 	const now = new Date();
 	const [row] = getDb().update(items).set({ ...data, updatedAt: now, ...(contentChanged ? { contentChangedAt: now } : {}) }).where(eq(items.id, itemId)).returning().all();
+	if (contentChanged) notifyClaimChanged(itemId, 'changed', viewer.id);
 	return row;
 }
 
 export function deleteItem(viewer: User, itemId: number) {
-	const { list } = loadItem(itemId);
+	const { item, list } = loadItem(itemId);
 	requireEditor(viewer, list.ownerId);
 	getDb().update(items).set({ deletedAt: new Date(), updatedAt: new Date() }).where(eq(items.id, itemId)).run();
+	if (!item.deletedAt) notifyClaimChanged(itemId, 'removed', viewer.id);
 }
 
 export function setPriority(viewer: User, itemId: number, priority: Priority) {

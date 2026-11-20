@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import Icon from '$lib/components/Icon.svelte';
+	import PushToggle from '$lib/components/PushToggle.svelte';
 	let { data, form } = $props();
 	let showPw = $state(false);
 </script>
@@ -27,6 +28,16 @@
 		<p class="muted">Nothing yet.</p>
 	{/each}
 
+	<div class="secthd sp"><b>Notifications</b></div>
+	<PushToggle vapidKey={data.vapidKey} />
+	<form method="POST" action="?/prefs" use:enhance class="prefs">
+		<p class="lbl">Tell me when…</p>
+		{#each [['newGifts', 'Someone adds gifts to their list'], ['claimChanged', 'A gift I’m getting is changed or removed'], ['priceDrop', 'A gift I’m getting drops in price'], ['reminders', 'Christmas reminders (Dec 1 and Dec 27)']] as [k, label]}
+			<label class="check"><input type="checkbox" name={k} checked={data.prefs[k as keyof typeof data.prefs]} onchange={(e) => e.currentTarget.form?.requestSubmit()} />{label}</label>
+		{/each}
+		<p class="hint">You’re never told anything about who’s getting gifts on your own list.</p>
+	</form>
+
 	<div class="secthd sp"><b>Password</b></div>
 	{#if form?.pwDone}<p class="note">Password changed. Other phones will need to sign in again.</p>{/if}
 	{#if !showPw}
@@ -52,4 +63,8 @@
 	.row { display: flex; justify-content: space-between; align-items: center; min-height: 56px; border-bottom: 1px solid var(--rule); font-weight: 700; font-size: 17px; color: var(--ink); text-decoration: none; }
 	.cnt { display: flex; align-items: center; gap: 6px; color: var(--muted); font-weight: 400; font-size: 15px; }
 	.muted { color: var(--muted); }
+	.prefs { margin-top: 14px; }
+	.check { display: flex; align-items: center; gap: 10px; min-height: 48px; font-size: 16px; }
+	.check input { width: 22px; height: 22px; accent-color: var(--red); flex: none; }
+	.hint { font-size: 14px; color: var(--muted); margin-top: 6px; }
 </style>

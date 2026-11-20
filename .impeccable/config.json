@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "broken-image",
+        "value": "*",
+        "files": [
+          "tests/fixtures/amazon-apex.html"
+        ],
+        "createdAt": "2026-11-20T05:34:33.594Z",
+        "reason": "Claude: test fixture copying Amazon's markup; the img only carries data-old-hires for the scraper test and is never shown"
+      }
+    ]
+  }
+}
