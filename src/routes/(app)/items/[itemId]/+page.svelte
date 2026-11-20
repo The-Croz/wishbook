@@ -31,7 +31,23 @@
 			<div class="kv"><span>Price</span><span class="when"><Icon name="clock" size={16} />{item.priceCheckedAt ? `checked ${timeAgo(item.priceCheckedAt)}` : 'entered by hand'}</span></div>
 		{/if}
 
-		<!-- claim:slot -->
+		{#if data.showClaims && !item.deleted}
+			{#if !item.claim}
+				<form method="POST" action="?/claim" use:enhance><button class="btn pine">I’ll get this</button></form>
+				<p class="hint">Everyone except {data.owner.displayName} will see that you’re getting it.</p>
+			{:else if item.claim.isMine}
+				<div class="mine">
+					<p class="hand">You’re getting this</p>
+					<form method="POST" action="?/purchased" use:enhance class="bought">
+						<label><input type="checkbox" name="purchased" checked={item.claim.purchased} onchange={(e) => e.currentTarget.form?.requestSubmit()} /> Bought it</label>
+					</form>
+					<form method="POST" action="?/unclaim" use:enhance><button class="link">I’m not getting this anymore</button></form>
+				</div>
+			{:else}
+				<p class="taken"><span class="hand">{item.claim.claimerName} has it</span> Pick something else so nobody doubles up.</p>
+			{/if}
+		{/if}
+		{#if item.deleted && item.claim?.isMine}<p class="note">You claimed this before it was removed. Check with {data.owner.displayName} before buying.</p>{/if}
 
 		{#if item.url}<a class="btn ghost" href={item.url} target="_blank" rel="noopener noreferrer">Open on {item.store ?? 'the store site'}<Icon name="ext" size={18} /></a>{/if}
 
@@ -72,6 +88,13 @@
 	.seg { display: flex; border: 2px solid var(--ink); border-radius: 10px; overflow: hidden; }
 	.seg button { flex: 1; border: 0; background: #fff; padding: 12px 4px; font-weight: 700; font-size: 14px; min-height: 48px; }
 	.seg button.on { background: var(--ink); color: #fff; }
+	.hint { font-size: 14px; color: var(--muted); margin-top: -2px; }
+	.hand { font-family: var(--hand); font-size: 26px; color: var(--pine); line-height: 1; }
+	.mine { border: 2px dashed var(--pine); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+	.bought label { display: flex; align-items: center; gap: 10px; font-weight: 700; min-height: 44px; }
+	.bought input { width: 24px; height: 24px; accent-color: var(--pine); }
+	.link { background: none; border: 0; padding: 0; color: var(--red); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; min-height: 44px; }
+	.taken { background: var(--wash); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 4px; }
 	.confirm { background: var(--wash); border-radius: 12px; padding: 14px; }
 	.confirm p { font-weight: 700; margin-bottom: 10px; }
 	.confirm div { display: flex; gap: 10px; }

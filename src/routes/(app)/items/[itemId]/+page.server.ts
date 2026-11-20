@@ -1,5 +1,6 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import { deleteItem, getItemForViewer, setPriority, type Priority } from '$lib/server/lists';
+import { claimItem, setPurchased, unclaimItem } from '$lib/server/claims';
 import type { Actions, PageServerLoad } from './$types';
 
 const idOf = (p: string) => {
@@ -11,6 +12,18 @@ const idOf = (p: string) => {
 export const load: PageServerLoad = ({ locals, params }) => getItemForViewer(locals.user!, idOf(params.itemId));
 
 export const actions: Actions = {
+	claim: ({ locals, params }) => {
+		const r = claimItem(locals.user!, idOf(params.itemId));
+		if (r.ok) return { claimed: true };
+		const message = r.reason === 'taken' ? `${r.byName} already has this one.` : r.reason === 'removed' ? 'This gift was removed from the list.' : 'You can’t claim gifts on your own list.';
+		return fail(409, { message });
+	},
+	unclaim: ({ locals, params }) => {
+		unclaimItem(locals.user!, idOf(params.itemId));
+	},
+	purchased: async ({ locals, params, request }) => {
+		setPurchased(locals.user!, idOf(params.itemId), (await request.formData()).get('purchased') === 'on');
+	},
 	priority: async ({ locals, params, request }) => {
 		const p = String((await request.formData()).get('priority')) as Priority;
 		if (!['nice', 'want', 'most'].includes(p)) return fail(400, { message: 'Pick a priority' });
