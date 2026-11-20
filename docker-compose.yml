@@ -1,7 +1,6 @@
 services:
   wishbook:
-    build: .
-    image: wishbook:latest
+    image: ghcr.io/the-croz/wishbook:latest
     container_name: wishbook
     restart: unless-stopped
     ports:
@@ -14,5 +13,5 @@ services:
       # Creates the first admin the very first time the app starts (ignored after that).
       ADMIN_USERNAME: josh
       ADMIN_PASSWORD: change-me-please
-      # Nightly price checks run at 3am in this time zone.
+      # Nightly price checks and reminders run in this time zone.
       TZ: America/Chicago

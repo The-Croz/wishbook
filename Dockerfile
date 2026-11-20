@@ -8,6 +8,8 @@ COPY . .
 RUN npm run build && npm prune --omit=dev
 
 FROM node:22-alpine
+LABEL org.opencontainers.image.source=https://github.com/The-Croz/wishbook \
+      org.opencontainers.image.description="Wishbook: the Crosby Family wishlists"
 WORKDIR /app
 ENV NODE_ENV=production \
     PORT=3000 \

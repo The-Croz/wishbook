@@ -10,17 +10,23 @@ The Crosby Family Christmas wishlists. Self-hosted, phone-first, installable as 
 
 ## Run it with Docker
 
-1. Copy `docker-compose.yml` and edit the three settings in it:
+Every push to `main` builds and publishes `ghcr.io/the-croz/wishbook:latest` (amd64 and arm64).
+
+1. Copy [`docker-compose.yml`](docker-compose.yml) to your server and edit the settings in it:
    - `ORIGIN`: the exact public address, e.g. `https://wishbook.crosby.family`. Form posts from any other address are rejected.
    - `ADMIN_USERNAME` / `ADMIN_PASSWORD`: your account. Only used the first time the app starts with an empty database; change the password later from the **Me** tab.
-   - `TZ`: your time zone, so the 3am price check happens at 3am for you.
+   - `TZ`: your time zone, for the 3am price check and the Christmas reminders.
 2. Start it:
 
    ```bash
-   docker compose up -d --build
+   docker compose up -d
    ```
 
 3. Open the address, sign in, then go to **Me → People and kids** to add everyone.
+
+To update: `docker compose pull && docker compose up -d`. To pin a version instead of `latest`, use a tag like `ghcr.io/the-croz/wishbook:sha-8ac200a`.
+
+To build it yourself instead, replace the `image:` line with `build: .` in a clone of this repo.
 
 Data lives in `./data/wishbook.db` (SQLite). The container listens on port 3000 and has a health check at `/api/health`.
 
