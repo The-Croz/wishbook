@@ -20,7 +20,7 @@
 		<a class="row" href="/admin/prices">Prices<Icon name="chev" size={20} /></a>
 	{/if}
 
-	<div class="secthd sp"><b>Past Christmases</b></div>
+	<div class="secthd sp"><b>Your lists by year</b></div>
 	{#each data.seasons as s (s.season)}
 		<a class="row" href="/me/archive/{s.season}">Christmas {s.season}<span class="cnt">{s.count} {s.count === 1 ? 'gift' : 'gifts'}<Icon name="chev" size={20} /></span></a>
 	{:else}
