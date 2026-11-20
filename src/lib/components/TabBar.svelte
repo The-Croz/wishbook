@@ -1,12 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import Icon from './Icon.svelte';
-	const tabs = [
-		{ href: '/', label: 'Family', icon: 'book' as const, match: (p: string) => p === '/' || p.startsWith('/people') },
-		{ href: '/me/list', label: 'My list', icon: 'star' as const, match: (p: string) => p.startsWith('/me/list') },
-		{ href: '/getting', label: "I'm getting", icon: 'gift' as const, match: (p: string) => p.startsWith('/getting') },
-		{ href: '/me', label: 'Me', icon: 'user' as const, match: (p: string) => p === '/me' || p.startsWith('/me/archive') || p.startsWith('/admin') }
-	];
+	import { tabs } from '$lib/nav';
 </script>
 
 <nav aria-label="Main">
@@ -19,6 +14,7 @@
 <style>
 	nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: #fff; border-top: 2px solid var(--ink); display: flex; justify-content: space-around; padding: 8px 0 calc(8px + env(safe-area-inset-bottom)); }
 	/* iOS can size the viewport short on launch until the first scroll; whatever is left below the bar shows the red body. Keep it white. */
+	@media (min-width: 900px) { nav { display: none; } }
 	nav::after { content: ''; position: absolute; left: 0; right: 0; top: 100%; height: 200px; background: #fff; pointer-events: none; }
 	a { display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 72px; min-height: 52px; justify-content: center; font-size: 12px; font-weight: 700; color: var(--muted); text-decoration: none; }
 	a.on { color: var(--red); }

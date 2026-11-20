@@ -110,4 +110,12 @@
 	.confirm { background: var(--wash); border-radius: 12px; padding: 14px; }
 	.confirm p { font-weight: 700; margin-bottom: 10px; }
 	.confirm div { display: flex; gap: 10px; }
+	@media (min-width: 900px) {
+		.detail { max-width: 1180px; min-height: 0; background: transparent; padding: 30px 44px 64px; display: grid; grid-template-columns: minmax(0, 480px) minmax(0, 1fr); gap: 48px; align-items: start; }
+		.hero { padding-top: 0; border-radius: 12px; overflow: hidden; --art-h: 480px; }
+		.back { top: 14px; }
+		.dt { padding: 0; }
+		h1 { font-size: 36px; }
+		.pr { font-size: 42px; }
+	}
 </style>

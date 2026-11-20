@@ -8,9 +8,10 @@
 <svelte:head><title>My list · Wishbook</title></svelte:head>
 
 <header class="hdr">
-	<div class="top"><span class="wm"><img src="/brand/stack.svg" alt="" width="26" height="26" />Wishbook</span><a class="av" href="/me" style:background={data.me.avatarColor} aria-label="Me">{initials(data.me.displayName)}</a></div>
+	<div class="top mob"><span class="wm"><img src="/brand/stack.svg" alt="" width="26" height="26" />Wishbook</span><a class="av" href="/me" style:background={data.me.avatarColor} aria-label="Me">{initials(data.me.displayName)}</a></div>
 	<h1>My wishlist</h1>
 	<p class="meta">{data.items.length} {data.items.length === 1 ? 'want' : 'wants'} · Christmas {data.season}</p>
+	<a class="btn ink hbtn" href="/add"><Icon name="plus" size={20} />Add a gift</a>
 </header>
 
 <main class="pg">
@@ -22,7 +23,7 @@
 	{/if}
 </main>
 
-<a class="fab" href="/add"><Icon name="plus" size={20} />Add a gift</a>
+<a class="fab mob" href="/add"><Icon name="plus" size={20} />Add a gift</a>
 
 <style>
 	.top { display: flex; justify-content: space-between; align-items: center; }

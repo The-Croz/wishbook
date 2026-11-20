@@ -57,7 +57,7 @@
 </main>
 
 <style>
-	.back { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: #fff; text-decoration: none; min-height: 44px; }
+	.back { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--on-hdr); text-decoration: none; min-height: 44px; }
 	.row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--rule); cursor: pointer; }
 	.row input { width: 24px; height: 24px; accent-color: var(--red); flex: none; }
 	.thumb { width: 56px; flex: none; }

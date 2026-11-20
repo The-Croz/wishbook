@@ -20,5 +20,5 @@
 </main>
 
 <style>
-	.back { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: #fff; text-decoration: none; min-height: 44px; }
+	.back { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--on-hdr); text-decoration: none; min-height: 44px; }
 </style>

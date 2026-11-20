@@ -96,7 +96,7 @@
 </main>
 
 <style>
-	.back { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: #fff; text-decoration: none; min-height: 44px; }
+	.back { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--on-hdr); text-decoration: none; min-height: 44px; }
 	.sp { margin-top: 30px; }
 	.person { border-bottom: 1px solid var(--rule); }
 	.person.off .nm { color: var(--muted); }

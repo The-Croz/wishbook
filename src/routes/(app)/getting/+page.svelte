@@ -27,6 +27,7 @@
 							{#if c.removed}<span class="badge">Removed from the list</span>{:else if c.changed}<span class="badge chg">Changed since you claimed it</span>{:else if c.claim?.purchased}<span class="bought">Bought</span>{:else}Not bought yet{/if}
 						</span>
 					</span>
+					<span class="store">{c.store ?? ''}</span>
 					{#if c.priceCents != null}<span class="pr num">{formatMoney(c.priceCents, c.currency)}</span>{/if}
 				</a>
 			{/each}
@@ -44,6 +45,15 @@
 	.bought { color: var(--pine); font-weight: 700; }
 	.badge { background: var(--pink); color: var(--red-deep); font-weight: 700; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
 	.badge.chg { background: #fff7d6; color: var(--ink); }
+	.store { display: none; }
+	@media (min-width: 900px) {
+		.row { display: grid; grid-template-columns: 72px minmax(0, 1fr) 140px 110px; gap: 18px; padding: 12px 8px; }
+		.row:hover { background: var(--wash); }
+		.thumb { width: 72px; }
+		.store { display: block; color: var(--muted); font-size: 15px; }
+		.t { font-size: 16px; }
+		.pr { text-align: right; font-size: 19px; }
+	}
 	.removed .t { text-decoration: line-through; color: var(--muted); }
 	.pr { font-family: var(--display); color: var(--red); font-size: 17px; flex: none; }
 </style>

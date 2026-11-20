@@ -4,7 +4,7 @@
 	const initial = $derived((store ?? title).trim().charAt(0).toUpperCase() || '?');
 </script>
 
-<div class="art" style:height="{height}px">
+<div class="art" style:height="var(--art-h, {height}px)">
 	{#if src && !broken}
 		<img {src} alt="" loading="lazy" referrerpolicy="no-referrer" onerror={() => (broken = true)} />
 	{:else}

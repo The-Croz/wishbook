@@ -4,6 +4,7 @@
 	import GiftArt from '$lib/components/GiftArt.svelte';
 	import { formatMoney } from '$lib/money';
 	import { untrack } from 'svelte';
+	import { goto } from '$app/navigation';
 
 	type Preview = { status: 'ok' | 'blocked' | 'failed'; url: string; title?: string; imageUrl?: string; store?: string; priceCents?: number; listPriceCents?: number; currency?: string };
 	let { data, form } = $props();
@@ -57,6 +58,7 @@
 </script>
 
 <svelte:head><title>{heading} · Wishbook</title></svelte:head>
+<svelte:window onkeydown={(e) => { if (e.key === 'Escape') goto(cancelHref); }} />
 
 <div class="scrim">
 	<a class="close" href={cancelHref} aria-label="Cancel"><Icon name="back" size={20} />Cancel</a>
@@ -157,4 +159,10 @@
 	.seg input { position: absolute; opacity: 0; pointer-events: none; }
 	.seg label:has(input:focus-visible) { outline: 3px solid var(--mustard); outline-offset: -3px; }
 	.btn { margin-top: 20px; }
+	@media (min-width: 900px) {
+		.scrim { min-height: 0; background: transparent; padding: 30px 44px 64px; }
+		.close { color: var(--ink); padding: 0; margin: 0 0 12px; max-width: 640px; }
+		.sheet { flex: none; border: 2px solid var(--ink); border-radius: 20px; box-shadow: 0 6px 0 var(--ink); padding: 26px 30px 28px; max-width: 640px; margin: 0; }
+		.grab { display: none; }
+	}
 </style>

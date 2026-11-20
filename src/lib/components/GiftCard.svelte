@@ -31,4 +31,5 @@
 	.hand { font-family: var(--hand); font-size: 22px; line-height: 1; color: var(--pine); margin-top: 4px; }
 	.chk { position: absolute; top: 6px; right: 6px; }
 	.claimed :global(.art) { opacity: 0.5; }
+	@media (min-width: 900px) { .t { font-size: 16px; } .pr { font-size: 22px; } .hand { font-size: 24px; } .it:hover :global(.art) { outline: 3px solid var(--ink); outline-offset: 3px; } }
 </style>

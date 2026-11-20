@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wishbook Desktop Mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Atkinson+Hyperlegible:wght@400;700&family=Caveat:wght@700&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:'Archivo Black';font-weight:400;src:url('../node_modules/@fontsource/archivo-black/files/archivo-black-latin-400-normal.woff2') format('woff2')}
+@font-face{font-family:'Atkinson Hyperlegible';font-weight:400;src:url('../node_modules/@fontsource/atkinson-hyperlegible/files/atkinson-hyperlegible-latin-400-normal.woff2') format('woff2')}
+@font-face{font-family:'Atkinson Hyperlegible';font-weight:700;src:url('../node_modules/@fontsource/atkinson-hyperlegible/files/atkinson-hyperlegible-latin-700-normal.woff2') format('woff2')}
+@font-face{font-family:'Caveat';font-weight:700;src:url('../node_modules/@fontsource/caveat/files/caveat-latin-700-normal.woff2') format('woff2')}
+:root{--red:#C8102E;--red-deep:#9A0C23;--ink:#1A1A1A;--page:#FFFFFF;--mustard:#F2B705;--pine:#2E7D5B;--rule:#E4E1DA;--muted:#5C5A55;--wash:#F4F2EE;--pink:#FFE3E7}
+*{box-sizing:border-box;margin:0}
+::selection{background:var(--mustard);color:var(--ink)}
+body{background:#2B2422;color:#fff;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;line-height:1.45}
+.intro{max-width:1280px;margin:0 auto;padding:44px 24px 8px}
+.intro h1{font-family:'Archivo Black';font-weight:400;font-size:clamp(34px,5vw,56px);line-height:1;letter-spacing:-.02em}
+.intro p{max-width:72ch;margin-top:12px;color:#E8DCD8;font-size:17px}
+.stage{width:1280px;margin:0 auto;padding:28px 0 80px;zoom:var(--z,1)}
+.shot{margin-bottom:64px}
+.cap{margin-bottom:14px;max-width:80ch}
+.cap h2{font-family:'Archivo Black';font-weight:400;font-size:22px}
+.cap p{color:#E8DCD8;font-size:16px;margin-top:2px}
+/* browser window */
+.win{width:1280px;height:840px;border-radius:14px;overflow:hidden;background:var(--red);box-shadow:0 0 0 1px #0f0c0b,0 24px 60px rgba(0,0,0,.5);position:relative;display:flex;flex-direction:column}
+.chrome{height:40px;background:#E9E6E0;display:flex;align-items:center;gap:8px;padding:0 14px;flex:none}
+.chrome i{width:12px;height:12px;border-radius:50%;background:#c9c5bc}
+.chrome .url{margin-left:18px;background:#fff;border-radius:8px;height:26px;width:420px;font-size:13px;color:var(--muted);display:flex;align-items:center;padding:0 12px}
+.app{flex:1;display:grid;grid-template-columns:240px 1fr;min-height:0;position:relative}
+/* rail = the red cover */
+.rail{color:#fff;padding:26px 18px 20px 22px;display:flex;flex-direction:column;gap:26px;position:relative}
+.rail::after{content:'';position:absolute;top:16px;bottom:16px;right:5px;border-right:2px dashed rgba(255,255,255,.3)}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Archivo Black';font-size:23px;letter-spacing:-.01em;padding-left:6px}
+.brand svg{width:28px;height:36px}
+.nav{display:flex;flex-direction:column;gap:6px}
+.nav a{display:flex;align-items:center;gap:12px;height:50px;padding:0 14px;border-radius:12px;font-weight:700;font-size:17px;color:#fff;text-decoration:none}
+.nav a:hover{background:rgba(255,255,255,.14)}
+.nav a.on{background:#fff;color:var(--red)}
+.nav .kb{margin-left:auto;font-size:12px;font-weight:700;opacity:.65;border:1.5px solid currentColor;border-radius:5px;padding:0 5px}
+.add{height:52px;border-radius:14px;background:var(--ink);color:#fff;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
+.days{background:var(--mustard);color:var(--ink);border-radius:14px;padding:14px 16px}
+.days b{font-family:'Archivo Black';font-weight:400;font-size:32px;line-height:1;display:block}
+.days span{font-size:14px;font-weight:700}
+.who{margin-top:auto;display:flex;align-items:center;gap:10px;padding:8px 6px;border-radius:12px}
+.av{width:40px;height:40px;border-radius:50%;background:var(--mustard);color:var(--ink);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:15px;flex:none}
+.who b{display:block;font-size:15px;line-height:1.1}
+.who span{font-size:13px;color:var(--pink)}
+/* the page */
+.page{background:var(--page);color:var(--ink);border-radius:20px;margin:12px 12px 12px 0;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.scroll{flex:1;overflow:hidden;padding:30px 44px 0}
+.crumbs{display:flex;align-items:center;gap:6px;font-size:15px;font-weight:700;color:var(--muted);margin-bottom:10px}
+.crumbs a{color:var(--muted);text-decoration:none}
+.crumbs svg{width:16px;height:16px}
+.crumbs b{color:var(--ink)}
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;border-bottom:3px solid var(--ink);padding-bottom:14px;margin-bottom:22px}
+.eyebrow{font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--red);text-transform:uppercase}
+.head h1{font-family:'Archivo Black';font-weight:400;font-size:40px;line-height:1.02;letter-spacing:-.015em;margin-top:4px}
+.head .meta{font-size:16px;font-weight:700;color:var(--muted);margin-top:6px}
+.head .meta em{font-style:normal;color:var(--pine)}
+.btn{height:50px;border-radius:12px;border:0;background:var(--red);color:#fff;font:700 17px 'Atkinson Hyperlegible';display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 22px;text-decoration:none;white-space:nowrap}
+.btn.ink{background:var(--ink)}.btn.pine{background:var(--pine)}
+.btn.ghost{background:#fff;color:var(--ink);border:2px solid var(--ink)}
+.btn.danger{background:#fff;color:var(--red);border:2px solid var(--red)}
+.btn.block{width:100%}
+.i{width:22px;height:22px;flex:none}
+/* family index */
+.split{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:32px}
+.secthd{display:flex;justify-content:space-between;align-items:baseline;border-bottom:3px solid var(--ink);padding-bottom:6px;margin-bottom:14px}
+.secthd b{font-family:'Archivo Black';font-weight:400;font-size:18px}
+.secthd span{font-size:14px;font-weight:700;color:var(--muted)}
+.people{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.pc{display:flex;align-items:center;gap:14px;padding:16px;min-width:0;border:2px solid var(--rule);border-radius:16px;color:var(--ink);text-decoration:none;min-height:112px}
+.pc:hover,.pc.hov{border-color:var(--ink);box-shadow:0 4px 0 var(--ink);transform:translateY(-2px)}
+.pav{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Archivo Black';font-size:26px;flex:none}
+.pc .nm{font-weight:700;font-size:19px}
+.pc .sm{font-size:15px;color:var(--muted);display:block}
+.pc .go{margin-left:auto;color:var(--muted)}
+.tag{font-size:12px;font-weight:700;letter-spacing:.06em;background:var(--mustard);padding:2px 6px;border-radius:4px;margin-left:6px;vertical-align:3px}
+.bar{height:8px;background:var(--wash);border-radius:4px;margin-top:8px;overflow:hidden;width:120px;max-width:100%;display:block}
+.bar i{display:block;height:100%;background:var(--pine)}
+.side{background:var(--wash);border-radius:16px;padding:18px}
+.side .secthd{border-color:var(--ink)}
+.row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--rule);color:var(--ink);text-decoration:none}
+.row:last-of-type{border-bottom:0}
+.row .th{width:52px;flex:none}
+.row .t{font-weight:700;font-size:15px;line-height:1.2;display:block}
+.row .sm{font-size:14px;color:var(--muted)}
+.row .pr{margin-left:auto;font-family:'Archivo Black';font-size:16px;color:var(--red);flex:none}
+.bought{color:var(--pine);font-weight:700}
+.link{color:var(--red);font-weight:700;text-decoration:underline;text-underline-offset:3px;font-size:15px;display:inline-block;margin-top:8px}
+/* gift grid */
+.chips{display:flex;gap:8px;margin-bottom:20px;align-items:center}
+.chip{height:40px;padding:0 16px;border-radius:99px;border:2px solid var(--ink);font:700 15px 'Atkinson Hyperlegible';background:#fff;display:inline-flex;align-items:center}
+.chip.on{background:var(--ink);color:#fff}
+.chips .sp{margin-left:auto;font-size:15px;color:var(--muted);font-weight:700}
+.note{display:flex;gap:10px;align-items:flex-start;background:var(--wash);border-radius:10px;padding:12px 14px;font-size:15px;margin-bottom:18px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:30px 24px}
+.it{position:relative;color:var(--ink);text-decoration:none;display:block}
+.ph{height:176px;background:var(--wash);border-radius:4px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.ph svg{width:62%;height:62%;mix-blend-mode:multiply}
+.no{font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--muted);margin-top:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t{font-weight:700;font-size:16px;line-height:1.2;margin-top:2px}
+.pr{font-family:'Archivo Black';font-size:22px;color:var(--red);margin-top:4px;font-variant-numeric:tabular-nums}
+.pr s{color:var(--muted);font-family:'Atkinson Hyperlegible';font-weight:400;font-size:14px;margin-left:5px}
+.hand{font-family:'Caveat',cursive;font-weight:700;font-size:24px;line-height:1;color:var(--pine);margin-top:4px}
+.it.claimed .ph{opacity:.5}
+.it .chk{position:absolute;top:8px;right:8px;width:44px;height:38px}
+.it .loop{position:absolute;left:-8px;top:-10px;width:calc(100% + 16px);height:196px;pointer-events:none}
+.it:hover .ph,.it.hov .ph{outline:3px solid var(--ink);outline-offset:3px}
+/* detail */
+.detail{display:grid;grid-template-columns:480px 1fr;gap:48px;align-items:start}
+.hero{background:var(--wash);border-radius:12px;height:480px;display:flex;align-items:center;justify-content:center;position:relative}
+.hero svg.pimg{width:62%;height:62%;mix-blend-mode:multiply}
+.dt{display:flex;flex-direction:column;gap:10px}
+.dt .no{margin:0;font-size:13px}
+.dt h1{font-family:'Archivo Black';font-weight:400;font-size:36px;line-height:1.05;letter-spacing:-.015em}
+.dt .big{font-family:'Archivo Black';font-size:42px;color:var(--red);line-height:1}
+.dt .big s{color:var(--muted);font:400 17px 'Atkinson Hyperlegible';margin-left:10px}
+.kv{display:flex;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid var(--rule);font-size:16px}
+.kv span:first-child{color:var(--muted)}
+.when{display:inline-flex;align-items:center;gap:6px}
+.when svg{width:16px;height:16px}
+.hint{font-size:14px;color:var(--muted);margin-top:-2px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.edit{margin-top:8px;padding-top:16px;border-top:3px solid var(--ink);display:flex;flex-direction:column;gap:10px}
+.seg{display:flex;border:2px solid var(--ink);border-radius:10px;overflow:hidden}
+.seg span{flex:1;text-align:center;padding:12px 0;font-weight:700;font-size:15px}
+.seg .on{background:var(--ink);color:#fff}
+.more{margin-top:28px}
+.mini{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.mini .ph{height:104px}
+.mini .t{font-size:14px}
+.mini .pr{font-size:17px}
+/* add dialog */
+.scrim{position:absolute;inset:0;background:rgba(26,26,26,.6)}
+.dlg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:640px;background:#fff;color:var(--ink);border-radius:20px;padding:26px 30px 28px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.dlg .top{display:flex;justify-content:space-between;align-items:center}
+.dlg h3{font-family:'Archivo Black';font-weight:400;font-size:28px}
+.x{width:44px;height:44px;border-radius:50%;border:2px solid var(--ink);display:flex;align-items:center;justify-content:center}
+label{display:block;font-weight:700;font-size:15px;margin:16px 0 6px}
+.field{border:2px solid var(--ink);border-radius:10px;padding:0 12px;min-height:50px;font-size:16px;display:flex;align-items:center;gap:8px;background:#fff}
+.field.ok{border-color:var(--pine)}
+.field.focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(200,16,46,.18)}
+.two{display:grid;grid-template-columns:1fr 250px;gap:14px}
+.preview{display:flex;gap:16px;border:2px solid var(--rule);border-radius:12px;padding:14px;margin-top:14px}
+.preview .ph{width:110px;height:96px;flex:none}
+.preview .t{margin-top:0;font-size:16px}
+.preview .pr{font-size:21px}
+.small{font-size:13px;color:var(--muted)}
+.foot{display:flex;gap:12px;margin-top:22px;justify-content:flex-end}
+.foot .btn{min-width:150px}
+/* getting */
+.group+.group{margin-top:26px}
+.grow{display:grid;grid-template-columns:68px 1fr 140px 110px;align-items:center;gap:18px;padding:12px 8px;border-bottom:1px solid var(--rule);color:var(--ink);text-decoration:none}
+.grow:hover{background:var(--wash)}
+.grow .ph{height:60px}
+.grow .ph svg{width:70%;height:70%}
+.grow .t{margin:0;display:block}
+.grow .st{display:block}
+.grow .st{font-size:15px;color:var(--muted)}
+.grow .pr{margin:0;text-align:right;font-size:19px}
+.badge{background:#fff7d6;font-weight:700;padding:2px 6px;border-radius:4px;font-size:13px}
+.kbd{font-size:12px;font-weight:700;border:1.5px solid var(--muted);border-radius:5px;padding:0 5px;color:var(--muted)}
+/* spec */
+.spec{max-width:1280px;margin:0 auto;padding:0 0 100px}
+.spec h2{font-family:'Archivo Black';font-weight:400;font-size:28px;margin-bottom:14px}
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.card{background:#3A302D;border-radius:14px;padding:20px 22px}
+.card h3{font-family:'Archivo Black';font-weight:400;font-size:24px;line-height:1.1;margin-bottom:10px}
+.card p,.card li{font-size:15px;color:#E8DCD8}
+.card ul{padding-left:18px;display:flex;flex-direction:column;gap:5px}
+.card b{color:#fff}
+table{width:100%;border-collapse:collapse;margin-top:6px;font-size:15px}
+td,th{text-align:left;padding:7px 10px;border-bottom:1px solid #54463f;color:#E8DCD8;vertical-align:top}
+th{color:#fff}
+.swatches{display:flex;gap:6px;margin-top:10px}.swatches i{width:30px;height:30px;border-radius:6px;display:block}
+@media (max-width:1320px){.intro,.spec{padding-left:16px;padding-right:16px}.cols{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- product illustrations (synthetic placeholders) -->
+    <symbol id="p-oven" viewBox="0 0 120 90"><ellipse cx="60" cy="74" rx="44" ry="8" fill="#0002"/><path d="M18 38h84v22c0 10-10 16-20 16H38c-10 0-20-6-20-16z" fill="#C8102E"/><rect x="14" y="32" width="92" height="9" rx="4" fill="#9A0C23"/><rect x="52" y="22" width="16" height="10" rx="3" fill="#1A1A1A"/><rect x="6" y="44" width="12" height="7" rx="3" fill="#9A0C23"/><rect x="102" y="44" width="12" height="7" rx="3" fill="#9A0C23"/></symbol>
+    <symbol id="p-kindle" viewBox="0 0 120 90"><rect x="36" y="6" width="48" height="78" rx="6" fill="#1A1A1A"/><rect x="41" y="13" width="38" height="58" rx="1" fill="#EDEBE4"/><path d="M46 22h28M46 29h28M46 36h22M46 43h28M46 50h18" stroke="#9a978f" stroke-width="2"/></symbol>
+    <symbol id="p-socks" viewBox="0 0 120 90"><path d="M34 8h22v46l16 16c6 6 2 16-8 16H40c-6 0-10-4-10-10V8z" fill="#3A5A8C"/><path d="M34 8h22v10H34z" fill="#E4E1DA"/><path d="M64 14h22v40l14 14c6 6 2 16-8 16H70c-6 0-10-4-10-10V14z" fill="#4C70A8"/><path d="M64 14h22v10H64z" fill="#fff"/></symbol>
+    <symbol id="p-book" viewBox="0 0 120 90"><path d="M22 14h38v64H22z" fill="#F2B705"/><path d="M60 14h38v64H60z" fill="#E0A800"/><rect x="30" y="24" width="22" height="18" fill="#fff"/><rect x="68" y="24" width="22" height="18" fill="#fff"/><circle cx="41" cy="33" r="5" fill="#2E7D5B"/><circle cx="79" cy="33" r="5" fill="#C8102E"/><path d="M30 52h22M30 58h16M68 52h22" stroke="#7a5c00" stroke-width="2"/></symbol>
+    <symbol id="p-lego" viewBox="0 0 120 90"><rect x="18" y="34" width="84" height="44" rx="3" fill="#2E7D5B"/><g fill="#256A4C"><rect x="24" y="24" width="14" height="12" rx="2"/><rect x="46" y="24" width="14" height="12" rx="2"/><rect x="68" y="24" width="14" height="12" rx="2"/><rect x="86" y="24" width="12" height="12" rx="2"/></g><text x="60" y="64" text-anchor="middle" font-family="Archivo Black" font-size="13" fill="#fff">1,240 pcs</text></symbol>
+    <symbol id="p-head" viewBox="0 0 120 90"><path d="M30 56V44a30 30 0 0160 0v12" fill="none" stroke="#1A1A1A" stroke-width="7"/><rect x="22" y="50" width="18" height="30" rx="7" fill="#F4A6B4"/><rect x="80" y="50" width="18" height="30" rx="7" fill="#F4A6B4"/></symbol>
+    <symbol id="p-bike" viewBox="0 0 120 90"><circle cx="32" cy="60" r="20" fill="none" stroke="#1A1A1A" stroke-width="5"/><circle cx="88" cy="60" r="20" fill="none" stroke="#1A1A1A" stroke-width="5"/><path d="M32 60l20-30h24l12 30M52 30l10 30h26M46 24h14" fill="none" stroke="#C8102E" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="p-mug" viewBox="0 0 120 90"><rect x="34" y="18" width="44" height="58" rx="6" fill="#F2B705"/><path d="M78 32h8a10 10 0 010 20h-8" fill="none" stroke="#E0A800" stroke-width="7"/><path d="M44 8c0 6 6 6 6 12M58 6c0 6 6 6 6 12" stroke="#c9c5bc" stroke-width="3" fill="none" stroke-linecap="round"/></symbol>
+    <!-- marks -->
+    <symbol id="loop" viewBox="0 0 180 160"><path d="M30 70C34 30 70 10 104 12c42 3 66 30 64 68-2 40-34 68-80 66C42 144 10 118 14 78c3-26 22-44 52-52" fill="none" stroke="#C8102E" stroke-width="5" stroke-linecap="round"/></symbol>
+    <symbol id="check" viewBox="0 0 60 50"><path d="M6 26l16 16L54 6" fill="none" stroke="#2E7D5B" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <!-- icons -->
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2zM4 21V5M8 7h7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-gift" viewBox="0 0 24 24"><path d="M3 8h18v4H3zM5 12v9h14v-9M12 8v13M12 8C10 4 6 4 7 7c.5 1 3 1 5 1zm0 0c2-4 6-4 5-1-.5 1-3 1-5 1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M3 3l18 18M10.6 6.1A10 10 0 0112 6c5 0 9 4 10 6-.4.9-1.3 2.2-2.6 3.4M6.6 6.6C4.4 8 2.8 10.2 2 12c1 2 5 6 10 6 1.8 0 3.4-.5 4.8-1.3M9.9 9.9a3 3 0 004.2 4.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 006 0l3-3a4 4 0 00-6-6l-1 1M14 10a4 4 0 00-6 0l-3 3a4 4 0 006 6l1-1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-ok" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#2E7D5B"/><path d="M8 12l3 3 5-6" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="stack" viewBox="0 0 72 72"><rect x="14" y="44" width="44" height="22" fill="#2E7D5B"/><rect x="33" y="44" width="6" height="22" fill="#F2B705"/><rect x="20" y="28" width="32" height="16" fill="#fff"/><rect x="33" y="28" width="6" height="16" fill="#C8102E"/><rect x="26" y="14" width="20" height="14" fill="#F2B705"/><rect x="33" y="14" width="6" height="14" fill="#C8102E"/><path d="M36 14c-4-8-11-6.5-9.5-2.5 1 2.5 5.5 2.5 9.5 2.5zM36 14c4-8 11-6.5 9.5-2.5-1 2.5-5.5 2.5-9.5 2.5z" fill="#fff"/></symbol>
+  </defs>
+</svg>
+
+<div class="intro">
+  <h1>Wishbook on a desktop</h1>
+  <p>The red cover becomes a left rail, the white page becomes a wide, scrolling page, and gifts spread into four columns. Same ink, red, and marker marks as the phone app. Names, gifts and prices are made-up; product pictures are placeholders.</p>
+</div>
+
+<div class="stage" id="stage">
+  <section class="shot"><div class="cap"><h2>1. Family: who's on the list</h2><p>The tab bar is gone. Navigation lives in the rail, so every screen keeps the same frame. "I'm getting" moves into a side column so a shopper sees what's left to buy without leaving the home page.</p></div><div class="win" id="w1" style="height:700px"></div></section>
+  <section class="shot"><div class="cap"><h2>2. A person's list</h2><p>Four columns of gifts. The floating button becomes a real button in the page header. Marker loop = most wanted; check + handwriting = claimed (givers and managers only, never the list's owner).</p></div><div class="win" id="w2"></div></section>
+  <section class="shot"><div class="cap"><h2>3. One gift</h2><p>Picture and details sit side by side and fill the page, so the page is no longer as narrow as the photo. The claim box, store link, and management actions stay where phone users already know them.</p></div><div class="win" id="w3"></div></section>
+  <section class="shot"><div class="cap"><h2>4. Adding a gift</h2><p>A centered dialog over the list instead of a full-screen sheet, so you can see the list you're adding to. Paste a link, and the name, price, and picture fill in. Esc closes it.</p></div><div class="win" id="w4"></div></section>
+  <section class="shot"><div class="cap"><h2>5. I'm getting</h2><p>Rows become a table-like list with room for the store and status, grouped by person with a total each.</p></div><div class="win" id="w5" style="height:700px"></div></section>
+</div>
+
+<div class="spec">
+  <h2>How it behaves</h2>
+  <div class="cols">
+    <div class="card"><h3>Breakpoints</h3>
+      <table>
+        <tr><th>Width</th><th>Layout</th></tr>
+        <tr><td>&lt; 900px</td><td>Today's phone layout, unchanged: red header, bottom tab bar</td></tr>
+        <tr><td>900–1279px</td><td>Rail 220px, page fills the rest, gift grid 3 columns, shopping column hides (link in header instead)</td></tr>
+        <tr><td>≥ 1280px</td><td>Rail 240px, page content max 1180px and left-aligned in the page, grid 4 columns</td></tr>
+        <tr><td>≥ 1700px</td><td>Page content stays 1180px; extra width becomes red cover on the right, like a book on a table</td></tr>
+      </table>
+    </div>
+    <div class="card"><h3>What changes in the code</h3>
+      <ul>
+        <li><b>One shell component</b> swaps the bottom tab bar for the rail at ≥ 900px. Routes and data don't change.</li>
+        <li><b>Detail page</b> becomes a two-column grid; the width bug disappears because the page owns the width, not the photo.</li>
+        <li><b>Add gift</b> opens as a dialog at desktop widths and as today's sheet on phones.</li>
+        <li>The floating "Add for…" button becomes a header button on desktop.</li>
+        <li>Notification and install prompts become a small card at the bottom of the rail.</li>
+      </ul>
+    </div>
+    <div class="card"><h3>Keeping what works</h3>
+      <ul>
+        <li>Same tokens: red <b>#C8102E</b>, ink, mustard, pine, Archivo Black + Atkinson Hyperlegible.</li>
+        <li>Targets stay ≥ 44px; hover adds a hard ink shadow (no soft glow), and every hover state has a keyboard focus ring in mustard.</li>
+        <li>Secrecy is untouched: the owner never sees claims on any screen here.</li>
+        <li>Stitching along the rail edge is the one new flourish: the red is a book cover, the white is the page.</li>
+      </ul>
+      <div class="swatches"><i style="background:#C8102E"></i><i style="background:#1A1A1A"></i><i style="background:#F2B705"></i><i style="background:#2E7D5B"></i><i style="background:#F4F2EE"></i><i style="background:#FFE3E7"></i></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const ic=(n,c='i')=>`<svg class="${c}"><use href="#i-${n}"/></svg>`;
+const money=c=>'$'+(c/100).toFixed(2);
+const nav=(on)=>`<aside class="rail">
+  <div class="brand"><svg viewBox="12 4 48 64"><use href="#stack"/></svg>Wishbook</div>
+  <nav class="nav" aria-label="Main">
+    ${[['book','Family','1'],['star','My list','2'],['gift',"I'm getting",'3'],['user','Me','4']].map(([i,l,k])=>`<a class="${on===l?'on':''}">${ic(i)}${l}<span class="kb">${k}</span></a>`).join('')}
+  </nav>
+  <a class="add">${ic('plus')}Add a gift</a>
+  <div class="days"><span>Christmas 2026</span><b>35 days</b><span>to go</span></div>
+  <div class="who"><span class="av">J</span><span><b>Josh</b><span>Signed in</span></span></div>
+</aside>`;
+const win=(id,url,on,page,overlay='')=>{document.getElementById(id).innerHTML=`<div class="chrome"><i></i><i></i><i></i><span class="url">${url}</span></div><div class="app">${nav(on)}<main class="page">${page}</main>${overlay}</div>`;};
+
+const G=[ // title, store, price, was, symbol, flags
+ ['LEGO Icons Bonsai Tree 10281','Amazon',4999,5999,'p-lego','most'],
+ ['Nerf Elite 2.0 Commander','Target',1299,0,'p-bike','mine'],
+ ['Pokémon Booster Bundle','Walmart',2999,0,'p-book',''],
+ ['Wireless Gaming Headset','Amazon',3999,0,'p-head','kate'],
+ ['Trail Rain Boots, size 3','REI',3400,0,'p-socks',''],
+ ['Hot Wheels Track Builder Set','Amazon',3499,0,'p-oven',''],
+ ['Catan Junior board game','Target',2299,0,'p-book',''],
+ ['Insulated Adventure Mug','Etsy',1800,0,'p-mug','']
+];
+const card=(g,i,hov)=>{const [t,s,p,w,sym,f]=g;const claimed=f==='mine'||f==='kate';
+ return `<a class="it ${claimed?'claimed':''} ${hov===i?'hov':''}"><div class="ph"><svg><use href="#${sym}"/></svg></div>
+ <div class="no">NO. ${String(i+1).padStart(2,'0')} · ${s.toUpperCase()}</div><div class="t">${t}</div>
+ <div class="pr">${money(p)}${w?`<s>${money(w)}</s>`:''}</div>
+ ${claimed?`<div class="hand">${f==='mine'?'You have it':'Aunt Kate has it'}</div><svg class="chk"><use href="#check"/></svg>`:''}
+ ${f==='most'?`<svg class="loop" viewBox="0 0 180 160" preserveAspectRatio="none"><use href="#loop"/></svg>`:''}</a>`;};
+const person=(n,c,kid,sm,pct,hov)=>`<a class="pc ${hov?'hov':''}"><span class="pav" style="background:${c}">${n[0]}</span><span><span class="nm">${n}${kid?'<span class="tag">KID</span>':''}</span><span class="sm">${sm}</span>${pct!==null?`<span class="bar"><i style="width:${pct}%"></i></span>`:''}</span><span class="go">${ic('chev')}</span></a>`;
+
+/* 1 Family */
+win('w1','wishbook.crosby.family/','Family',`<div class="scroll">
+ <div class="head"><div><div class="eyebrow">Christmas 2026 · 35 days to go</div><h1>Who’s on the list this year</h1></div></div>
+ <div class="split">
+  <div><div class="secthd"><b>Family</b><span>4 lists</span></div>
+   <div class="people">
+    ${person('Grayson','#BFCDEE',1,'You manage · 8 wants · 2 claimed',25,true)}
+    ${person('Levi','#A8D5BF',1,'You manage · 5 wants · 1 claimed',20)}
+    ${person('Reese','#F4C9A0',1,'You manage · 6 wants · 3 claimed',50)}
+    ${person('Jessie','#F2A7B5',0,'4 wants',null)}
+   </div>
+  </div>
+  <div class="side"><div class="secthd"><b>I’m getting</b><span>3 gifts · $79.97</span></div>
+   <a class="row"><span class="th"><span class="ph" style="height:52px"><svg><use href="#p-oven"/></svg></span></span><span><span class="t">Hot Wheels Track Builder Set</span><span class="sm">For Levi · Not bought yet</span></span><span class="pr">$34.99</span></a>
+   <a class="row"><span class="th"><span class="ph" style="height:52px"><svg><use href="#p-bike"/></svg></span></span><span><span class="t">Nerf Elite 2.0 Commander</span><span class="sm">For Grayson · Not bought yet</span></span><span class="pr">$12.99</span></a>
+   <a class="row"><span class="th"><span class="ph" style="height:52px"><svg><use href="#p-mug"/></svg></span></span><span><span class="t">Insulated Adventure Mug</span><span class="sm">For Reese · <span class="bought">Bought</span></span></span><span class="pr">$18.00</span></a>
+   <a class="link">See everything I’m getting</a>
+  </div>
+ </div></div>`);
+
+/* 2 Person list */
+const list=(dim)=>`<div class="scroll">
+ <div class="crumbs"><a>Family</a>${ic('chev')}<b>Grayson</b></div>
+ <div class="head"><div><div class="eyebrow">Kid · you manage this list</div><h1>Grayson’s list</h1><div class="meta">8 wants · <em>2 claimed</em> · 6 still open</div></div><a class="btn ink">${ic('plus')}Add for Grayson</a></div>
+ <div class="note">${ic('eye','i')}<span>You manage Grayson’s list and shop for him, so you see claims here. Grayson never logs in.</span></div>
+ <div class="chips"><span class="chip on">All</span><span class="chip">Still open</span><span class="chip">Under $50</span><span class="sp">Sorted: most wanted first</span></div>
+ <div class="grid">${G.map((g,i)=>card(g,i,dim?-1:2)).join('')}</div></div>`;
+win('w2','wishbook.crosby.family/people/2','Family',list(false));
+
+/* 3 Item */
+win('w3','wishbook.crosby.family/items/12','Family',`<div class="scroll">
+ <div class="crumbs"><a>Family</a>${ic('chev')}<a>Grayson</a>${ic('chev')}<b>LEGO Icons Bonsai Tree</b></div>
+ <div class="detail">
+  <div class="hero"><svg class="pimg"><use href="#p-lego"/></svg></div>
+  <div class="dt">
+   <p class="no">AMAZON · MOST WANTED</p>
+   <h1>LEGO Icons Bonsai Tree 10281 Building Set</h1>
+   <div class="big">$49.99<s>$59.99</s></div>
+   <div class="kv"><span>Note</span><span>Green leaves, not the pink ones</span></div>
+   <div class="kv"><span>Price</span><span class="when">${ic('clock','i')}checked 19 hours ago</span></div>
+   <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px"><a class="btn pine block">I’ll get this</a><p class="hint">Everyone except Grayson will see that you’re getting it.</p></div>
+   <a class="btn ghost block">Open on Amazon ${ic('link','i')}</a>
+   <section class="edit"><div class="seg"><span>Nice to have</span><span>Want</span><span class="on">Most wanted</span></div>
+    <div class="actions"><a class="btn ghost">Edit details</a><a class="btn danger">Remove gift</a></div></section>
+  </div>
+ </div>
+ <div class="more"><div class="secthd"><b>More on Grayson’s list</b><span>7 other gifts</span></div>
+  <div class="mini">${[1,2,3,4].map(i=>{const g=G[i];return `<a class="it"><div class="ph"><svg><use href="#${g[4]}"/></svg></div><div class="t">${g[0]}</div><div class="pr">${money(g[2])}</div></a>`}).join('')}</div></div>
+</div>`);
+
+/* 4 Add dialog */
+win('w4','wishbook.crosby.family/people/2','Family',list(true),`<div class="scrim"></div>
+ <div class="dlg" role="dialog" aria-label="Add for Grayson">
+  <div class="top"><h3>Add for Grayson</h3><span class="x"><svg class="i" style="transform:rotate(45deg)"><use href="#i-plus"/></svg></span></div>
+  <label>Paste a link</label>
+  <div class="field ok">${ic('link','i')}<span style="flex:1;color:var(--ink)">amazon.com/dp/B08HRQ92R1</span>${ic('ok','i')}</div>
+  <div class="preview"><div class="ph"><svg><use href="#p-lego"/></svg></div><div><div class="no" style="margin:0">FOUND ON AMAZON</div><div class="t">LEGO Icons Bonsai Tree 10281 Building Set</div><div class="pr">$49.99</div><div class="small">Price checked just now · <a style="color:var(--red);font-weight:700;text-decoration:underline">Change the name or price</a></div></div></div>
+  <div class="two"><div><label>Options (size, color, notes)</label><div class="field focus"><span style="color:var(--ink)">Green leaves, not the pink ones</span></div></div>
+   <div><label>Priority</label><div class="field" style="padding:0;overflow:hidden"><div class="seg" style="border:0;width:100%;border-radius:0"><span style="padding:13px 0">Nice</span><span style="padding:13px 0">Want</span><span class="on" style="padding:13px 0">Most</span></div></div></div></div>
+  <div class="foot"><a class="btn ghost">Cancel</a><a class="btn">Add to Grayson’s list</a></div>
+ </div>`);
+
+/* 5 Getting */
+const grow=(sym,t,sub,store,pr,st)=>`<a class="grow"><span class="ph"><svg><use href="#${sym}"/></svg></span><span><span class="t">${t}</span><span class="st">${sub}</span></span><span class="st">${store}</span><span class="pr">${pr}</span></a>`;
+win('w5','wishbook.crosby.family/getting',"I'm getting",`<div class="scroll">
+ <div class="head"><div><div class="eyebrow">Christmas 2026</div><h1>I’m getting</h1><div class="meta">3 gifts · $79.97 so far · <em>1 bought</em></div></div></div>
+ <div class="group"><div class="secthd"><b>For Grayson</b><span class="num">$12.99</span></div>
+  ${grow('p-bike','Nerf Elite 2.0 Commander','Not bought yet','Target','$12.99')}</div>
+ <div class="group"><div class="secthd"><b>For Levi</b><span class="num">$34.99</span></div>
+  ${grow('p-oven','Hot Wheels Track Builder Set','<span class="badge">Changed since you claimed it</span> Check the name and link before buying','Amazon','$34.99')}</div>
+ <div class="group"><div class="secthd"><b>For Reese</b><span class="num">$18.00</span></div>
+  ${grow('p-mug','Insulated Adventure Mug','<span class="bought">Bought</span>','Etsy','$18.00')}</div>
+</div>`);
+
+const fit=()=>document.documentElement.style.setProperty('--z',Math.min(1,(innerWidth-32)/1280));
+fit();addEventListener('resize',fit);
+</script>
+</body>
+</html>

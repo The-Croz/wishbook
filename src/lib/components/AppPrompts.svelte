@@ -97,6 +97,7 @@
 
 <style>
 	.sheet { position: fixed; z-index: 30; left: 12px; right: 12px; bottom: calc(var(--tabbar) + env(safe-area-inset-bottom) + 8px); max-width: 616px; margin: 0 auto; background: #fff; color: var(--ink); border: 2px solid var(--ink); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28); }
+	@media (min-width: 900px) { .sheet { left: auto; right: 24px; bottom: 24px; width: 380px; margin: 0; } }
 	h2 { font-family: var(--display); font-weight: 400; font-size: 21px; line-height: 1.1; }
 	.why { font-size: 15px; color: var(--muted); }
 	ol { padding-left: 22px; display: flex; flex-direction: column; gap: 6px; font-size: 16px; }

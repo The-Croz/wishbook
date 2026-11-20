@@ -16,6 +16,7 @@
 	<a class="back" href="/"><Icon name="back" size={20} />Family</a>
 	<h1>{name}{data.owner.isManaged ? '’s list' : ''}</h1>
 	<p class="meta">{data.items.length} {data.items.length === 1 ? 'want' : 'wants'}{#if data.showClaims}{` · ${claimed} claimed · ${data.items.length - claimed} still open`}{/if}</p>
+	{#if data.canEdit}<a class="btn ink hbtn" href="/add?for={data.owner.id}"><Icon name="plus" size={20} />Add for {name}</a>{/if}
 </header>
 
 <main class="pg">
@@ -35,10 +36,10 @@
 	{/if}
 </main>
 
-{#if data.canEdit}<a class="fab" href="/add?for={data.owner.id}"><Icon name="plus" size={20} />Add for {name}</a>{/if}
+{#if data.canEdit}<a class="fab mob" href="/add?for={data.owner.id}"><Icon name="plus" size={20} />Add for {name}</a>{/if}
 
 <style>
-	.back { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 16px; color: #fff; text-decoration: none; min-height: 44px; }
+	.back { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 16px; color: var(--on-hdr); text-decoration: none; min-height: 44px; }
 	.chips { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
 	.chips button { min-height: 40px; padding: 0 14px; border-radius: 99px; border: 2px solid var(--ink); font-weight: 700; font-size: 14px; background: #fff; }
 	.chips button.on { background: var(--ink); color: #fff; }
