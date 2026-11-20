@@ -9,6 +9,8 @@
 }
 * { box-sizing: border-box; margin: 0; }
 html { -webkit-text-size-adjust: 100%; }
+/* If iOS sizes the viewport short at launch, the canvas below the tab bar shows through. Inside the app that must be white, not the cover red. */
+html:has(.frame) { background: var(--page); }
 body { background: var(--red); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.45; min-height: 100dvh; }
 ::selection { background: var(--mustard); color: var(--ink); }
 :focus-visible { outline: 3px solid var(--mustard); outline-offset: 2px; border-radius: 4px; }
