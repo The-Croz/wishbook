@@ -15,6 +15,10 @@ services:
       ADMIN_PASSWORD: change-me-please
       # Nightly price checks and reminders run in this time zone.
       TZ: America/Chicago
+      # Oxylabs Web API key: used only when Amazon blocks a lookup. Leave unset to turn off.
+      # OXYLABS_API_KEY: your-key
+      # Most Oxylabs lookups per month (default 300).
+      # OXYLABS_MONTHLY_LIMIT: 300
       # Owner of ./data on the host (Unraid uses 99 and 100). Defaults to 1000.
       # PUID: 1000
       # PGID: 1000

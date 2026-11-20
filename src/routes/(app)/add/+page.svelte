@@ -74,7 +74,7 @@
 			</div>
 
 			{#if preview?.status === 'blocked'}
-				<p class="warn">Amazon didn’t let us peek. Add the name and price yourself, and we’ll keep trying overnight.</p>
+				<p class="warn">Amazon didn’t let us peek. Save it anyway and we’ll keep trying in the background — the name, price and picture usually fill in within a day.</p>
 			{:else if preview?.status === 'failed'}
 				<p class="warn">We couldn’t read that page. Type the name and price below.</p>
 			{/if}

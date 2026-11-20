@@ -2,6 +2,11 @@ import { load } from 'cheerio';
 import { canonicalize, extractUrl, isAmazon, titleFromShareText } from './extractUrl';
 import { parseAmazon } from './amazon';
 import { parseGeneric } from './generic';
+import { lookupAmazon } from './oxylabs';
+
+const isAmazonUrl = (u: string) => {
+	try { return isAmazon(new URL(u).hostname); } catch { return false; }
+};
 
 export type ScrapeResult = {
 	status: 'ok' | 'blocked' | 'failed';
@@ -28,7 +33,8 @@ export function parseHtml(url: string, html: string): ScrapeResult {
 
 /** Fetches a pasted link and reads gift details from it. Never throws. */
 export async function scrape(rawText: string, fetchImpl: typeof fetch = fetch): Promise<ScrapeResult> {
-	const r = await scrapePage(rawText, fetchImpl);
+	let r = await scrapePage(rawText, fetchImpl);
+	if (r.status !== 'ok' && isAmazonUrl(r.url)) r = (await lookupAmazon(r.url, fetchImpl)) ?? r;
 	if (r.status === 'ok' || r.title) return r;
 	const shared = titleFromShareText(rawText);
 	return shared ? { ...r, title: shared } : r;
