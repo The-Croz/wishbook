@@ -1,0 +1,18 @@
+services:
+  wishbook:
+    build: .
+    image: wishbook:latest
+    container_name: wishbook
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/data
+    environment:
+      # The public address people type, exactly as your reverse proxy serves it.
+      ORIGIN: https://wishbook.example.com
+      # Creates the first admin the very first time the app starts (ignored after that).
+      ADMIN_USERNAME: josh
+      ADMIN_PASSWORD: change-me-please
+      # Nightly price checks run at 3am in this time zone.
+      TZ: America/Chicago

@@ -1,0 +1,14 @@
+node_modules
+.svelte-kit
+build
+data
+*.db
+.git
+.superpowers
+.impeccable
+.claude
+design
+docs
+tests
+test-results
+.env
