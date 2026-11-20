@@ -36,7 +36,7 @@ img { max-width: 100%; display: block; }
 .btn:active:not(:disabled) { transform: translateY(1px); }
 .field { display: block; width: 100%; border: 2px solid var(--ink); border-radius: 10px; padding: 12px; font-size: 16px; background: #fff; min-height: 50px; }
 .field:focus { outline: none; border-color: var(--red); box-shadow: 0 0 0 3px rgba(200, 16, 46, 0.18); }
-label.lbl { display: block; font-weight: 700; font-size: 15px; margin: 14px 0 6px; }
+.lbl { display: block; font-weight: 700; font-size: 15px; margin: 14px 0 6px; }
 .err { color: var(--red); font-weight: 700; font-size: 15px; margin-top: 10px; }
 .note { display: flex; gap: 10px; align-items: flex-start; background: var(--wash); border-radius: 10px; padding: 12px; font-size: 15px; margin-bottom: 14px; }
 .secthd { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 3px solid var(--ink); padding-bottom: 6px; margin-bottom: 14px; }
