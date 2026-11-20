@@ -25,6 +25,14 @@ beforeEach(() => { createTestDb(); process.env.OXYLABS_API_KEY = 'k'; delete pro
 afterEach(() => { delete process.env.OXYLABS_API_KEY; });
 
 describe('parseOxylabs', () => {
+	it('reads the real Web API layout (results[0].json), ignoring ads', () => {
+		const real = { state: 'done', results: [{ json: {
+			ads: [{ asin: '0824956842', title: 'Some other book', price: 6.51, images: ['https://img/ad.jpg'] }],
+			asin: '1546000429', title: 'Little Blue Truck', images: ['https://m.media-amazon.com/images/I/main.jpg'],
+			buybox: [{ price: 25.9 }, { price: 35.16 }]
+		} }] };
+		expect(parseOxylabs(URL1, real)).toMatchObject({ title: 'Little Blue Truck', priceCents: 2590, imageUrl: 'https://m.media-amazon.com/images/I/main.jpg' });
+	});
 	it('reads title, price, list price and image', () =>
 		expect(parseOxylabs(URL1, product)).toEqual({ status: 'ok', url: URL1, store: 'Amazon', title: 'Little Blue Truck', priceCents: 899, listPriceCents: 1299, currency: 'USD', imageUrl: 'https://m.media-amazon.com/images/I/a.jpg' }));
 	it('accepts an unwrapped product and string prices', () =>

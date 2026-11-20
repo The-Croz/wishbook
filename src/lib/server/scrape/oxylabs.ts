@@ -38,7 +38,8 @@ const num = (v: unknown): number | undefined => {
 
 /** Finds the parsed product, whichever wrapper the response uses. */
 function productOf(body: any): any {
-	const candidates = [body?.results?.[0]?.content, body?.results?.[0], body?.content, body];
+	const r0 = body?.results?.[0];
+	const candidates = [r0?.json, r0?.content, r0, body?.json, body?.content, body];
 	return candidates.find((c) => c && typeof c === 'object' && typeof c.title === 'string' && c.title.trim());
 }
 
@@ -57,7 +58,8 @@ export function parseOxylabs(url: string, body: unknown): ScrapeResult | null {
 	const p = productOf(body);
 	if (!p) return null;
 	const result: ScrapeResult = { status: 'ok', url, store: 'Amazon', title: p.title.replace(/\s+/g, ' ').trim() };
-	const price = num(p.price ?? p.price_buybox ?? p.price_upper);
+	const buybox = Array.isArray(p.buybox) ? p.buybox : [];
+	const price = num(p.price) ?? num(p.price_buybox) ?? num(buybox[0]?.price) ?? num(p.price_upper);
 	if (price) {
 		result.priceCents = Math.round(price * 100);
 		result.currency = typeof p.currency === 'string' && /^[A-Z]{3}$/.test(p.currency) ? p.currency : 'USD';
@@ -67,6 +69,16 @@ export function parseOxylabs(url: string, body: unknown): ScrapeResult | null {
 	const img = firstImage(p);
 	if (img) result.imageUrl = img;
 	return result;
+}
+
+/** The reply's keys and value types, two levels deep, so an unexpected layout can be read from the logs. */
+function describe(v: unknown, depth = 0): string {
+	if (Array.isArray(v)) return depth > 2 ? '[…]' : `[${v.length ? describe(v[0], depth + 1) : ''}]`;
+	if (v && typeof v === 'object') {
+		if (depth > 2) return '{…}';
+		return `{${Object.entries(v).slice(0, 40).map(([k, x]) => `${k}:${describe(x, depth + 1)}`).join(', ')}}`;
+	}
+	return typeof v === 'string' ? `str(${v.slice(0, 40)})` : typeof v;
 }
 
 /** Looks up one Amazon product. Null when off, over the cap, or anything goes wrong. */
@@ -93,8 +105,9 @@ export async function lookupAmazon(url: string, fetchImpl: typeof fetch = fetch)
 			console.warn(`[wishbook] Oxylabs lookup failed: HTTP ${res.status}`);
 			return null;
 		}
-		const parsed = parseOxylabs(url, await res.json());
-		if (!parsed) console.warn('[wishbook] Oxylabs answered without a product');
+		const body = await res.json();
+		const parsed = parseOxylabs(url, body);
+		if (!parsed) console.warn(`[wishbook] Oxylabs answered without a product; reply layout: ${describe(body)}`);
 		return parsed;
 	} catch (e) {
 		console.warn('[wishbook] Oxylabs lookup error', e);

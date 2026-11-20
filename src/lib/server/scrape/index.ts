@@ -2,7 +2,19 @@ import { load } from 'cheerio';
 import { canonicalize, extractUrl, isAmazon, titleFromShareText } from './extractUrl';
 import { parseAmazon } from './amazon';
 import { parseGeneric } from './generic';
-import { lookupAmazon } from './oxylabs';
+import { lookupAmazon, oxylabsEnabled } from './oxylabs';
+
+/** The canonical /dp/ASIN link when the pasted text holds a full Amazon product link (short a.co links need a fetch first). */
+function amazonDirect(rawText: string): string | null {
+	const found = extractUrl(rawText);
+	if (!found) return null;
+	try {
+		const c = canonicalize(found);
+		return isAmazonUrl(c) && /\/dp\/[A-Z0-9]{10}$/i.test(c) ? c : null;
+	} catch {
+		return null;
+	}
+}
 
 const isAmazonUrl = (u: string) => {
 	try { return isAmazon(new URL(u).hostname); } catch { return false; }
@@ -33,8 +45,14 @@ export function parseHtml(url: string, html: string): ScrapeResult {
 
 /** Fetches a pasted link and reads gift details from it. Never throws. */
 export async function scrape(rawText: string, fetchImpl: typeof fetch = fetch): Promise<ScrapeResult> {
-	let r = await scrapePage(rawText, fetchImpl);
-	if (r.status !== 'ok' && isAmazonUrl(r.url)) r = (await lookupAmazon(r.url, fetchImpl)) ?? r;
+	// Amazon blocks nearly every direct read, so with Oxylabs set up go straight to it.
+	const direct = amazonDirect(rawText);
+	if (direct && oxylabsEnabled()) {
+		const hit = await lookupAmazon(direct, fetchImpl);
+		if (hit) return hit;
+	}
+	let r = direct && oxylabsEnabled() ? { status: 'blocked' as const, url: direct } : await scrapePage(rawText, fetchImpl);
+	if (r.status !== 'ok' && !direct && isAmazonUrl(r.url)) r = (await lookupAmazon(r.url, fetchImpl)) ?? r;
 	if (r.status === 'ok' || r.title) return r;
 	const shared = titleFromShareText(rawText);
 	return shared ? { ...r, title: shared } : r;
