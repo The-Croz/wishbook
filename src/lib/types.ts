@@ -26,6 +26,7 @@ export type ListSummary = {
 	ownerId: number;
 	displayName: string;
 	avatarColor: string;
+	avatarPhoto: string | null;
 	isManaged: boolean;
 	managedByMe: boolean;
 	wantCount: number;

@@ -4,7 +4,7 @@ import type { Item, User } from '../../src/lib/server/db/schema';
 
 const u = (id: number, name: string, extra: Partial<User> = {}): User => ({
 	id, username: name.toLowerCase(), displayName: name, passwordHash: null, isAdmin: false, isManaged: false,
-	isActive: true, avatarColor: '#F2B705', birthYear: null, createdAt: new Date(), ...extra
+	isActive: true, avatarColor: '#F2B705', avatarPhoto: null, birthYear: null, createdAt: new Date(), ...extra
 });
 const josh = u(1, 'Josh'), kate = u(2, 'Kate'), milo = u(3, 'Milo', { isManaged: true });
 const item = (id: number, extra: Partial<Item> = {}): Item => ({

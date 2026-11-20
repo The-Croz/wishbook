@@ -2,6 +2,7 @@
 	import { enhance } from '$app/forms';
 	import Icon from '$lib/components/Icon.svelte';
 	import PushToggle from '$lib/components/PushToggle.svelte';
+	import ProfilePicker from '$lib/components/ProfilePicker.svelte';
 	let { data, form } = $props();
 	let showPw = $state(false);
 </script>
@@ -14,8 +15,11 @@
 </header>
 
 <main class="pg">
+	<div class="secthd"><b>Your picture</b></div>
+	<ProfilePicker userId={data.me.id} name={data.me.displayName} color={data.me.avatarColor} photo={data.me.avatarPhoto} />
+
 	{#if data.me.isAdmin}
-		<div class="secthd"><b>Admin</b></div>
+		<div class="secthd sp"><b>Admin</b></div>
 		<a class="row" href="/admin/users">People and kids<Icon name="chev" size={20} /></a>
 		<a class="row" href="/admin/import">Import from Elfster<Icon name="chev" size={20} /></a>
 		<a class="row" href="/admin/prices">Prices<Icon name="chev" size={20} /></a>

@@ -1,15 +1,15 @@
 <script lang="ts">
 	import Icon from '$lib/components/Icon.svelte';
 	import GiftArt from '$lib/components/GiftArt.svelte';
+	import Avatar from '$lib/components/Avatar.svelte';
 	import { formatMoney } from '$lib/money';
 	let { data } = $props();
-	const initials = (n: string) => n.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
 </script>
 
 <svelte:head><title>Family · Wishbook</title></svelte:head>
 
 <header class="hdr">
-	<div class="top mob"><span class="wm"><img src="/brand/stack.svg" alt="" width="26" height="26" />Wishbook</span><a class="av" href="/me" style:background={data.me.avatarColor} aria-label="Me">{initials(data.me.displayName)}</a></div>
+	<div class="top mob"><span class="wm"><img src="/brand/stack.svg" alt="" width="26" height="26" />Wishbook</span><a class="av" href="/me" aria-label="Me"><Avatar name={data.me.displayName} color={data.me.avatarColor} photo={data.me.avatarPhoto} /></a></div>
 	<h1>Who’s on the list this year</h1>
 	<p class="meta eyebrow">Christmas {data.season}{#if data.daysToGo > 0}{' · '}{data.daysToGo} {data.daysToGo === 1 ? 'day' : 'days'} to go{:else if data.daysToGo === 0}{' · '}Merry Christmas!{/if}</p>
 </header>
@@ -24,7 +24,7 @@
 			<div class="people">
 				{#each data.family as p (p.ownerId)}
 					<a class="person" href="/people/{p.ownerId}">
-						<span class="pav" style:background={p.avatarColor}>{initials(p.displayName)}</span>
+						<span class="pav"><Avatar name={p.displayName} color={p.avatarColor} photo={p.avatarPhoto} size={52} display /></span>
 						<span class="body">
 							<span class="nm">{p.displayName}{#if p.isManaged}<span class="tag">KID</span>{/if}</span>
 							<span class="sm">
@@ -68,9 +68,9 @@
 	.side { display: none; }
 	.top { display: flex; justify-content: space-between; align-items: center; }
 	.wm { font-family: var(--display); font-size: 20px; display: flex; align-items: center; gap: 8px; }
-	.av { width: 40px; height: 40px; border-radius: 50%; color: var(--ink); font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 15px; text-decoration: none; }
+	.av { display: flex; border-radius: 50%; }
 	.person { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--rule); color: var(--ink); text-decoration: none; min-height: 72px; }
-	.pav { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--display); font-size: 20px; flex: none; }
+	.pav { display: flex; flex: none; }
 	.body { display: flex; flex-direction: column; min-width: 0; }
 	.nm { font-weight: 700; font-size: 18px; }
 	.sm { font-size: 15px; color: var(--muted); }
@@ -82,7 +82,6 @@
 		.people { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 		.person { border: 2px solid var(--rule); border-radius: 16px; padding: 16px; min-height: 104px; }
 		.person:hover { border-color: var(--ink); box-shadow: 0 4px 0 var(--ink); transform: translateY(-2px); }
-		.pav { width: 56px; height: 56px; }
 		.nm { font-size: 19px; }
 		.bar { width: 120px; max-width: 100%; }
 	}

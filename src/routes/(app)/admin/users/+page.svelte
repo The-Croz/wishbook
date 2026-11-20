@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import Icon from '$lib/components/Icon.svelte';
+	import Avatar from '$lib/components/Avatar.svelte';
+	import ProfilePicker from '$lib/components/ProfilePicker.svelte';
 	let { data, form } = $props();
 	const adults = $derived(data.people.filter((p) => !p.isManaged));
 	const kids = $derived(data.people.filter((p) => p.isManaged));
@@ -22,12 +24,14 @@
 	{#each adults as p (p.id)}
 		<div class="person" class:off={!p.isActive}>
 			<button class="head" onclick={() => toggle(`p${p.id}`)} aria-expanded={open === `p${p.id}`}>
-				<span class="dot" style:background={p.avatarColor}></span>
+				<Avatar name={p.displayName} color={p.avatarColor} photo={p.avatarPhoto} size={32} />
 				<span class="nm">{p.displayName}{#if p.isAdmin}<span class="tag">ADMIN</span>{/if}{#if !p.isActive}<span class="tag gray">OFF</span>{/if}</span>
 				<span class="un">{p.username}</span>
 			</button>
 			{#if open === `p${p.id}`}
 				<div class="body">
+					<p class="lbl">Picture</p>
+					<ProfilePicker userId={p.id} name={p.displayName} color={p.avatarColor} photo={p.avatarPhoto} />
 					<form method="POST" action="?/reset" use:enhance>
 						<input type="hidden" name="userId" value={p.id} />
 						<label class="lbl" for="pw{p.id}">New password for {p.displayName}</label>
@@ -61,11 +65,15 @@
 	{#each kids as k (k.id)}
 		<div class="person">
 			<button class="head" onclick={() => toggle(`k${k.id}`)} aria-expanded={open === `k${k.id}`}>
-				<span class="dot" style:background={k.avatarColor}></span>
+				<Avatar name={k.displayName} color={k.avatarColor} photo={k.avatarPhoto} size={32} />
 				<span class="nm">{k.displayName}</span>
 				<span class="un">{k.managerIds.map((id) => data.people.find((p) => p.id === id)?.displayName).join(', ')}</span>
 			</button>
 			{#if open === `k${k.id}`}
+				<div class="body">
+					<p class="lbl">Picture</p>
+					<ProfilePicker userId={k.id} name={k.displayName} color={k.avatarColor} photo={k.avatarPhoto} />
+				</div>
 				<form method="POST" action="?/managers" use:enhance class="body">
 					<input type="hidden" name="kidId" value={k.id} />
 					<p class="lbl">Who manages {k.displayName}’s list?</p>
@@ -101,7 +109,6 @@
 	.person { border-bottom: 1px solid var(--rule); }
 	.person.off .nm { color: var(--muted); }
 	.head { width: 100%; display: flex; align-items: center; gap: 12px; background: none; border: 0; padding: 12px 0; min-height: 60px; text-align: left; }
-	.dot { width: 28px; height: 28px; border-radius: 50%; flex: none; }
 	.nm { font-weight: 700; font-size: 17px; flex: 1; }
 	.un { color: var(--muted); font-size: 14px; }
 	.tag { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; background: var(--mustard); padding: 2px 6px; border-radius: 4px; margin-left: 6px; vertical-align: 2px; }

@@ -61,6 +61,7 @@ export function toListSummary(
 		ownerId: owner.id,
 		displayName: owner.displayName,
 		avatarColor: owner.avatarColor,
+		avatarPhoto: owner.avatarPhoto,
 		isManaged: owner.isManaged,
 		managedByMe: managerIds.includes(viewer.id),
 		wantCount: open.length

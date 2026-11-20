@@ -2,10 +2,10 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import Icon from './Icon.svelte';
+	import Avatar from './Avatar.svelte';
 	import { tabs } from '$lib/nav';
 
-	let { me, countdown }: { me: { displayName: string; avatarColor: string }; countdown: { season: number; daysToGo: number } } = $props();
-	const initials = (n: string) => n.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
+	let { me, countdown }: { me: { displayName: string; avatarColor: string; avatarPhoto: string | null }; countdown: { season: number; daysToGo: number } } = $props();
 
 	/** 1–4 jump between the main sections, unless someone is typing. */
 	function onkey(e: KeyboardEvent) {
@@ -34,7 +34,7 @@
 			{#if countdown.daysToGo === 0}<b>Merry Christmas!</b>{:else}<b>{countdown.daysToGo} {countdown.daysToGo === 1 ? 'day' : 'days'}</b><span>to go</span>{/if}
 		</div>
 	{/if}
-	<a class="who" href="/me"><span class="av" style:background={me.avatarColor}>{initials(me.displayName)}</span><span><b>{me.displayName}</b><span>Account and notifications</span></span></a>
+	<a class="who" href="/me"><Avatar name={me.displayName} color={me.avatarColor} photo={me.avatarPhoto} /><span><b>{me.displayName}</b><span>Account and notifications</span></span></a>
 </aside>
 
 <style>
@@ -58,7 +58,6 @@
 	.days span { font-size: 14px; font-weight: 700; }
 	.who { margin-top: auto; display: flex; align-items: center; gap: 10px; padding: 8px 6px; border-radius: 12px; color: #fff; text-decoration: none; min-height: 56px; }
 	.who:hover { background: rgba(255, 255, 255, 0.14); }
-	.av { width: 40px; height: 40px; border-radius: 50%; color: var(--ink); font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 15px; flex: none; }
 	.who b { display: block; font-size: 15px; line-height: 1.15; }
 	.who span span { font-size: 13px; color: var(--pink); display: block; line-height: 1.2; }
 </style>

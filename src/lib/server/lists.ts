@@ -86,7 +86,7 @@ export function getListForViewer(viewer: User, ownerId: number, season = current
 		.orderBy(asc(items.sortOrder)).all().sort(sortItems);
 	const cl = claimsFor(rows.map((r) => r.id));
 	return {
-		owner: { id: owner.id, displayName: owner.displayName, isManaged: owner.isManaged, avatarColor: owner.avatarColor },
+		owner: { id: owner.id, displayName: owner.displayName, isManaged: owner.isManaged, avatarColor: owner.avatarColor, avatarPhoto: owner.avatarPhoto },
 		managerNames: managerIds.length ? getDb().select({ n: users.displayName }).from(users).where(inArray(users.id, managerIds)).all().map((r) => r.n) : [],
 		season,
 		items: rows.map((r) => toItemView(viewer, ownerId, r, cl.get(r.id) ?? null)),

@@ -12,6 +12,8 @@ export const users = sqliteTable('users', {
 	isManaged: integer('is_managed', { mode: 'boolean' }).notNull().default(false),
 	isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
 	avatarColor: text('avatar_color').notNull().default('#F2B705'),
+	/** File name of an uploaded profile photo in the avatars folder; shown instead of initials. */
+	avatarPhoto: text('avatar_photo'),
 	birthYear: integer('birth_year'),
 	createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull().default(now)
 });

@@ -4,8 +4,9 @@ import { randomBytes } from 'node:crypto';
 import { getDb } from './db';
 import { managers, users, type User } from './db/schema';
 import { hashPassword, invalidateUserSessions, MIN_PASSWORD } from './auth';
+import { AVATAR_COLORS } from '../avatar';
 
-const COLORS = ['#F2B705', '#F4A6B4', '#A9D3BE', '#BFD0EE', '#F6C79C', '#D9C7F0', '#B9E3E8'];
+const COLORS = AVATAR_COLORS;
 const USERNAME = /^[a-z0-9._-]{2,32}$/;
 
 export function requireAdmin(viewer: User) {
@@ -23,7 +24,7 @@ export function listPeople() {
 	const links = db.select().from(managers).all();
 	return all.map((u) => ({
 		id: u.id, username: u.username, displayName: u.displayName, isAdmin: u.isAdmin, isManaged: u.isManaged, isActive: u.isActive,
-		avatarColor: u.avatarColor, managerIds: links.filter((l) => l.kidId === u.id).map((l) => l.managerId)
+		avatarColor: u.avatarColor, avatarPhoto: u.avatarPhoto, managerIds: links.filter((l) => l.kidId === u.id).map((l) => l.managerId)
 	}));
 }
 

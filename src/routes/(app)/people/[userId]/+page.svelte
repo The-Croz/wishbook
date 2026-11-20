@@ -3,6 +3,7 @@
 	import GiftGrid from '$lib/components/GiftGrid.svelte';
 	import SortMenu from '$lib/components/SortMenu.svelte';
 	import ArrangeList from '$lib/components/ArrangeList.svelte';
+	import ProfilePicker from '$lib/components/ProfilePicker.svelte';
 	import { defaultSort, sortGifts, type SortMode } from '$lib/sortGifts';
 	let { data } = $props();
 	let filter = $state<'all' | 'open' | 'under50'>('all');
@@ -10,6 +11,7 @@
 	const customOrder = $derived(data.customOrder);
 	let sort = $derived<SortMode>(defaultSort(customOrder));
 	let arranging = $state(false);
+	let picking = $state(false);
 	const shown = $derived(
 		sortGifts(data.items, sort).filter((i) => filter === 'all' || (filter === 'open' ? !i.claim : i.priceCents != null && i.priceCents < 5000))
 	);
@@ -29,6 +31,11 @@
 <main class="pg">
 	{#if data.canEdit && data.owner.isManaged}
 		<p class="note">You manage {name}’s list and shop for {name}, so you see claims here. {name} never logs in.</p>
+		{#if picking}
+			<div class="pick"><ProfilePicker userId={data.owner.id} {name} color={data.owner.avatarColor} photo={data.owner.avatarPhoto} /><button class="arr done" onclick={() => (picking = false)}>Done</button></div>
+		{:else}
+			<button class="arr pickbtn" onclick={() => (picking = true)}>Change {name}’s picture</button>
+		{/if}
 	{/if}
 	{#if arranging}
 		<ArrangeList items={sortGifts(data.items, defaultSort(data.customOrder))} customOrder={data.customOrder} done={() => (arranging = false)} />
@@ -52,6 +59,9 @@
 {#if data.canEdit}<a class="fab mob" href="/add?for={data.owner.id}"><Icon name="plus" size={20} />Add for {name}</a>{/if}
 
 <style>
+	.pick { margin-bottom: 18px; }
+	.pickbtn { margin-bottom: 14px; }
+	.done { margin-top: 14px; }
 	.bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
 	.arr { min-height: 40px; padding: 0 14px; border-radius: 99px; border: 2px solid var(--ink); font-weight: 700; font-size: 14px; background: #fff; color: var(--ink); }
 	.back { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 16px; color: var(--on-hdr); text-decoration: none; min-height: 44px; }

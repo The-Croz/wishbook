@@ -3,6 +3,7 @@
 	import GiftGrid from '$lib/components/GiftGrid.svelte';
 	import SortMenu from '$lib/components/SortMenu.svelte';
 	import ArrangeList from '$lib/components/ArrangeList.svelte';
+	import Avatar from '$lib/components/Avatar.svelte';
 	import { defaultSort, sortGifts, type SortMode } from '$lib/sortGifts';
 	let { data } = $props();
 	// Follows the list's default until the viewer picks another order.
@@ -10,13 +11,12 @@
 	let sort = $derived<SortMode>(defaultSort(customOrder));
 	let arranging = $state(false);
 	const shown = $derived(sortGifts(data.items, sort));
-	const initials = (n: string) => n.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
 </script>
 
 <svelte:head><title>My list · Wishbook</title></svelte:head>
 
 <header class="hdr">
-	<div class="top mob"><span class="wm"><img src="/brand/stack.svg" alt="" width="26" height="26" />Wishbook</span><a class="av" href="/me" style:background={data.me.avatarColor} aria-label="Me">{initials(data.me.displayName)}</a></div>
+	<div class="top mob"><span class="wm"><img src="/brand/stack.svg" alt="" width="26" height="26" />Wishbook</span><a class="av" href="/me" aria-label="Me"><Avatar name={data.me.displayName} color={data.me.avatarColor} photo={data.me.avatarPhoto} /></a></div>
 	<h1>My wishlist</h1>
 	<p class="meta">{data.items.length} {data.items.length === 1 ? 'want' : 'wants'} · Christmas {data.season}</p>
 	<a class="btn ink hbtn" href="/add"><Icon name="plus" size={20} />Add a gift</a>
@@ -44,7 +44,7 @@
 	.arr { min-height: 40px; padding: 0 14px; border-radius: 99px; border: 2px solid var(--ink); font-weight: 700; font-size: 14px; background: #fff; color: var(--ink); }
 	.top { display: flex; justify-content: space-between; align-items: center; }
 	.wm { font-family: var(--display); font-size: 20px; display: flex; align-items: center; gap: 8px; }
-	.av { width: 40px; height: 40px; border-radius: 50%; color: var(--ink); font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 15px; text-decoration: none; }
+	.av { display: flex; border-radius: 50%; }
 	.note :global(svg) { flex: none; color: var(--muted); margin-top: 1px; }
 	.fab { position: fixed; right: max(16px, calc(50% - 304px)); bottom: calc(var(--tabbar) + 16px + env(safe-area-inset-bottom)); z-index: 15; height: 56px; padding: 0 22px 0 18px; border-radius: 28px; background: var(--ink); color: #fff; font-weight: 700; font-size: 17px; display: flex; align-items: center; gap: 8px; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25); text-decoration: none; }
 </style>
