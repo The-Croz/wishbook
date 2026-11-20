@@ -1,10 +1,17 @@
 <script lang="ts">
 	import Icon from '$lib/components/Icon.svelte';
 	import GiftGrid from '$lib/components/GiftGrid.svelte';
+	import SortMenu from '$lib/components/SortMenu.svelte';
+	import ArrangeList from '$lib/components/ArrangeList.svelte';
+	import { defaultSort, sortGifts, type SortMode } from '$lib/sortGifts';
 	let { data } = $props();
 	let filter = $state<'all' | 'open' | 'under50'>('all');
+	// Follows the list's default until the viewer picks another order.
+	const customOrder = $derived(data.customOrder);
+	let sort = $derived<SortMode>(defaultSort(customOrder));
+	let arranging = $state(false);
 	const shown = $derived(
-		data.items.filter((i) => filter === 'all' || (filter === 'open' ? !i.claim : i.priceCents != null && i.priceCents < 5000))
+		sortGifts(data.items, sort).filter((i) => filter === 'all' || (filter === 'open' ? !i.claim : i.priceCents != null && i.priceCents < 5000))
 	);
 	const claimed = $derived(data.items.filter((i) => i.claim).length);
 	const name = $derived(data.owner.displayName);
@@ -23,7 +30,13 @@
 	{#if data.canEdit && data.owner.isManaged}
 		<p class="note">You manage {name}’s list and shop for {name}, so you see claims here. {name} never logs in.</p>
 	{/if}
-	{#if data.items.length > 0}
+	{#if arranging}
+		<ArrangeList items={sortGifts(data.items, defaultSort(data.customOrder))} customOrder={data.customOrder} done={() => (arranging = false)} />
+	{:else if data.items.length > 0}
+		<div class="bar">
+			<SortMenu bind:value={sort} customOrder={data.customOrder} />
+			{#if data.canEdit && data.items.length > 1}<button class="arr" onclick={() => (arranging = true)}>Arrange {name}’s list</button>{/if}
+		</div>
 		<div class="chips" role="group" aria-label="Filter gifts">
 			<button class:on={filter === 'all'} onclick={() => (filter = 'all')} aria-pressed={filter === 'all'}>All</button>
 			<button class:on={filter === 'open'} onclick={() => (filter = 'open')} aria-pressed={filter === 'open'}>Still open</button>
@@ -39,6 +52,8 @@
 {#if data.canEdit}<a class="fab mob" href="/add?for={data.owner.id}"><Icon name="plus" size={20} />Add for {name}</a>{/if}
 
 <style>
+	.bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+	.arr { min-height: 40px; padding: 0 14px; border-radius: 99px; border: 2px solid var(--ink); font-weight: 700; font-size: 14px; background: #fff; color: var(--ink); }
 	.back { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 16px; color: var(--on-hdr); text-decoration: none; min-height: 44px; }
 	.chips { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
 	.chips button { min-height: 40px; padding: 0 14px; border-radius: 99px; border: 2px solid var(--ink); font-weight: 700; font-size: 14px; background: #fff; }

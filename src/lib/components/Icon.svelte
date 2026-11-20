@@ -1,5 +1,5 @@
 <script lang="ts">
-	type Name = 'book' | 'star' | 'gift' | 'user' | 'plus' | 'chev' | 'back' | 'eye' | 'link' | 'ok' | 'clock' | 'edit' | 'trash' | 'ext';
+	type Name = 'book' | 'star' | 'gift' | 'user' | 'plus' | 'chev' | 'back' | 'eye' | 'link' | 'ok' | 'clock' | 'edit' | 'trash' | 'ext' | 'up' | 'down';
 	let { name, size = 24 }: { name: Name; size?: number } = $props();
 	const P: Record<Name, string> = {
 		book: 'M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2zM4 21V5M8 7h7',
@@ -15,7 +15,9 @@
 		clock: 'M3 12a9 9 0 1018 0 9 9 0 10-18 0M12 7v5l3 2',
 		edit: 'M4 20h4L19 9l-4-4L4 16zM14 6l4 4',
 		trash: 'M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3',
-		ext: 'M14 4h6v6M20 4l-9 9M18 14v6H4V6h6'
+		ext: 'M14 4h6v6M20 4l-9 9M18 14v6H4V6h6',
+		up: 'M6 15l6-6 6 6',
+		down: 'M6 9l6 6 6-6'
 	};
 </script>
 

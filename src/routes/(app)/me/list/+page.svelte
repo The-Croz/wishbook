@@ -1,7 +1,15 @@
 <script lang="ts">
 	import Icon from '$lib/components/Icon.svelte';
 	import GiftGrid from '$lib/components/GiftGrid.svelte';
+	import SortMenu from '$lib/components/SortMenu.svelte';
+	import ArrangeList from '$lib/components/ArrangeList.svelte';
+	import { defaultSort, sortGifts, type SortMode } from '$lib/sortGifts';
 	let { data } = $props();
+	// Follows the list's default until the viewer picks another order.
+	const customOrder = $derived(data.customOrder);
+	let sort = $derived<SortMode>(defaultSort(customOrder));
+	let arranging = $state(false);
+	const shown = $derived(sortGifts(data.items, sort));
 	const initials = (n: string) => n.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
 </script>
 
@@ -16,8 +24,14 @@
 
 <main class="pg">
 	<p class="note"><Icon name="eye" size={20} /><span>Claims on your list are hidden from you, so the surprise stays a surprise.</span></p>
-	{#if data.items.length}
-		<GiftGrid items={data.items} />
+	{#if arranging}
+		<ArrangeList items={sortGifts(data.items, defaultSort(data.customOrder))} customOrder={data.customOrder} done={() => (arranging = false)} />
+	{:else if data.items.length}
+		<div class="bar">
+			<SortMenu bind:value={sort} customOrder={data.customOrder} ownList />
+			{#if data.items.length > 1}<button class="arr" onclick={() => (arranging = true)}>Arrange my list</button>{/if}
+		</div>
+		<GiftGrid items={shown} />
 	{:else}
 		<div class="empty"><b>Your list is empty</b>Paste a link from Amazon or any store to add your first gift.</div>
 	{/if}
@@ -26,6 +40,8 @@
 <a class="fab mob" href="/add"><Icon name="plus" size={20} />Add a gift</a>
 
 <style>
+	.bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+	.arr { min-height: 40px; padding: 0 14px; border-radius: 99px; border: 2px solid var(--ink); font-weight: 700; font-size: 14px; background: #fff; color: var(--ink); }
 	.top { display: flex; justify-content: space-between; align-items: center; }
 	.wm { font-family: var(--display); font-size: 20px; display: flex; align-items: center; gap: 8px; }
 	.av { width: 40px; height: 40px; border-radius: 50%; color: var(--ink); font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 15px; text-decoration: none; }

@@ -90,6 +90,7 @@ export function getListForViewer(viewer: User, ownerId: number, season = current
 		managerNames: managerIds.length ? getDb().select({ n: users.displayName }).from(users).where(inArray(users.id, managerIds)).all().map((r) => r.n) : [],
 		season,
 		items: rows.map((r) => toItemView(viewer, ownerId, r, cl.get(r.id) ?? null)),
+		customOrder: list.customOrder,
 		canEdit: canEditList(viewer, ownerId, managerIds),
 		showClaims: canSeeClaims(viewer, ownerId)
 	};
@@ -144,9 +145,36 @@ export function createItem(viewer: User, ownerId: number, input: ItemInput, seas
 		listId: list.id,
 		createdBy: viewer.id,
 		priceCheckedAt: data.priceCents != null && data.scrapeStatus === 'ok' ? new Date() : null,
-		sortOrder: Date.now() % 2_000_000_000
+		sortOrder: list.customOrder ? topSortOrder(list.id) : Date.now() % 2_000_000_000
 	}).returning().all();
 	return row;
+}
+
+/** A sort position above everything on a hand-arranged list, so new gifts show up first. */
+function topSortOrder(listId: number): number {
+	const first = getDb().select({ s: items.sortOrder }).from(items).where(eq(items.listId, listId)).orderBy(asc(items.sortOrder)).limit(1).get();
+	return (first?.s ?? 0) - 1;
+}
+
+/** Saves the owner's hand-made order (ids top to bottom) and makes it the list's default view. */
+export function reorderList(viewer: User, ownerId: number, ids: number[], season = currentSeason(new Date())) {
+	requireEditor(viewer, ownerId);
+	const list = ensureSeasonList(ownerId, season);
+	const db = getDb();
+	const mine = new Set(db.select({ id: items.id }).from(items).where(and(eq(items.listId, list.id), isNull(items.deletedAt))).all().map((r) => r.id));
+	const order = ids.filter((id) => mine.has(id));
+	if (order.length !== new Set(order).size) error(400, 'That order has a gift twice');
+	db.transaction((tx) => {
+		order.forEach((id, n) => tx.update(items).set({ sortOrder: n }).where(eq(items.id, id)).run());
+		tx.update(lists).set({ customOrder: true }).where(eq(lists.id, list.id)).run();
+	});
+}
+
+/** Drops the hand-made order; the list goes back to newest first. */
+export function resetListOrder(viewer: User, ownerId: number, season = currentSeason(new Date())) {
+	requireEditor(viewer, ownerId);
+	const list = ensureSeasonList(ownerId, season);
+	getDb().update(lists).set({ customOrder: false }).where(eq(lists.id, list.id)).run();
 }
 
 export function updateItem(viewer: User, itemId: number, patch: Partial<ItemInput>): Item {

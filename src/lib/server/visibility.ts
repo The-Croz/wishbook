@@ -33,7 +33,9 @@ export function toItemView(viewer: User, ownerId: number, item: Item, claim: Cla
 		priority: item.priority,
 		status: item.status,
 		scrapeStatus: item.scrapeStatus,
-		deleted: item.deletedAt != null
+		deleted: item.deletedAt != null,
+		createdAt: item.createdAt.getTime(),
+		sortOrder: item.sortOrder
 	};
 	if (claim && canSeeClaims(viewer, ownerId)) {
 		view.claim = {

@@ -36,7 +36,9 @@ export const lists = sqliteTable(
 	{
 		id: integer('id').primaryKey({ autoIncrement: true }),
 		ownerId: integer('owner_id').notNull().references(() => users.id),
-		season: integer('season').notNull()
+		season: integer('season').notNull(),
+		/** The owner arranged this list by hand; their order becomes the default view. */
+		customOrder: integer('custom_order', { mode: 'boolean' }).notNull().default(false)
 	},
 	(t) => [uniqueIndex('lists_owner_season').on(t.ownerId, t.season)]
 );
