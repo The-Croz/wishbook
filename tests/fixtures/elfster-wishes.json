@@ -1,0 +1,7 @@
+[
+ {"wishId":"w1","wishlistId":"L1","title":"Sourdough starter warmer","description":"","sourceUrl":"https://www.amazon.com/dp/B0TEST0001?ref=cm_sw_r_apin_dp_X&social_share=x","imageUrl":"https://cdn.example/img1.jpg","price":{"currency":"USD","amount":179},"isMostWanted":true,"quantity":1,"quantityPurchased":1,"quantityReceived":0,"sortPriority":0},
+ {"wishId":"w2","wishlistId":"L1","title":"  Gardening gloves, size S ","description":"Green if they have it","sourceUrl":"https://www.etsy.com/listing/123/gloves?ref=shop","imageUrl":"","price":{"currency":"USD","amount":24.5},"isMostWanted":false,"quantity":1,"quantityPurchased":0,"quantityReceived":0,"sortPriority":1},
+ {"wishId":"w3","wishlistId":"L1","title":"Gift card to the bookstore","description":"","sourceUrl":"","imageUrl":"","price":null,"isMostWanted":false,"quantity":1,"quantityPurchased":0,"quantityReceived":0,"sortPriority":2},
+ {"wishId":"w4","wishlistId":"L1","title":"Already got this one","description":"","sourceUrl":"https://www.amazon.com/dp/B0TEST0004","imageUrl":"https://cdn.example/img4.jpg","price":{"currency":"USD","amount":30},"isMostWanted":false,"quantity":1,"quantityPurchased":1,"quantityReceived":1,"sortPriority":3},
+ {"wishId":"w5","wishlistId":"L1","title":"Sourdough starter warmer (dupe)","description":"","sourceUrl":"https://www.amazon.com/Brod-Taylor/dp/B0TEST0001/ref=x","imageUrl":"","price":{"currency":"USD","amount":179},"isMostWanted":false,"quantity":1,"quantityPurchased":0,"quantityReceived":0,"sortPriority":4}
+]

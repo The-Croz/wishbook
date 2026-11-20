@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { canonicalize, extractUrl } from '../../src/lib/server/scrape/extractUrl';
 import { parseHtml, scrape } from '../../src/lib/server/scrape';
+import { storeFromHost } from '../../src/lib/server/scrape/generic';
 
 const fx = (n: string) => readFileSync(new URL(`../fixtures/${n}`, import.meta.url), 'utf8');
 
@@ -63,8 +64,14 @@ describe('parseHtml: other stores', () => {
 		}));
 	it('falls back to the page title', () =>
 		expect(parseHtml('https://crafts.example/x', fx('no-metadata.html'))).toMatchObject({
-			status: 'ok', title: "Handmade Ornament Set | Grandma's Craft Shop", store: 'Crafts.example'
+			status: 'ok', title: "Handmade Ornament Set | Grandma's Craft Shop", store: 'Crafts'
 		}));
+});
+
+describe('storeFromHost', () => {
+	it('drops www and the domain ending', () => expect(storeFromHost('www.zappos.com')).toBe('Zappos'));
+	it('keeps known names', () => expect(storeFromHost('www.bestbuy.com')).toBe('Best Buy'));
+	it('handles country endings', () => expect(storeFromHost('shop.madebymary.co.uk')).toBe('Madebymary'));
 });
 
 describe('scrape', () => {

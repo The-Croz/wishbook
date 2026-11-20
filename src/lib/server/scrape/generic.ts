@@ -48,7 +48,11 @@ const absolute = (src: string | undefined, base: string) => {
 export function storeFromHost(host: string): string {
 	const h = host.replace(/^www\./, '');
 	const known: Record<string, string> = { 'target.com': 'Target', 'walmart.com': 'Walmart', 'etsy.com': 'Etsy', 'rei.com': 'REI', 'bestbuy.com': 'Best Buy', 'lego.com': 'LEGO', 'kohls.com': "Kohl's", 'costco.com': 'Costco' };
-	return known[h] ?? h.charAt(0).toUpperCase() + h.slice(1);
+	if (known[h]) return known[h];
+	const parts = h.split('.');
+	const tail = parts.length > 2 && parts.at(-2)!.length <= 3 ? 3 : 2;
+	const name = parts.length >= tail ? parts[parts.length - tail] : parts[0];
+	return name.charAt(0).toUpperCase() + name.slice(1);
 }
 
 export function parseGeneric(url: string, $: CheerioAPI): ScrapeResult {
