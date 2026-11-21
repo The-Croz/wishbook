@@ -6,13 +6,13 @@ const u = (id: number, name: string, extra: Partial<User> = {}): User => ({
 	id, username: name.toLowerCase(), displayName: name, passwordHash: null, isAdmin: false, isManaged: false,
 	isActive: true, avatarColor: '#F2B705', avatarPhoto: null, birthYear: null, createdAt: new Date(), ...extra
 });
-const josh = u(1, 'Josh'), kate = u(2, 'Kate'), milo = u(3, 'Milo', { isManaged: true });
+const josh = u(1, 'Josh'), kate = u(2, 'Kate'), milo = u(3, 'Milo', { isManaged: true }), june = u(4, 'June');
 const item = (id: number, extra: Partial<Item> = {}): Item => ({
 	id, listId: 1, title: 'Socks', url: null, imageUrl: null, store: null, priceCents: 2400, listPriceCents: null,
-	currency: 'USD', priceCheckedAt: null, notes: '', priority: 'want', status: 'active', sortOrder: 0, createdBy: 1,
+	currency: 'USD', priceCheckedAt: null, notes: '', priority: 'want', quantity: 1, status: 'active', sortOrder: 0, createdBy: 1,
 	createdAt: new Date(), updatedAt: new Date(), deletedAt: null, contentChangedAt: null, announcedAt: null, scrapeStatus: 'manual', ...extra
 });
-const claimBy = (who: User, itemId = 1) => ({ itemId, claimerId: who.id, claimerName: who.displayName, createdAt: new Date(), purchased: false });
+const claimBy = (who: User, itemId = 1) => ({ itemId, claimerId: who.id, claimerName: who.displayName, quantity: 1, createdAt: new Date(), purchased: false });
 
 describe('canSeeClaims', () => {
 	it('hides claims from the owner', () => expect(canSeeClaims(josh, josh.id)).toBe(false));
@@ -28,19 +28,19 @@ describe('canEditList', () => {
 });
 
 describe('toItemView', () => {
-	it('omits the claim key entirely for the owner', () => {
-		const v = toItemView(josh, josh.id, item(1), claimBy(kate));
-		expect('claim' in v).toBe(false);
+	it('omits the claims key entirely for the owner', () => {
+		const v = toItemView(josh, josh.id, item(1), [claimBy(kate)]);
+		expect('claims' in v).toBe(false);
 		expect(JSON.stringify(v)).not.toContain('Kate');
 	});
 	it('marks my own claim', () => {
-		expect(toItemView(kate, josh.id, item(1), claimBy(kate)).claim).toMatchObject({ isMine: true, claimerName: 'Kate' });
+		expect(toItemView(kate, josh.id, item(1), [claimBy(kate)]).claims?.[0]).toMatchObject({ isMine: true, claimerName: 'Kate' });
 	});
 	it('shows someone else’s claim to a giver', () => {
-		expect(toItemView(milo, josh.id, item(1), claimBy(kate)).claim).toMatchObject({ isMine: false, claimerName: 'Kate' });
+		expect(toItemView(milo, josh.id, item(1), [claimBy(kate)]).claims?.[0]).toMatchObject({ isMine: false, claimerName: 'Kate' });
 	});
-	it('omits the claim key when nobody has claimed it', () => {
-		expect('claim' in toItemView(kate, josh.id, item(1), null)).toBe(false);
+	it('gives a giver an empty claims list when nobody has claimed it', () => {
+		expect(toItemView(kate, josh.id, item(1), []).claims).toEqual([]);
 	});
 });
 
@@ -54,6 +54,12 @@ describe('toListSummary', () => {
 	});
 	it('counts claims for a giver', () => {
 		expect(toListSummary(kate, josh, items, claims, [])).toMatchObject({ wantCount: 2, claimedCount: 1 });
+	});
+	it('counts a gift as claimed only once every wanted one is spoken for', () => {
+		const its = [item(1, { quantity: 3 }), item(2, { quantity: 2 })];
+		const cl = [{ ...claimBy(kate, 1), quantity: 2 }, { ...claimBy(kate, 2), quantity: 1 }, { ...claimBy(milo, 2), quantity: 1 }];
+		expect(toListSummary(josh, josh, its, cl, [])).not.toHaveProperty('claimedCount');
+		expect(toListSummary(june, josh, its, cl, []).claimedCount).toBe(1);
 	});
 	it('flags kid lists the viewer manages', () => {
 		expect(toListSummary(josh, milo, [], [], [josh.id]).managedByMe).toBe(true);

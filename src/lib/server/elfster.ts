@@ -16,6 +16,7 @@ export type ElfsterWish = {
 	imageUrl?: string;
 	price?: { currency: string; amount: number } | null;
 	isMostWanted?: boolean;
+	quantity?: number;
 	quantityReceived?: number;
 	sortPriority?: number;
 };
@@ -30,6 +31,7 @@ export type ImportRow = {
 	currency: string;
 	notes: string;
 	priority: Priority;
+	quantity?: number;
 	selected: boolean;
 	reason?: string;
 };
@@ -88,6 +90,7 @@ export function toImportRows(wishes: ElfsterWish[]): ImportRow[] {
 				currency: w.price?.currency ?? 'USD',
 				notes: (w.description ?? '').trim().slice(0, 1000),
 				priority: w.isMostWanted ? 'most' : 'want',
+				quantity: Number.isInteger(w.quantity) && w.quantity! > 1 ? Math.min(w.quantity!, 99) : 1,
 				selected: true
 			};
 			if ((w.quantityReceived ?? 0) > 0) Object.assign(row, { selected: false, reason: 'Already received on Elfster' });
@@ -112,7 +115,7 @@ export function importWishes(admin: User, ownerId: number, rows: ImportRow[], se
 			if (r.url && existing.has(r.url)) { skipped++; return; }
 			tx.insert(items).values({
 				listId: list.id, title: r.title, url: r.url, imageUrl: r.imageUrl, store: r.store, priceCents: r.priceCents,
-				currency: r.currency, notes: r.notes, priority: r.priority, createdBy: admin.id, sortOrder: n,
+				currency: r.currency, notes: r.notes, priority: r.priority, quantity: r.quantity ?? 1, createdBy: admin.id, sortOrder: n,
 				scrapeStatus: 'manual'
 			}).run();
 			if (r.url) existing.add(r.url);

@@ -36,6 +36,13 @@
       "when": 1795207309843,
       "tag": "0004_avatar_photo",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1795292944867,
+      "tag": "0005_gift_quantity",
+      "breakpoints": true
     }
   ]
 }

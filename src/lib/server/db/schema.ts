@@ -58,6 +58,8 @@ export const items = sqliteTable('items', {
 	priceCheckedAt: integer('price_checked_at', { mode: 'timestamp_ms' }),
 	notes: text('notes').notNull().default(''),
 	priority: text('priority', { enum: ['nice', 'want', 'most'] }).notNull().default('want'),
+	/** How many the owner wants. Givers can split it, each claiming some. */
+	quantity: integer('quantity').notNull().default(1),
 	status: text('status', { enum: ['active', 'received'] }).notNull().default('active'),
 	sortOrder: integer('sort_order').notNull().default(0),
 	createdBy: integer('created_by').notNull().references(() => users.id),
@@ -69,12 +71,18 @@ export const items = sqliteTable('items', {
 	scrapeStatus: text('scrape_status', { enum: ['ok', 'blocked', 'failed', 'manual'] }).notNull().default('manual')
 });
 
-export const claims = sqliteTable('claims', {
-	itemId: integer('item_id').primaryKey().references(() => items.id),
-	claimerId: integer('claimer_id').notNull().references(() => users.id),
-	createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull().default(now),
-	purchased: integer('purchased', { mode: 'boolean' }).notNull().default(false)
-});
+/** One row per person buying a gift; quantity is how many of the gift's wanted count they're covering. */
+export const claims = sqliteTable(
+	'claims',
+	{
+		itemId: integer('item_id').notNull().references(() => items.id),
+		claimerId: integer('claimer_id').notNull().references(() => users.id),
+		quantity: integer('quantity').notNull().default(1),
+		createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull().default(now),
+		purchased: integer('purchased', { mode: 'boolean' }).notNull().default(false)
+	},
+	(t) => [primaryKey({ columns: [t.itemId, t.claimerId] })]
+);
 
 export const priceHistory = sqliteTable('price_history', {
 	id: integer('id').primaryKey({ autoIncrement: true }),

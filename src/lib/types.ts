@@ -13,14 +13,19 @@ export type ItemView = {
 	priceCheckedAt: number | null;
 	notes: string;
 	priority: Item['priority'];
+	/** How many the owner wants. */
+	quantity: number;
 	status: Item['status'];
 	scrapeStatus: Item['scrapeStatus'];
 	deleted: boolean;
 	createdAt: number;
 	sortOrder: number;
-	/** Only present for givers. changedSinceClaim: the owner changed name, link, or note after it was claimed. */
-	claim?: { claimerId: number; claimerName: string; isMine: boolean; purchased: boolean; changedSinceClaim: boolean };
+	/** Only present for givers: everyone buying some of this gift. */
+	claims?: ClaimView[];
 };
+
+/** One person's share of a gift. changedSinceClaim: the owner changed name, link, or note after they claimed it. */
+export type ClaimView = { claimerId: number; claimerName: string; isMine: boolean; quantity: number; purchased: boolean; changedSinceClaim: boolean };
 
 export type ListSummary = {
 	ownerId: number;

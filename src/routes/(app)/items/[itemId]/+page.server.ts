@@ -13,10 +13,18 @@ const idOf = (p: string) => {
 export const load: PageServerLoad = ({ locals, params }) => ({ ...getItemForViewer(locals.user!, idOf(params.itemId)), receivedTime: showReceived(new Date()) });
 
 export const actions: Actions = {
-	claim: ({ locals, params }) => {
-		const r = claimItem(locals.user!, idOf(params.itemId));
+	claim: async ({ locals, params, request }) => {
+		const raw = (await request.formData()).get('quantity');
+		const r = claimItem(locals.user!, idOf(params.itemId), raw == null || raw === '' ? 1 : Number(raw));
 		if (r.ok) return { claimed: true };
-		const message = r.reason === 'taken' ? `${r.byName} already has this one.` : r.reason === 'removed' ? 'This gift was removed from the list.' : 'You can’t claim gifts on your own list.';
+		const message =
+			r.reason === 'taken'
+				? r.left === 0
+					? r.byName ? `${r.byName} already has this one.` : 'Someone just took the rest of these.'
+					: `Only ${r.left} left now. Someone else claimed some.`
+				: r.reason === 'removed' ? 'This gift was removed from the list.'
+				: r.reason === 'bad-quantity' ? 'Pick how many you’re buying.'
+				: 'You can’t claim gifts on your own list.';
 		return fail(409, { message });
 	},
 	unclaim: ({ locals, params }) => {

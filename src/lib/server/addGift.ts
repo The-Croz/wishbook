@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import type { Item, User } from './db/schema';
-import { createItem, updateItem, type ItemInput, type Priority } from './lists';
+import { createItem, MAX_QUANTITY, updateItem, type ItemInput, type Priority } from './lists';
 import { parsePrice } from '$lib/money';
 import { storeFromHost } from './scrape/generic';
 import { isAmazon, placeholderTitle } from './scrape/extractUrl';
@@ -35,6 +35,9 @@ export function saveGift(viewer: User, target: { ownerId: number; editId?: numbe
 	const listCents = Number(s('listPriceCents')) || null;
 	const status = s('scrapeStatus') as Item['scrapeStatus'];
 	const priority = (['nice', 'want', 'most'].includes(s('priority')) ? s('priority') : 'want') as Priority;
+	const qtyText = s('quantity').trim();
+	const quantity = qtyText ? Number(qtyText) : 1;
+	if (!Number.isInteger(quantity) || quantity < 1 || quantity > MAX_QUANTITY) error(400, `How many should be a whole number from 1 to ${MAX_QUANTITY}`);
 	const input: ItemInput = {
 		title,
 		url,
@@ -45,6 +48,7 @@ export function saveGift(viewer: User, target: { ownerId: number; editId?: numbe
 		currency: price?.currency ?? (s('currency') || 'USD'),
 		notes: s('notes'),
 		priority,
+		quantity,
 		scrapeStatus: STATUSES.includes(status) ? status : 'manual'
 	};
 	return target.editId ? updateItem(viewer, target.editId, input) : createItem(viewer, target.ownerId, input);

@@ -41,9 +41,9 @@ describe('what the owner sees', () => {
 		getDb().insert(claims).values({ itemId: i.id, claimerId: kate.id }).run();
 		const list = getListForViewer(josh, josh.id, 2026);
 		expect(list.showClaims).toBe(false);
-		expect(list.items.every((x) => !('claim' in x))).toBe(true);
-		expect('claim' in getItemForViewer(josh, i.id).item).toBe(false);
-		expect(getItemForViewer(kate, i.id).item.claim?.claimerName).toBe('Kate');
+		expect(list.items.every((x) => !('claims' in x))).toBe(true);
+		expect('claims' in getItemForViewer(josh, i.id).item).toBe(false);
+		expect(getItemForViewer(kate, i.id).item.claims?.[0]?.claimerName).toBe('Kate');
 	});
 	it('excludes deleted items and puts most-wanted first', () => {
 		createItem(josh, josh.id, { title: 'A' }, 2026);

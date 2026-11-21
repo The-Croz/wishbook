@@ -9,8 +9,8 @@ export const load: PageServerLoad = ({ locals }) => {
 	const mine = getMyClaims(locals.user!, season).filter((c) => !c.removed);
 	const getting = {
 		count: mine.length,
-		total: mine.reduce((s, c) => s + (c.priceCents ?? 0), 0),
-		recent: mine.slice(0, 3).map((c) => ({ id: c.id, title: c.title, imageUrl: c.imageUrl, store: c.store, ownerName: c.ownerName, priceCents: c.priceCents, currency: c.currency, purchased: Boolean(c.claim?.purchased) }))
+		total: mine.reduce((s, c) => s + (c.priceCents ?? 0) * c.mine.quantity, 0),
+		recent: mine.slice(0, 3).map((c) => ({ id: c.id, title: c.title, imageUrl: c.imageUrl, store: c.store, ownerName: c.ownerName, priceCents: c.priceCents, currency: c.currency, purchased: c.mine.purchased, quantity: c.mine.quantity }))
 	};
 	return { family: getFamily(locals.user!, season), season, daysToGo, getting };
 };

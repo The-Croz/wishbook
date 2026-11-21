@@ -4,9 +4,18 @@
 	import GiftArt from './GiftArt.svelte';
 	import MarkerLoop from './MarkerLoop.svelte';
 	import Check from './Check.svelte';
+	import { claimedCount, isFullyClaimed, myClaim } from '$lib/claimCount';
 	let { item, n }: { item: ItemView; n: number } = $props();
-	const claimed = $derived(!!item.claim);
-	const label = $derived(item.claim ? (item.claim.isMine ? 'You have it' : `${item.claim.claimerName} has it`) : '');
+	const claimed = $derived(isFullyClaimed(item));
+	const taken = $derived(claimedCount(item));
+	const mine = $derived(myClaim(item));
+	const label = $derived.by(() => {
+		const cl = item.claims ?? [];
+		if (!taken) return '';
+		if (item.quantity === 1 && cl.length === 1) return cl[0].isMine ? 'You have it' : `${cl[0].claimerName} has it`;
+		if (mine) return claimed && cl.length === 1 ? 'You have them all' : `You’re getting ${mine.quantity}`;
+		return claimed ? 'All claimed' : `${taken} of ${item.quantity} claimed`;
+	});
 </script>
 
 <a class="it" class:claimed href="/items/{item.id}">
@@ -16,9 +25,11 @@
 	{#if item.priceCents != null}
 		<div class="pr num">{formatMoney(item.priceCents, item.currency)}{#if item.listPriceCents && item.listPriceCents > item.priceCents}<s>{formatMoney(item.listPriceCents, item.currency)}</s>{/if}</div>
 	{/if}
-	{#if claimed}<div class="hand">{label}</div><span class="chk"><Check /></span>{/if}
+	{#if item.quantity > 1 && !taken}<div class="qty">Wants {item.quantity}</div>{/if}
+	{#if label}<div class="hand" class:part={!claimed}>{label}</div>{/if}
+	{#if claimed}<span class="chk"><Check /></span>{/if}
 	{#if item.priority === 'most'}<MarkerLoop /><span class="sr-only">Most wanted.</span>{/if}
-	{#if claimed}<span class="sr-only">{label}.</span>{/if}
+	{#if label}<span class="sr-only">{label}.</span>{/if}
 </a>
 
 <style>
@@ -29,6 +40,8 @@
 	.pr { font-family: var(--display); font-size: 21px; color: var(--red); margin-top: 4px; }
 	.pr s { color: var(--muted); font-family: var(--body); font-size: 13px; margin-left: 4px; }
 	.hand { font-family: var(--hand); font-size: 22px; line-height: 1; color: var(--pine); margin-top: 4px; }
+	.hand.part { color: var(--ink); }
+	.qty { font-size: 13px; font-weight: 700; color: var(--muted); margin-top: 4px; }
 	.chk { position: absolute; top: 6px; right: 6px; }
 	.claimed :global(.art) { opacity: 0.5; }
 	@media (min-width: 900px) { .t { font-size: 16px; } .pr { font-size: 22px; } .hand { font-size: 24px; } .it:hover :global(.art) { outline: 3px solid var(--ink); outline-offset: 3px; } }

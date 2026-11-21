@@ -4,11 +4,19 @@
 	import GiftArt from '$lib/components/GiftArt.svelte';
 	import { formatMoney } from '$lib/money';
 	import { timeAgo } from '$lib/time';
+	import { claimedCount, myClaim, remainingCount } from '$lib/claimCount';
 	let { data, form } = $props();
 	const item = $derived(data.item);
 	const backHref = $derived(data.owner.id === data.me.id ? '/me/list' : `/people/${data.owner.id}`);
 	const backLabel = $derived(data.owner.id === data.me.id ? 'My list' : data.owner.displayName);
 	let confirmDelete = $state(false);
+	const mine = $derived(myClaim(item));
+	const others = $derived((item.claims ?? []).filter((c) => !c.isMine));
+	const left = $derived(remainingCount(item));
+	/** Most I could be getting: my share plus whatever's still open. */
+	const maxMine = $derived(left + (mine?.quantity ?? 0));
+	let pick = $state(1);
+	$effect(() => { pick = Math.min(Math.max(1, mine?.quantity ?? 1), Math.max(1, maxMine)); });
 	const PRI = [['nice', 'Nice to have'], ['want', 'Want'], ['most', 'Most wanted']] as const;
 </script>
 
@@ -27,29 +35,54 @@
 		{/if}
 		{#if item.deleted}<p class="note">This gift was removed from the list.</p>{/if}
 		{#if item.status === 'received'}<p class="note">Received. It’s in the {data.season} archive now.</p>{/if}
+		{#if item.quantity > 1}<div class="kv"><span>{data.owner.id === data.me.id ? 'You want' : 'Wants'}</span><span class="num"><b>{item.quantity}</b>{#if data.showClaims}{` · ${left === 0 ? 'all claimed' : `${left} still open`}`}{/if}</span></div>{/if}
 		{#if item.notes}<div class="kv"><span>{data.owner.id === data.me.id ? 'Your note' : 'Note'}</span><span>{item.notes}</span></div>{/if}
 		{#if item.priceCents != null}
 			<div class="kv"><span>Price</span><span class="when"><Icon name="clock" size={16} />{item.priceCheckedAt ? `checked ${timeAgo(item.priceCheckedAt)}` : 'entered by hand'}</span></div>
 		{/if}
 
+		{#snippet stepper(max: number)}
+			<div class="stepper" role="group" aria-label="How many you’re buying">
+				<button type="button" aria-label="One fewer" disabled={pick <= 1} onclick={() => (pick = Math.max(1, pick - 1))}>−</button>
+				<output aria-live="polite">{pick}</output>
+				<input type="hidden" name="quantity" value={pick} />
+				<button type="button" aria-label="One more" disabled={pick >= max} onclick={() => (pick = Math.min(max, pick + 1))}>+</button>
+			</div>
+		{/snippet}
 		{#if data.showClaims && !item.deleted}
-			{#if !item.claim}
-				<form method="POST" action="?/claim" use:enhance><button class="btn pine">I’ll get this</button></form>
-				<p class="hint">Everyone except {data.owner.displayName} will see that you’re getting it.</p>
-			{:else if item.claim.isMine}
+			{#if others.length}
+				<ul class="others">
+					{#each others as o (o.claimerId)}<li><span class="hand">{o.claimerName}</span> {item.quantity > 1 ? `is getting ${o.quantity}` : 'has it'}</li>{/each}
+				</ul>
+			{/if}
+			{#if mine}
 				<div class="mine">
-					<p class="hand">You’re getting this</p>
-					{#if item.claim.changedSinceClaim}<p class="changed">{data.owner.displayName} changed this gift after you claimed it. Check the name and link before buying.</p>{/if}
+					<p class="hand">{item.quantity > 1 ? `You’re getting ${mine.quantity} of ${item.quantity}` : 'You’re getting this'}</p>
+					{#if mine.changedSinceClaim}<p class="changed">{data.owner.displayName} changed this gift after you claimed it. Check the name and link before buying.</p>{/if}
+					{#if maxMine > 1}
+						<form method="POST" action="?/claim" use:enhance class="qty">
+							{@render stepper(maxMine)}
+							<button class="btn ghost sm" disabled={pick === mine.quantity}>Update</button>
+						</form>
+					{/if}
 					<form method="POST" action="?/purchased" use:enhance class="bought">
-						<label><input type="checkbox" name="purchased" checked={item.claim.purchased} onchange={(e) => e.currentTarget.form?.requestSubmit()} /> Bought it</label>
+						<label><input type="checkbox" name="purchased" checked={mine.purchased} onchange={(e) => e.currentTarget.form?.requestSubmit()} /> Bought {mine.quantity > 1 ? 'them' : 'it'}</label>
 					</form>
-					<form method="POST" action="?/unclaim" use:enhance><button class="link">I’m not getting this anymore</button></form>
+					<form method="POST" action="?/unclaim" use:enhance><button class="link">I’m not getting {mine.quantity > 1 ? 'these' : 'this'} anymore</button></form>
 				</div>
+			{:else if left > 0}
+				<form method="POST" action="?/claim" use:enhance class="claimf">
+					{#if left > 1}
+						<div class="qty"><span class="lbl">How many are you buying?</span>{@render stepper(left)}</div>
+					{/if}
+					<button class="btn pine">{left > 1 || claimedCount(item) > 0 ? `I’ll get ${pick}` : 'I’ll get this'}</button>
+				</form>
+				<p class="hint">Everyone except {data.owner.displayName} will see that you’re getting {pick > 1 ? 'them' : 'it'}{left - pick > 0 ? `, and that ${left - pick} ${left - pick === 1 ? 'is' : 'are'} still open` : ''}.</p>
 			{:else}
-				<p class="taken"><span class="hand">{item.claim.claimerName} has it</span> Pick something else so nobody doubles up.</p>
+				<p class="taken"><span class="hand">{others.length === 1 ? `${others[0].claimerName} has it` : 'All claimed'}</span> Pick something else so nobody doubles up.</p>
 			{/if}
 		{/if}
-		{#if item.deleted && item.claim?.isMine}
+		{#if item.deleted && mine}
 			<p class="note">You claimed this before it was removed. Check with {data.owner.displayName} before buying.</p>
 			<form method="POST" action="?/unclaim" use:enhance><button class="btn ghost">Take it off my list</button></form>
 		{/if}
@@ -106,6 +139,16 @@
 	.bought input { width: 24px; height: 24px; accent-color: var(--pine); }
 	.link { background: none; border: 0; padding: 0; color: var(--red); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; min-height: 44px; }
 	.changed { background: #fff7d6; border-radius: 8px; padding: 8px 10px; font-size: 15px; }
+	.others { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 2px; }
+	.others .hand { font-size: 22px; }
+	.claimf { display: flex; flex-direction: column; gap: 10px; }
+	.qty { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; }
+	.qty .lbl { margin: 0; }
+	.stepper { display: flex; align-items: center; border: 2px solid var(--ink); border-radius: 10px; overflow: hidden; flex: none; }
+	.stepper button { width: 48px; min-height: 48px; border: 0; background: #fff; font-size: 22px; font-weight: 700; color: var(--ink); }
+	.stepper button:disabled { color: var(--rule); }
+	.stepper output { min-width: 48px; text-align: center; font-size: 18px; font-weight: 700; border-left: 2px solid var(--ink); border-right: 2px solid var(--ink); line-height: 48px; }
+	.btn.sm { width: auto; padding: 0 18px; min-height: 48px; }
 	.taken { background: var(--wash); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 4px; }
 	.confirm { background: var(--wash); border-radius: 12px; padding: 14px; }
 	.confirm p { font-weight: 700; margin-bottom: 10px; }

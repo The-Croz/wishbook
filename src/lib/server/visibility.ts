@@ -18,7 +18,7 @@ export function canEditList(viewer: User, ownerId: number, managerIds: number[])
 	return viewer.id === ownerId || managerIds.includes(viewer.id);
 }
 
-export function toItemView(viewer: User, ownerId: number, item: Item, claim: ClaimWithName | null): ItemView {
+export function toItemView(viewer: User, ownerId: number, item: Item, claims: ClaimWithName[]): ItemView {
 	const view: ItemView = {
 		id: item.id,
 		title: item.title,
@@ -31,20 +31,22 @@ export function toItemView(viewer: User, ownerId: number, item: Item, claim: Cla
 		priceCheckedAt: item.priceCheckedAt?.getTime() ?? null,
 		notes: item.notes,
 		priority: item.priority,
+		quantity: item.quantity,
 		status: item.status,
 		scrapeStatus: item.scrapeStatus,
 		deleted: item.deletedAt != null,
 		createdAt: item.createdAt.getTime(),
 		sortOrder: item.sortOrder
 	};
-	if (claim && canSeeClaims(viewer, ownerId)) {
-		view.claim = {
-			claimerId: claim.claimerId,
-			claimerName: claim.claimerName,
-			isMine: claim.claimerId === viewer.id,
-			purchased: claim.purchased,
-			changedSinceClaim: item.contentChangedAt != null && item.contentChangedAt.getTime() > claim.createdAt.getTime()
-		};
+	if (canSeeClaims(viewer, ownerId)) {
+		view.claims = claims.map((c) => ({
+			claimerId: c.claimerId,
+			claimerName: c.claimerName,
+			isMine: c.claimerId === viewer.id,
+			quantity: c.quantity,
+			purchased: c.purchased,
+			changedSinceClaim: item.contentChangedAt != null && item.contentChangedAt.getTime() > c.createdAt.getTime()
+		}));
 	}
 	return view;
 }
@@ -53,7 +55,7 @@ export function toListSummary(
 	viewer: User,
 	owner: User,
 	items: Item[],
-	claims: Pick<Claim, 'itemId'>[],
+	claims: Pick<Claim, 'itemId' | 'quantity'>[],
 	managerIds: number[]
 ): ListSummary {
 	const open = items.filter((i) => i.deletedAt == null && i.status === 'active');
@@ -67,8 +69,9 @@ export function toListSummary(
 		wantCount: open.length
 	};
 	if (canSeeClaims(viewer, owner.id)) {
-		const ids = new Set(open.map((i) => i.id));
-		summary.claimedCount = claims.filter((c) => ids.has(c.itemId)).length;
+		const taken = new Map<number, number>();
+		for (const c of claims) taken.set(c.itemId, (taken.get(c.itemId) ?? 0) + c.quantity);
+		summary.claimedCount = open.filter((i) => (taken.get(i.id) ?? 0) >= i.quantity).length;
 	}
 	return summary;
 }

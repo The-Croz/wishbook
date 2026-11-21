@@ -17,8 +17,11 @@ export type ItemInput = {
 	currency?: string;
 	notes?: string;
 	priority?: Priority;
+	quantity?: number;
 	scrapeStatus?: Item['scrapeStatus'];
 };
+
+export const MAX_QUANTITY = 99;
 
 const PRIORITY_RANK: Record<Priority, number> = { most: 0, want: 1, nice: 2 };
 
@@ -51,13 +54,20 @@ export function ensureSeasonList(ownerId: number, season: number): List {
 	});
 }
 
-function claimsFor(itemIds: number[]): Map<number, ClaimWithName> {
-	if (itemIds.length === 0) return new Map();
+/** Claims per gift, oldest first. */
+export function claimsFor(itemIds: number[]): Map<number, ClaimWithName[]> {
+	const out = new Map<number, ClaimWithName[]>();
+	if (itemIds.length === 0) return out;
 	const rows = getDb()
 		.select({ claim: claims, name: users.displayName })
 		.from(claims).innerJoin(users, eq(users.id, claims.claimerId))
-		.where(inArray(claims.itemId, itemIds)).all();
-	return new Map(rows.map((r) => [r.claim.itemId, { ...r.claim, claimerName: r.name }]));
+		.where(inArray(claims.itemId, itemIds)).orderBy(asc(claims.createdAt)).all();
+	for (const r of rows) {
+		const list = out.get(r.claim.itemId) ?? [];
+		list.push({ ...r.claim, claimerName: r.name });
+		out.set(r.claim.itemId, list);
+	}
+	return out;
 }
 
 function sortItems(a: Item, b: Item) {
@@ -71,7 +81,7 @@ export function getFamily(viewer: User, season = currentSeason(new Date())): Lis
 	const summaries = people.map((owner) => {
 		const list = ensureSeasonList(owner.id, season);
 		const its = db.select().from(items).where(eq(items.listId, list.id)).all();
-		const cl = its.length ? db.select({ itemId: claims.itemId }).from(claims).where(inArray(claims.itemId, its.map((i) => i.id))).all() : [];
+		const cl = its.length ? db.select({ itemId: claims.itemId, quantity: claims.quantity }).from(claims).where(inArray(claims.itemId, its.map((i) => i.id))).all() : [];
 		return toListSummary(viewer, owner, its, cl, owner.isManaged ? getManagerIds(owner.id) : []);
 	});
 	return summaries.sort((a, b) => Number(b.managedByMe) - Number(a.managedByMe) || a.displayName.localeCompare(b.displayName));
@@ -89,7 +99,7 @@ export function getListForViewer(viewer: User, ownerId: number, season = current
 		owner: { id: owner.id, displayName: owner.displayName, isManaged: owner.isManaged, avatarColor: owner.avatarColor, avatarPhoto: owner.avatarPhoto },
 		managerNames: managerIds.length ? getDb().select({ n: users.displayName }).from(users).where(inArray(users.id, managerIds)).all().map((r) => r.n) : [],
 		season,
-		items: rows.map((r) => toItemView(viewer, ownerId, r, cl.get(r.id) ?? null)),
+		items: rows.map((r) => toItemView(viewer, ownerId, r, cl.get(r.id) ?? [])),
 		customOrder: list.customOrder,
 		canEdit: canEditList(viewer, ownerId, managerIds),
 		showClaims: canSeeClaims(viewer, ownerId)
@@ -110,10 +120,10 @@ export function getItemForViewer(viewer: User, itemId: number): {
 	const owner = list.ownerId === viewer.id ? viewer : getUser(list.ownerId);
 	const managerIds = getManagerIds(owner.id);
 	const canEdit = canEditList(viewer, owner.id, managerIds);
-	const claim = claimsFor([item.id]).get(item.id) ?? null;
-	if (item.deletedAt && !canEdit && claim?.claimerId !== viewer.id) error(404, 'Gift not found');
+	const cl = claimsFor([item.id]).get(item.id) ?? [];
+	if (item.deletedAt && !canEdit && !cl.some((c) => c.claimerId === viewer.id)) error(404, 'Gift not found');
 	return {
-		item: toItemView(viewer, owner.id, item, claim),
+		item: toItemView(viewer, owner.id, item, cl),
 		owner: { id: owner.id, displayName: owner.displayName, isManaged: owner.isManaged },
 		canEdit,
 		showClaims: canSeeClaims(viewer, owner.id),
@@ -133,6 +143,9 @@ function clean(input: Partial<ItemInput>): Partial<ItemInput> {
 		if (out.title.length > 200) error(400, 'That name is too long (200 characters max)');
 	}
 	if (out.notes !== undefined) out.notes = out.notes.trim().slice(0, 1000);
+	if (out.quantity !== undefined && (!Number.isInteger(out.quantity) || out.quantity < 1 || out.quantity > MAX_QUANTITY)) {
+		error(400, `How many should be a whole number from 1 to ${MAX_QUANTITY}`);
+	}
 	return out;
 }
 
@@ -215,7 +228,7 @@ export function getArchive(viewer: User, ownerId: number, season: number): ItemV
 	const rows = getDb().select().from(items).where(and(eq(items.listId, list.id), isNull(items.deletedAt))).all()
 		.sort((a, b) => Number(b.status === 'received') - Number(a.status === 'received') || sortItems(a, b));
 	const cl = claimsFor(rows.map((r) => r.id));
-	return rows.map((r) => toItemView(viewer, ownerId, r, cl.get(r.id) ?? null));
+	return rows.map((r) => toItemView(viewer, ownerId, r, cl.get(r.id) ?? []));
 }
 
 export function getSeasons(ownerId: number): { season: number; count: number }[] {
