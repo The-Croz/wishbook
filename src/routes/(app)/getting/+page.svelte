@@ -22,13 +22,13 @@
 				<a class="row" class:removed={c.removed} href="/items/{c.id}">
 					<span class="thumb"><GiftArt src={c.imageUrl} store={c.store} title={c.title} height={64} /></span>
 					<span class="body">
-						<span class="t">{c.title}</span>
+						<span class="t">{#if c.mine.quantity > 1}<span class="x num">{c.mine.quantity}×</span> {/if}{c.title}</span>
 						<span class="sm">
-							{#if c.removed}<span class="badge">Removed from the list</span>{:else if c.changed}<span class="badge chg">Changed since you claimed it</span>{:else if c.claim?.purchased}<span class="bought">Bought</span>{:else}Not bought yet{/if}
+							{#if c.removed}<span class="badge">Removed from the list</span>{:else if c.changed}<span class="badge chg">Changed since you claimed it</span>{:else if c.mine.purchased}<span class="bought">Bought</span>{:else}Not bought yet{/if}
 						</span>
 					</span>
 					<span class="store">{c.store ?? ''}</span>
-					{#if c.priceCents != null}<span class="pr num">{formatMoney(c.priceCents, c.currency)}</span>{/if}
+					{#if c.priceCents != null}<span class="pr num">{formatMoney(c.priceCents * c.mine.quantity, c.currency)}</span>{/if}
 				</a>
 			{/each}
 		</section>
@@ -41,6 +41,7 @@
 	.thumb { width: 64px; flex: none; }
 	.body { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
 	.t { font-weight: 700; font-size: 15px; line-height: 1.2; }
+	.x { color: var(--red); }
 	.sm { font-size: 14px; color: var(--muted); }
 	.bought { color: var(--pine); font-weight: 700; }
 	.badge { background: var(--pink); color: var(--red-deep); font-weight: 700; padding: 2px 6px; border-radius: 4px; font-size: 13px; }

@@ -110,17 +110,22 @@ export function announceNewGifts(now = new Date()) {
 	}
 }
 
-function claimFor(itemId: number) {
-	return getDb().select({ claimerId: claims.claimerId, ownerId: lists.ownerId, ownerName: users.displayName, title: items.title })
+/** Everyone buying some of a gift, plus whose list it's on. */
+function claimersOf(itemId: number) {
+	const rows = getDb().select({ claimerId: claims.claimerId, ownerId: lists.ownerId, ownerName: users.displayName, title: items.title })
 		.from(claims).innerJoin(items, eq(items.id, claims.itemId)).innerJoin(lists, eq(lists.id, items.listId))
-		.innerJoin(users, eq(users.id, lists.ownerId)).where(eq(claims.itemId, itemId)).get();
+		.innerJoin(users, eq(users.id, lists.ownerId)).where(eq(claims.itemId, itemId)).all();
+	if (!rows.length) return null;
+	const { ownerId, ownerName, title } = rows[0];
+	return { ownerId, ownerName, title, claimerIds: rows.map((r) => r.claimerId).filter((id) => id !== ownerId) };
 }
 
-/** The owner (or a parent) changed or removed a gift someone has claimed: tell that one person. */
+/** The owner (or a parent) changed or removed a gift people have claimed: tell those people. */
 export function notifyClaimChanged(itemId: number, kind: 'changed' | 'removed', actorId: number) {
-	const c = claimFor(itemId);
-	if (!c || c.claimerId === actorId || c.claimerId === c.ownerId) return;
-	notify([c.claimerId], 'claimChanged', {
+	const c = claimersOf(itemId);
+	const to = c?.claimerIds.filter((id) => id !== actorId) ?? [];
+	if (!c || !to.length) return;
+	notify(to, 'claimChanged', {
 		title: `${c.ownerName} ${kind} a gift you’re getting`,
 		body: kind === 'removed' ? `“${c.title}” was taken off the list. Check before buying.` : `Now: “${c.title}”. Check the details before buying.`,
 		url: `/items/${itemId}`
@@ -128,9 +133,9 @@ export function notifyClaimChanged(itemId: number, kind: 'changed' | 'removed', 
 }
 
 export function notifyPriceDrop(itemId: number, oldCents: number, newCents: number, currency: string) {
-	const c = claimFor(itemId);
-	if (!c || newCents >= oldCents) return;
-	notify([c.claimerId], 'priceDrop', {
+	const c = claimersOf(itemId);
+	if (!c || !c.claimerIds.length || newCents >= oldCents) return;
+	notify(c.claimerIds, 'priceDrop', {
 		title: `Price drop: ${formatMoney(newCents, currency)}`,
 		body: `${c.title} (was ${formatMoney(oldCents, currency)}), for ${c.ownerName}.`,
 		url: `/items/${itemId}`

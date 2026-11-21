@@ -39,7 +39,7 @@ describe('archive', () => {
 		const i = createItem(josh, josh.id, { title: 'Kettle' }, 2026);
 		claimItem(kate, i.id);
 		markReceived(josh, i.id, true);
-		expect(getArchive(kate, josh.id, 2026)[0].claim?.claimerName).toBe('Kate');
+		expect(getArchive(kate, josh.id, 2026)[0].claims?.[0]?.claimerName).toBe('Kate');
 	});
 	it('lists past seasons with counts', () => {
 		const a = createItem(josh, josh.id, { title: 'A' }, 2025);

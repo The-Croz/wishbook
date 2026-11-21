@@ -94,6 +94,16 @@ describe('claimed gift changed or removed', () => {
 		expect(to(june)).toHaveLength(0);
 		expect(to(josh)).toHaveLength(0);
 	});
+	it('tells everyone splitting a gift when it changes', async () => {
+		const i = createItem(june, june.id, { title: 'Wine glasses', quantity: 4 }, 2026);
+		claimItem(kate, i.id, 2);
+		claimItem(josh, i.id, 2);
+		updateItem(june, i.id, { title: 'Champagne flutes' });
+		await drainNotifications();
+		expect(to(kate)).toHaveLength(1);
+		expect(to(josh)).toHaveLength(1);
+		expect(to(june)).toHaveLength(0);
+	});
 	it('tells the claimer when it is removed', async () => {
 		const i = createItem(june, june.id, { title: 'Mug' }, 2026);
 		claimItem(kate, i.id);

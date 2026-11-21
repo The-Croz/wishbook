@@ -15,6 +15,7 @@
 	let price = $state(it?.priceCents != null ? (it.priceCents / 100).toFixed(2) : '');
 	let notes = $state(it?.notes ?? '');
 	let priority = $state(it?.priority ?? 'want');
+	let quantity = $state(it?.quantity ?? 1);
 	let preview = $state<Preview | null>(null);
 	let loading = $state(false);
 	let manual = $state(mode === 'edit');
@@ -114,6 +115,16 @@
 			<label class="lbl" for="notes">Options (size, color, notes)</label>
 			<input class="field" id="notes" name="notes" bind:value={notes} maxlength="1000" placeholder="Size M, any color but orange" />
 
+			<div class="qtyrow">
+				<label class="lbl" for="quantity">How many?</label>
+				<div class="stepper">
+					<button type="button" aria-label="One fewer" disabled={quantity <= 1} onclick={() => (quantity = Math.max(1, quantity - 1))}>−</button>
+					<input id="quantity" name="quantity" type="number" inputmode="numeric" min="1" max="99" bind:value={quantity} />
+					<button type="button" aria-label="One more" disabled={quantity >= 99} onclick={() => (quantity = Math.min(99, quantity + 1))}>+</button>
+				</div>
+			</div>
+			{#if quantity > 1}<p class="small">Family can split it. Each person says how many they’re buying.</p>{/if}
+
 			<fieldset>
 				<legend class="lbl">How much {data.isMe ? 'do you' : `does ${data.ownerName}`} want it?</legend>
 				<div class="seg">
@@ -152,6 +163,13 @@
 	.small { font-size: 13px; color: var(--muted); }
 	.opt { font-weight: 400; color: var(--muted); }
 	.link { background: none; border: 0; padding: 0; color: var(--red); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; min-height: 44px; margin-top: 6px; }
+	.qtyrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; }
+	.qtyrow .lbl { margin: 0; }
+	.stepper { display: flex; align-items: center; border: 2px solid var(--ink); border-radius: 10px; overflow: hidden; }
+	.stepper button { width: 48px; min-height: 48px; border: 0; background: #fff; font-size: 22px; font-weight: 700; color: var(--ink); }
+	.stepper button:disabled { color: var(--rule); }
+	.stepper input { width: 52px; text-align: center; border: 0; border-left: 2px solid var(--ink); border-right: 2px solid var(--ink); font-size: 18px; font-weight: 700; min-height: 48px; -moz-appearance: textfield; appearance: textfield; }
+	.stepper input::-webkit-inner-spin-button, .stepper input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 	fieldset { border: 0; padding: 0; margin: 0; }
 	.seg { display: flex; border: 2px solid var(--ink); border-radius: 10px; overflow: hidden; }
 	.seg label { flex: 1; text-align: center; padding: 12px 2px; font-weight: 700; font-size: 14px; cursor: pointer; min-height: 48px; display: flex; align-items: center; justify-content: center; }

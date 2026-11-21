@@ -44,7 +44,7 @@
 			{#each data.getting.recent as g (g.id)}
 				<a class="grow" href="/items/{g.id}">
 					<span class="gth"><GiftArt src={g.imageUrl} store={g.store} title={g.title} height={52} /></span>
-					<span class="gbody"><span class="gt">{g.title}</span><span class="gsm">For {g.ownerName} · {#if g.purchased}<b class="bought">Bought</b>{:else}Not bought yet{/if}</span></span>
+					<span class="gbody"><span class="gt">{#if g.quantity > 1}{g.quantity}× {/if}{g.title}</span><span class="gsm">For {g.ownerName} · {#if g.purchased}<b class="bought">Bought</b>{:else}Not bought yet{/if}</span></span>
 					{#if g.priceCents != null}<span class="gpr num">{formatMoney(g.priceCents, g.currency)}</span>{/if}
 				</a>
 			{:else}

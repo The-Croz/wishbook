@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { isFullyClaimed } from '$lib/claimCount';
 	import Icon from '$lib/components/Icon.svelte';
 	import GiftGrid from '$lib/components/GiftGrid.svelte';
 	import SortMenu from '$lib/components/SortMenu.svelte';
@@ -13,9 +14,9 @@
 	let arranging = $state(false);
 	let picking = $state(false);
 	const shown = $derived(
-		sortGifts(data.items, sort).filter((i) => filter === 'all' || (filter === 'open' ? !i.claim : i.priceCents != null && i.priceCents < 5000))
+		sortGifts(data.items, sort).filter((i) => filter === 'all' || (filter === 'open' ? !isFullyClaimed(i) : i.priceCents != null && i.priceCents < 5000))
 	);
-	const claimed = $derived(data.items.filter((i) => i.claim).length);
+	const claimed = $derived(data.items.filter((i) => isFullyClaimed(i)).length);
 	const name = $derived(data.owner.displayName);
 </script>
 

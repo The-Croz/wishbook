@@ -7,9 +7,9 @@ export const load: PageServerLoad = ({ locals }) => {
 	for (const c of claims) {
 		const g = groups.get(c.ownerId) ?? { ownerId: c.ownerId, ownerName: c.ownerName, total: 0, items: [] };
 		g.items.push(c);
-		if (!c.removed && c.priceCents) g.total += c.priceCents;
+		if (!c.removed && c.priceCents) g.total += c.priceCents * c.mine.quantity;
 		groups.set(c.ownerId, g);
 	}
 	const all = [...groups.values()];
-	return { groups: all, grandTotal: all.reduce((s, g) => s + g.total, 0), count: claims.filter((c) => !c.removed).length };
+	return { groups: all, grandTotal: all.reduce((s, g) => s + g.total, 0), count: claims.filter((c) => !c.removed).reduce((n, c) => n + c.mine.quantity, 0) };
 };
