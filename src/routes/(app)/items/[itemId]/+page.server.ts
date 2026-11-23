@@ -11,7 +11,7 @@ const idOf = (p: string) => {
 	return id;
 };
 
-export const load: PageServerLoad = ({ locals, params }) => ({ ...getItemForViewer(locals.user!, idOf(params.itemId)), receivedTime: showReceived(new Date()) });
+export const load: PageServerLoad = ({ locals, params }) => ({ ...getItemForViewer(locals.user!, idOf(params.itemId)), canRefresh: locals.user!.isAdmin || getItemForViewer(locals.user!, idOf(params.itemId)).canEdit, receivedTime: showReceived(new Date()) });
 
 export const actions: Actions = {
 	claim: async ({ locals, params, request }) => {

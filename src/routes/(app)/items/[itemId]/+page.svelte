@@ -117,6 +117,13 @@
 				{/if}
 			</section>
 		{/if}
+		{#if data.canRefresh && !data.canEdit && item.url && !item.deleted}
+			{#if item.url}
+				<form method="POST" action="?/refresh" use:enhance={() => { refreshing = true; return async ({ update }) => { await update(); refreshing = false; }; }}>
+					<button class="btn ghost" disabled={refreshing} aria-busy={refreshing}><Icon name="clock" size={18} />{refreshing ? 'Reading the link…' : 'Refresh from link'}</button>
+				</form>
+			{/if}
+		{/if}
 		{#if form?.refreshed}<p class="note" role="status">Updated from the link.</p>{/if}
 		{#if form?.message}<p class="err" role="alert">{form.message}</p>{/if}
 	</main>

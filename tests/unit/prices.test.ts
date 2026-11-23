@@ -107,6 +107,8 @@ describe('repullItem', () => {
 		expect(get(i.id)).toMatchObject({ title: 'Real Name', imageUrl: 'https://img/new.jpg', priceCents: 1250, scrapeStatus: 'ok' });
 		const other = makeUser('sam');
 		await expect(repullItem(other, i.id, page(html))).rejects.toMatchObject({ status: 403 });
+		const admin = makeUser('boss', { isAdmin: true });
+		expect(await repullItem(admin, i.id, page(html))).toBe('ok');
 		expect(await repullItem(josh, i.id, page('<html></html>', 403))).toBe('failed');
 		expect(get(i.id).title).toBe('Real Name');
 	});

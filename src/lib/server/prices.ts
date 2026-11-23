@@ -44,7 +44,7 @@ export async function refreshItem(itemId: number, fetchImpl: typeof fetch = fetc
  */
 export async function repullItem(viewer: User, itemId: number, fetchImpl: typeof fetch = fetch): Promise<ScrapeResult['status']> {
 	const { item: view, canEdit } = getItemForViewer(viewer, itemId);
-	if (!canEdit) error(403, 'Only the list owner can refresh this gift');
+	if (!canEdit && !viewer.isAdmin) error(403, 'Only the list owner can refresh this gift');
 	if (view.deleted) error(404, 'Gift not found');
 	const db = getDb();
 	const item = db.select().from(items).where(eq(items.id, itemId)).get();
