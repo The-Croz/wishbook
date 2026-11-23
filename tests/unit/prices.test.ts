@@ -97,3 +97,17 @@ describe('retryIncomplete', () => {
 		expect(r).toEqual({ checked: 2, fixed: 0 });
 	});
 });
+
+describe('repullItem', () => {
+	it('replaces name, picture and price from the link, for the owner but not others', async () => {
+		const { repullItem } = await import('../../src/lib/server/prices');
+		const i = createItem(josh, josh.id, { title: 'Gift from shop.example', url: 'https://shop.example/p/1', imageUrl: 'https://img/old.jpg', priceCents: 100, scrapeStatus: 'blocked' }, 2026);
+		const html = '<html><head><meta property="og:title" content="Real Name"><meta property="og:image" content="https://img/new.jpg"><meta property="product:price:amount" content="12.50"></head></html>';
+		expect(await repullItem(josh, i.id, page(html))).toBe('ok');
+		expect(get(i.id)).toMatchObject({ title: 'Real Name', imageUrl: 'https://img/new.jpg', priceCents: 1250, scrapeStatus: 'ok' });
+		const other = makeUser('sam');
+		await expect(repullItem(other, i.id, page(html))).rejects.toMatchObject({ status: 403 });
+		expect(await repullItem(josh, i.id, page('<html></html>', 403))).toBe('failed');
+		expect(get(i.id).title).toBe('Real Name');
+	});
+});

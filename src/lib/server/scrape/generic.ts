@@ -14,7 +14,7 @@ function* walk(node: unknown): Generator<LdNode> {
 
 const isProduct = (n: LdNode) => {
 	const t = n['@type'];
-	return t === 'Product' || (Array.isArray(t) && t.includes('Product'));
+	return t === 'Product' || t === 'ProductGroup' || (Array.isArray(t) && (t.includes('Product') || t.includes('ProductGroup')));
 };
 
 const decode = (s: string) => s.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/\s+/g, ' ').trim();
@@ -36,10 +36,12 @@ function offerPrices(offers: unknown): { cents: number; currency: string }[] {
 	return out;
 }
 
+const walkList = (v: unknown): LdNode[] => (Array.isArray(v) ? v : [v]).filter((x): x is LdNode => !!x && typeof x === 'object');
+
 const absolute = (src: string | undefined, base: string) => {
 	if (!src) return undefined;
 	try {
-		return new URL(src.startsWith('//') ? `https:${src}` : src, base).toString();
+		return new URL(src.startsWith('//') ? `https:${src}` : src, base).toString().replace(/^http:/, 'https:');
 	} catch {
 		return undefined;
 	}
@@ -70,7 +72,8 @@ export function parseGeneric(url: string, $: CheerioAPI): ScrapeResult {
 	if (title) result.title = decode(title);
 	result.imageUrl = absolute(firstImage(product?.image) ?? meta('og:image') ?? meta('twitter:image'), url);
 
-	const prices = product ? offerPrices(product.offers) : [];
+	let prices = product ? offerPrices(product.offers) : [];
+	if (!prices.length && product?.hasVariant) prices = offerPrices((walkList(product.hasVariant)).map((v) => v.offers));
 	if (prices.length) {
 		const low = prices.reduce((a, b) => (b.cents < a.cents ? b : a));
 		result.priceCents = low.cents;

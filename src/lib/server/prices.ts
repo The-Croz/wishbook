@@ -6,6 +6,9 @@ import { scrape, type ScrapeResult } from './scrape';
 import { isAmazon, isPlaceholderTitle } from './scrape/extractUrl';
 import { currentSeason } from '$lib/season';
 import { notifyPriceDrop } from './notify';
+import { error } from '@sveltejs/kit';
+import { getItemForViewer } from './lists';
+import type { User } from './db/schema';
 
 /** Re-reads one gift's link. Only updates price/image on a clean read; a blocked or failed read changes nothing but the status. */
 export async function refreshItem(itemId: number, fetchImpl: typeof fetch = fetch): Promise<ScrapeResult['status']> {
@@ -31,6 +34,38 @@ export async function refreshItem(itemId: number, fetchImpl: typeof fetch = fetc
 	if (!item.store && r.store) patch.store = r.store;
 	db.update(items).set(patch).where(eq(items.id, itemId)).run();
 	if (r.priceCents != null && item.priceCents != null && r.priceCents < item.priceCents) notifyPriceDrop(itemId, item.priceCents, r.priceCents, r.currency ?? item.currency);
+	return 'ok';
+}
+
+/**
+ * "Refresh from link": the owner (or a manager or admin) re-reads the gift's link and
+ * whatever the page gives replaces the saved name, picture, store and price.
+ * A blocked or failed read changes nothing.
+ */
+export async function repullItem(viewer: User, itemId: number, fetchImpl: typeof fetch = fetch): Promise<ScrapeResult['status']> {
+	const { item: view, canEdit } = getItemForViewer(viewer, itemId);
+	if (!canEdit) error(403, 'Only the list owner can refresh this gift');
+	if (view.deleted) error(404, 'Gift not found');
+	const db = getDb();
+	const item = db.select().from(items).where(eq(items.id, itemId)).get();
+	if (!item?.url) return 'failed';
+	const r = await scrape(item.url, fetchImpl);
+	if (r.status !== 'ok' || !r.title || isPlaceholderTitle(r.title)) {
+		db.update(items).set({ scrapeStatus: r.status === 'ok' ? 'failed' : r.status }).where(eq(items.id, itemId)).run();
+		return r.status === 'ok' ? 'failed' : r.status;
+	}
+	const now = new Date();
+	const patch: Partial<typeof items.$inferInsert> = { scrapeStatus: 'ok', title: r.title.slice(0, 200), updatedAt: now };
+	if (r.imageUrl) patch.imageUrl = r.imageUrl;
+	if (r.store) patch.store = r.store;
+	if (r.priceCents != null) {
+		patch.priceCents = r.priceCents;
+		patch.listPriceCents = r.listPriceCents ?? null;
+		patch.currency = r.currency ?? item.currency;
+		patch.priceCheckedAt = now;
+		if (r.priceCents !== item.priceCents) db.insert(priceHistory).values({ itemId, priceCents: r.priceCents, checkedAt: now }).run();
+	}
+	db.update(items).set(patch).where(eq(items.id, itemId)).run();
 	return 'ok';
 }
 

@@ -2,7 +2,7 @@ import { load } from 'cheerio';
 import { canonicalize, extractUrl, isAmazon, titleFromShareText } from './extractUrl';
 import { parseAmazon } from './amazon';
 import { parseGeneric } from './generic';
-import { lookupAmazon, oxylabsEnabled } from './oxylabs';
+import { fetchPageHtml, lookupAmazon, oxylabsEnabled } from './oxylabs';
 
 /** The canonical /dp/ASIN link when the pasted text holds a full Amazon product link (short a.co links need a fetch first). */
 function amazonDirect(rawText: string): string | null {
@@ -43,6 +43,25 @@ export function parseHtml(url: string, html: string): ScrapeResult {
 	return isAmazon(new URL(url).hostname) ? parseAmazon(url, $, html) : parseGeneric(url, $);
 }
 
+/** Titles that bot-protection pages show instead of the product. */
+const CHALLENGE_TITLE = /just a moment|security checkpoint|site unavailable|access denied|attention required|robot|pardon our interruption|request blocked|verify you are human|are you a human/i;
+export const isChallengeTitle = (t: string | undefined): boolean => !!t && CHALLENGE_TITLE.test(t);
+
+/** A store that bot-blocks our request: read the page through Oxylabs instead (plain first, then with JavaScript). */
+async function pageViaOxylabs(url: string, fetchImpl: typeof fetch): Promise<ScrapeResult | null> {
+	let titled: ScrapeResult | null = null;
+	for (const runJs of [false, true]) {
+		const html = await fetchPageHtml(url, fetchImpl, runJs);
+		if (!html) continue;
+		let r: ScrapeResult;
+		try { r = parseHtml(url, html); } catch { continue; }
+		if (r.status !== 'ok' || !r.title || isChallengeTitle(r.title)) continue;
+		if (r.priceCents != null) return r;
+		titled ??= r;
+	}
+	return titled;
+}
+
 /** Fetches a pasted link and reads gift details from it. Never throws. */
 export async function scrape(rawText: string, fetchImpl: typeof fetch = fetch): Promise<ScrapeResult> {
 	// Amazon blocks nearly every direct read, so with Oxylabs set up go straight to it.
@@ -70,12 +89,22 @@ async function scrapePage(rawText: string, fetchImpl: typeof fetch): Promise<Scr
 		const finalUrl = (() => {
 			try { return canonicalize(res.url || url); } catch { return url; }
 		})();
+		const amazon = isAmazon(new URL(finalUrl).hostname);
 		if (!res.ok) {
-			const blocked = isAmazon(new URL(finalUrl).hostname) && [403, 429, 503].includes(res.status);
-			return { status: blocked ? 'blocked' : 'failed', url: finalUrl };
+			const blocked = [401, 403, 429, 503].includes(res.status);
+			if (blocked && !amazon && oxylabsEnabled()) {
+				const via = await pageViaOxylabs(finalUrl, fetchImpl);
+				if (via) return via;
+			}
+			return { status: amazon && blocked ? 'blocked' : 'failed', url: finalUrl };
 		}
 		const html = await res.text();
-		return parseHtml(finalUrl, html);
+		const r = parseHtml(finalUrl, html);
+		if (!amazon && r.status === 'ok' && isChallengeTitle(r.title) && r.priceCents == null) {
+			const via = oxylabsEnabled() ? await pageViaOxylabs(finalUrl, fetchImpl) : null;
+			return via ?? { status: 'blocked', url: finalUrl };
+		}
+		return r;
 	} catch {
 		return { status: 'failed', url };
 	}

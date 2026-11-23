@@ -2,6 +2,7 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import { deleteItem, getItemForViewer, markReceived, setPriority, type Priority } from '$lib/server/lists';
 import { showReceived } from '$lib/season';
 import { claimItem, setPurchased, unclaimItem } from '$lib/server/claims';
+import { repullItem } from '$lib/server/prices';
 import type { Actions, PageServerLoad } from './$types';
 
 const idOf = (p: string) => {
@@ -40,6 +41,11 @@ export const actions: Actions = {
 	},
 	received: async ({ locals, params, request }) => {
 		markReceived(locals.user!, idOf(params.itemId), (await request.formData()).get('received') === 'yes');
+	},
+	refresh: async ({ locals, params }) => {
+		const status = await repullItem(locals.user!, idOf(params.itemId));
+		if (status === 'ok') return { refreshed: true };
+		return fail(422, { message: status === 'blocked' ? 'That store wouldn’t let us read the page. Edit the details by hand instead.' : 'Couldn’t read that link right now. Try again in a bit.' });
 	},
 	delete: ({ locals, params }) => {
 		const id = idOf(params.itemId);

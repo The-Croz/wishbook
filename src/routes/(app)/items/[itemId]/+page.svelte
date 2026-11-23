@@ -10,6 +10,7 @@
 	const backHref = $derived(data.owner.id === data.me.id ? '/me/list' : `/people/${data.owner.id}`);
 	const backLabel = $derived(data.owner.id === data.me.id ? 'My list' : data.owner.displayName);
 	let confirmDelete = $state(false);
+	let refreshing = $state(false);
 	const mine = $derived(myClaim(item));
 	const others = $derived((item.claims ?? []).filter((c) => !c.isMine));
 	const left = $derived(remainingCount(item));
@@ -100,6 +101,11 @@
 						<button class="btn pine">{item.status === 'received' ? 'Not received after all' : 'Mark received'}</button>
 					</form>
 				{/if}
+				{#if item.url}
+					<form method="POST" action="?/refresh" use:enhance={() => { refreshing = true; return async ({ update }) => { await update(); refreshing = false; }; }}>
+						<button class="btn ghost" disabled={refreshing} aria-busy={refreshing}><Icon name="clock" size={18} />{refreshing ? 'Reading the link…' : 'Refresh from link'}</button>
+					</form>
+				{/if}
 				<a class="btn ghost" href="/add?edit={item.id}"><Icon name="edit" size={18} />Edit details</a>
 				{#if !confirmDelete}
 					<button class="btn danger" onclick={() => (confirmDelete = true)}><Icon name="trash" size={18} />Remove gift</button>
@@ -111,6 +117,7 @@
 				{/if}
 			</section>
 		{/if}
+		{#if form?.refreshed}<p class="note" role="status">Updated from the link.</p>{/if}
 		{#if form?.message}<p class="err" role="alert">{form.message}</p>{/if}
 	</main>
 </div>

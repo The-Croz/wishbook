@@ -114,3 +114,37 @@ export async function lookupAmazon(url: string, fetchImpl: typeof fetch = fetch)
 		return null;
 	}
 }
+
+/**
+ * Any page through Oxylabs' general scraper, for stores that bot-block our own request.
+ * Returns the page's HTML, or null when off, over the cap, or anything goes wrong.
+ * Shares the monthly cap with Amazon lookups.
+ */
+export async function fetchPageHtml(url: string, fetchImpl: typeof fetch = fetch, runJs = false): Promise<string | null> {
+	const key = process.env.OXYLABS_API_KEY;
+	if (!key) return null;
+	if (oxylabsCallsThisMonth() >= limit()) {
+		console.warn('[wishbook] Oxylabs monthly limit reached; skipping page fetch');
+		return null;
+	}
+	try {
+		countCall();
+		const res = await fetchImpl('https://webapi.oxylabs.io/v1/scrape', {
+			method: 'POST',
+			headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+			body: JSON.stringify({ url, output: ['html'], location: 'US', ...(runJs ? { run_js: true } : {}) }),
+			signal: AbortSignal.timeout(runJs ? 150_000 : 60_000)
+		});
+		if (!res.ok) {
+			console.warn(`[wishbook] Oxylabs page fetch failed: HTTP ${res.status}`);
+			return null;
+		}
+		const body: any = await res.json();
+		const r0 = body?.results?.[0];
+		const html = r0?.html ?? r0?.content ?? body?.html ?? body?.content;
+		return typeof html === 'string' && html.length > 200 ? html : null;
+	} catch (e) {
+		console.warn('[wishbook] Oxylabs page fetch error', e);
+		return null;
+	}
+}

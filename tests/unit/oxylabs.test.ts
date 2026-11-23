@@ -66,3 +66,30 @@ describe('scrape with Oxylabs', () => {
 		expect(calls).toHaveLength(1);
 	});
 });
+
+describe('stores that bot-block us (non-Amazon)', () => {
+	const html = '<html><head><title>x</title><script type="application/ld+json">{"@type":"Product","name":"Scrubee","image":"http://img/s.png","offers":{"@type":"Offer","price":13,"priceCurrency":"USD"}}</script></head></html>'.padEnd(300, ' ');
+	const net = (directStatus: number, directHtml = '') => {
+		const calls: any[] = [];
+		const f = (async (url: string, init?: RequestInit) => {
+			if (String(url).includes('oxylabs')) { calls.push(JSON.parse(String(init!.body))); return { ok: true, status: 200, json: async () => ({ results: [{ html }] }) } as unknown as Response; }
+			return { ok: directStatus < 400, status: directStatus, url, text: async () => directHtml } as unknown as Response;
+		}) as unknown as typeof fetch;
+		return { f, calls };
+	};
+	it('reads a 403 page through Oxylabs', async () => {
+		const { f, calls } = net(403);
+		expect(await scrape('https://www.lush.com/us/en_us/p/scrubee', f)).toMatchObject({ status: 'ok', title: 'Scrubee', priceCents: 1300, imageUrl: 'https://img/s.png' });
+		expect(calls[0]).toMatchObject({ url: 'https://www.lush.com/us/en_us/p/scrubee', output: ['html'] });
+	});
+	it('treats a 200 challenge page as blocked and goes through Oxylabs', async () => {
+		const { f } = net(200, '<html><head><title>Just a moment...</title></head></html>');
+		expect(await scrape('https://www.lush.com/p/x', f)).toMatchObject({ status: 'ok', title: 'Scrubee' });
+	});
+	it('stays blocked/failed without a key', async () => {
+		delete process.env.OXYLABS_API_KEY;
+		const { f } = net(200, '<html><head><title>Just a moment...</title></head></html>');
+		expect((await scrape('https://www.lush.com/p/x', f)).status).toBe('blocked');
+		expect((await scrape('https://www.lush.com/p/x', net(403).f)).status).toBe('failed');
+	});
+});
