@@ -12,7 +12,7 @@ const item = (id: number, extra: Partial<Item> = {}): Item => ({
 	currency: 'USD', priceCheckedAt: null, notes: '', priority: 'want', quantity: 1, status: 'active', sortOrder: 0, createdBy: 1,
 	createdAt: new Date(), updatedAt: new Date(), deletedAt: null, contentChangedAt: null, announcedAt: null, scrapeStatus: 'manual', ...extra
 });
-const claimBy = (who: User, itemId = 1) => ({ itemId, claimerId: who.id, claimerName: who.displayName, quantity: 1, createdAt: new Date(), purchased: false });
+const claimBy = (who: User, itemId = 1) => ({ itemId, claimerId: who.id, claimerName: who.displayName, quantity: 1, createdAt: new Date(), purchased: false, status: 'claimed' as const, finalCents: null });
 
 describe('canSeeClaims', () => {
 	it('hides claims from the owner', () => expect(canSeeClaims(josh, josh.id)).toBe(false));

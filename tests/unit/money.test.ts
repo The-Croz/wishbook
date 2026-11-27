@@ -8,3 +8,20 @@ describe('money', () => {
 	it('parses bare numbers as USD', () => expect(parsePrice('79.9')).toEqual({ cents: 7990, currency: 'USD' }));
 	it('rejects text without a price', () => expect(parsePrice('See price in cart')).toBeNull());
 });
+
+import { parseCents, centsToInput } from '../../src/lib/money';
+describe('parseCents', () => {
+	it('reads typed amounts', () => {
+		expect(parseCents('')).toBeNull();
+		expect(parseCents(' $1,234.5 ')).toBe(123450);
+		expect(parseCents('24')).toBe(2400);
+		expect(parseCents('.99')).toBe(99);
+		expect(parseCents('abc')).toBeUndefined();
+		expect(parseCents('$')).toBeUndefined();
+	});
+	it('round-trips for editing', () => {
+		expect(centsToInput(2400)).toBe('24');
+		expect(centsToInput(2450)).toBe('24.50');
+		expect(centsToInput(null)).toBe('');
+	});
+});

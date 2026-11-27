@@ -34,7 +34,7 @@ describe('refreshItem', () => {
 		await refreshItem(i.id, page(fx('amazon-product.html')));
 		expect(get(i.id).title).toBe('My Kindle');
 	});
-	it('records no history when the price is unchanged', async () => {
+	it('keeps one reading per day when checked twice', async () => {
 		const i = amazonItem();
 		await refreshItem(i.id, page(fx('amazon-product.html')));
 		await refreshItem(i.id, page(fx('amazon-product.html')));

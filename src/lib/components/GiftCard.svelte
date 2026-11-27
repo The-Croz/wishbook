@@ -23,7 +23,10 @@
 	<div class="no">NO. {String(n).padStart(2, '0')}{item.store ? ` · ${item.store.toUpperCase()}` : ''}</div>
 	<div class="t">{item.title}</div>
 	{#if item.priceCents != null}
-		<div class="pr num">{formatMoney(item.priceCents, item.currency)}{#if item.listPriceCents && item.listPriceCents > item.priceCents}<s>{formatMoney(item.listPriceCents, item.currency)}</s>{/if}</div>
+		<div class="pr num">{formatMoney(item.priceCents, item.currency)}{#if item.priceSignal?.kind !== 'usual' && item.listPriceCents && item.listPriceCents > item.priceCents}<s>{formatMoney(item.listPriceCents, item.currency)}</s>{/if}</div>
+		{#if item.priceSignal?.kind === 'deal'}<div class="deal">Real deal · {item.priceSignal.pctOff}% below usual</div>
+		{:else if item.priceSignal?.kind === 'drop'}<div class="deal">Price drop · {item.priceSignal.pctOff}% off</div>
+		{:else if item.priceSignal?.kind === 'usual'}<div class="usual">Its usual price</div>{/if}
 	{/if}
 	{#if item.quantity > 1 && !taken}<div class="qty">Wants {item.quantity}</div>{/if}
 	{#if label}<div class="hand" class:part={!claimed}>{label}</div>{/if}
@@ -41,6 +44,8 @@
 	.pr s { color: var(--muted); font-family: var(--body); font-size: 13px; margin-left: 4px; }
 	.hand { font-family: var(--hand); font-size: 22px; line-height: 1; color: var(--pine); margin-top: 4px; }
 	.hand.part { color: var(--ink); }
+	.deal { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: 0.02em; color: #fff; background: var(--pine); border-radius: 4px; padding: 2px 6px; margin-top: 4px; }
+	.usual { font-size: 13px; font-weight: 700; color: var(--muted); margin-top: 2px; }
 	.qty { font-size: 13px; font-weight: 700; color: var(--muted); margin-top: 4px; }
 	.chk { position: absolute; top: 6px; right: 6px; }
 	.claimed :global(.art) { opacity: 0.5; }

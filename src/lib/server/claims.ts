@@ -3,6 +3,7 @@ import { and, eq, ne } from 'drizzle-orm';
 import { getDb } from './db';
 import { claims, items, lists, users, type User } from './db/schema';
 import { toItemView } from './visibility';
+import { withPriceSignals } from './priceHistory';
 import { claimsFor } from './lists';
 import type { ClaimView, ItemView } from '$lib/types';
 import { currentSeason } from '$lib/season';
@@ -56,7 +57,10 @@ export function unclaimItem(viewer: User, itemId: number) {
 
 export function setPurchased(viewer: User, itemId: number, purchased: boolean) {
 	requireClaimer(viewer, itemId);
-	getDb().update(claims).set({ purchased }).where(mineWhere(viewer, itemId)).run();
+	const c = getDb().select().from(claims).where(mineWhere(viewer, itemId)).get()!;
+	// Ticking "bought" moves a claimed gift to purchased; it doesn't undo "on the way" or later.
+	const status = purchased ? (c.status === 'claimed' ? 'purchased' : c.status) : 'claimed';
+	getDb().update(claims).set({ purchased, status }).where(mineWhere(viewer, itemId)).run();
 }
 
 export type MyClaim = ItemView & { ownerId: number; ownerName: string; removed: boolean; changed: boolean; mine: ClaimView };
@@ -73,7 +77,7 @@ export function getMyClaims(viewer: User, season = currentSeason(new Date())): M
 		.all()
 		.filter((r) => r.ownerId !== viewer.id);
 	const all = claimsFor(rows.map((r) => r.item.id));
-	return rows
+	return withPriceSignals(rows
 		.map((r) => {
 			const view = toItemView(viewer, r.ownerId, r.item, all.get(r.item.id) ?? []);
 			return {
@@ -85,5 +89,5 @@ export function getMyClaims(viewer: User, season = currentSeason(new Date())): M
 				mine: view.claims!.find((c) => c.isMine)!
 			};
 		})
-		.sort((a, b) => a.ownerName.localeCompare(b.ownerName) || a.id - b.id);
+		.sort((a, b) => a.ownerName.localeCompare(b.ownerName) || a.id - b.id));
 }

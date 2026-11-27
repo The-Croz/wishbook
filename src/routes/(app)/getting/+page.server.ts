@@ -1,5 +1,6 @@
-import { getMyClaims } from '$lib/server/claims';
-import type { PageServerLoad } from './$types';
+import { error } from '@sveltejs/kit';
+import { getMyClaims, setPurchased } from '$lib/server/claims';
+import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = ({ locals }) => {
 	const claims = getMyClaims(locals.user!);
@@ -11,5 +12,16 @@ export const load: PageServerLoad = ({ locals }) => {
 		groups.set(c.ownerId, g);
 	}
 	const all = [...groups.values()];
-	return { groups: all, grandTotal: all.reduce((s, g) => s + g.total, 0), count: claims.filter((c) => !c.removed).reduce((n, c) => n + c.mine.quantity, 0) };
+	const live = claims.filter((c) => !c.removed);
+	return { groups: all, bought: live.filter((c) => c.mine.purchased).length, live: live.length, grandTotal: all.reduce((s, g) => s + g.total, 0), count: claims.filter((c) => !c.removed).reduce((n, c) => n + c.mine.quantity, 0) };
+};
+
+export const actions: Actions = {
+	/** The "bought" checkbox on each row, so you can tick gifts off without opening them. */
+	purchased: async ({ locals, request }) => {
+		const form = await request.formData();
+		const itemId = Number(form.get('itemId'));
+		if (!Number.isInteger(itemId) || itemId <= 0) error(400, 'Unknown gift');
+		setPurchased(locals.user!, itemId, form.get('purchased') === 'on');
+	}
 };

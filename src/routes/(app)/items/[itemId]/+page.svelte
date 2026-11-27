@@ -32,7 +32,10 @@
 		<p class="no">{item.store ? item.store.toUpperCase() : 'GIFT'}{item.priority === 'most' ? ' · MOST WANTED' : ''}</p>
 		<h1>{item.title}</h1>
 		{#if item.priceCents != null}
-			<p class="pr num">{formatMoney(item.priceCents, item.currency)}{#if item.listPriceCents && item.listPriceCents > item.priceCents}<s>{formatMoney(item.listPriceCents, item.currency)}</s>{/if}</p>
+			<p class="pr num">{formatMoney(item.priceCents, item.currency)}{#if item.priceSignal?.kind !== 'usual' && item.listPriceCents && item.listPriceCents > item.priceCents}<s>{formatMoney(item.listPriceCents, item.currency)}</s>{/if}</p>
+			{#if item.priceSignal?.kind === 'deal'}<p class="deal"><b>Real deal.</b> {item.priceSignal.pctOff}% below the {formatMoney(item.priceSignal.typicalCents, item.currency)} it usually sells for.</p>
+			{:else if item.priceSignal?.kind === 'drop'}<p class="deal"><b>Price drop.</b> Down {item.priceSignal.pctOff}% from {formatMoney(item.priceSignal.fromCents, item.currency)} on {new Date(item.priceSignal.since).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}.</p>
+			{:else if item.priceSignal?.kind === 'usual'}<p class="usual">The store shows a sale, but {formatMoney(item.priceCents, item.currency)} is what this usually costs.</p>{/if}
 		{/if}
 		{#if item.deleted}<p class="note">This gift was removed from the list.</p>{/if}
 		{#if item.status === 'received'}<p class="note">Received. It’s in the {data.season} archive now.</p>{/if}
@@ -130,6 +133,8 @@
 </div>
 
 <style>
+	.deal { margin: 6px 0 0; padding: 10px 12px; border-radius: 8px; background: #e6f2ec; color: var(--pine); font-size: 15px; line-height: 1.35; }
+	.usual { margin: 4px 0 0; color: var(--muted); font-size: 15px; line-height: 1.35; }
 	.detail { width: 100%; max-width: 640px; margin: 0 auto; background: #fff; min-height: 100dvh; padding-bottom: calc(var(--tabbar) + 40px); }
 	.hero { position: relative; padding-top: env(safe-area-inset-top); background: var(--wash); }
 	.back { position: absolute; top: calc(env(safe-area-inset-top) + 12px); left: 14px; display: inline-flex; align-items: center; gap: 4px; background: #fff; color: var(--ink); text-decoration: none; font-weight: 700; padding: 8px 14px 8px 8px; border-radius: 22px; min-height: 44px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12); }
