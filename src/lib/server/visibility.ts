@@ -45,6 +45,7 @@ export function toItemView(viewer: User, ownerId: number, item: Item, claims: Cl
 			isMine: c.claimerId === viewer.id,
 			quantity: c.quantity,
 			purchased: c.purchased,
+			status: c.status,
 			changedSinceClaim: item.contentChangedAt != null && item.contentChangedAt.getTime() > c.createdAt.getTime()
 		}));
 	}

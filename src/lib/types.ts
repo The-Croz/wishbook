@@ -1,5 +1,6 @@
 /** View types shared by server loaders and client components. */
 import type { Item } from './server/db/schema';
+import type { PriceSignal } from './priceSignal';
 
 export type ItemView = {
 	id: number;
@@ -20,12 +21,14 @@ export type ItemView = {
 	deleted: boolean;
 	createdAt: number;
 	sortOrder: number;
+	/** Set once we've watched the price long enough to know if today's price is a real sale. */
+	priceSignal?: PriceSignal;
 	/** Only present for givers: everyone buying some of this gift. */
 	claims?: ClaimView[];
 };
 
 /** One person's share of a gift. changedSinceClaim: the owner changed name, link, or note after they claimed it. */
-export type ClaimView = { claimerId: number; claimerName: string; isMine: boolean; quantity: number; purchased: boolean; changedSinceClaim: boolean };
+export type ClaimView = { claimerId: number; claimerName: string; isMine: boolean; quantity: number; purchased: boolean; status: import('./giftStatus').GiftStatusName; changedSinceClaim: boolean };
 
 export type ListSummary = {
 	ownerId: number;

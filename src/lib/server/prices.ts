@@ -1,7 +1,8 @@
 import { and, eq, inArray, isNotNull, isNull } from 'drizzle-orm';
 import cron from 'node-cron';
 import { getDb } from './db';
-import { items, lists, priceHistory } from './db/schema';
+import { items, lists } from './db/schema';
+import { recordPrice } from './priceHistory';
 import { scrape, type ScrapeResult } from './scrape';
 import { isAmazon, isPlaceholderTitle } from './scrape/extractUrl';
 import { currentSeason } from '$lib/season';
@@ -27,7 +28,7 @@ export async function refreshItem(itemId: number, fetchImpl: typeof fetch = fetc
 		patch.listPriceCents = r.listPriceCents ?? null;
 		patch.currency = r.currency ?? item.currency;
 		patch.priceCheckedAt = now;
-		if (r.priceCents !== item.priceCents) db.insert(priceHistory).values({ itemId, priceCents: r.priceCents, checkedAt: now }).run();
+		recordPrice(item, r.priceCents, now);
 	}
 	if (r.title && isPlaceholderTitle(item.title)) patch.title = r.title;
 	if (!item.imageUrl && r.imageUrl) patch.imageUrl = r.imageUrl;
@@ -63,7 +64,7 @@ export async function repullItem(viewer: User, itemId: number, fetchImpl: typeof
 		patch.listPriceCents = r.listPriceCents ?? null;
 		patch.currency = r.currency ?? item.currency;
 		patch.priceCheckedAt = now;
-		if (r.priceCents !== item.priceCents) db.insert(priceHistory).values({ itemId, priceCents: r.priceCents, checkedAt: now }).run();
+		recordPrice(item, r.priceCents, now);
 	}
 	db.update(items).set(patch).where(eq(items.id, itemId)).run();
 	return 'ok';
@@ -133,7 +134,7 @@ export function retrySoon(itemId: number, afterMs = 2 * 60_000) {
 let started = false;
 let running = false;
 
-/** Nightly at 3am server time. */
+/** Nightly at 3am server time. Each run also saves a price sample, which the deal check uses. */
 export function startPriceScheduler() {
 	if (started || process.env.DISABLE_PRICE_REFRESH === '1') return;
 	started = true;

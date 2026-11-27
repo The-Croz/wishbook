@@ -2,6 +2,7 @@ import { error } from '@sveltejs/kit';
 import { and, asc, eq, inArray, isNull, ne } from 'drizzle-orm';
 import { getDb } from './db';
 import { claims, items, lists, managers, users, type Item, type List, type User } from './db/schema';
+import { recordPrice, withPriceSignals } from './priceHistory';
 import { canEditList, canSeeClaims, toItemView, toListSummary, type ClaimWithName, type ItemView, type ListSummary } from './visibility';
 import { currentSeason } from '$lib/season';
 import { notifyClaimChanged } from './notify';
@@ -99,7 +100,7 @@ export function getListForViewer(viewer: User, ownerId: number, season = current
 		owner: { id: owner.id, displayName: owner.displayName, isManaged: owner.isManaged, avatarColor: owner.avatarColor, avatarPhoto: owner.avatarPhoto },
 		managerNames: managerIds.length ? getDb().select({ n: users.displayName }).from(users).where(inArray(users.id, managerIds)).all().map((r) => r.n) : [],
 		season,
-		items: rows.map((r) => toItemView(viewer, ownerId, r, cl.get(r.id) ?? [])),
+		items: withPriceSignals(rows.map((r) => toItemView(viewer, ownerId, r, cl.get(r.id) ?? []))),
 		customOrder: list.customOrder,
 		canEdit: canEditList(viewer, ownerId, managerIds),
 		showClaims: canSeeClaims(viewer, ownerId)
@@ -123,7 +124,7 @@ export function getItemForViewer(viewer: User, itemId: number): {
 	const cl = claimsFor([item.id]).get(item.id) ?? [];
 	if (item.deletedAt && !canEdit && !cl.some((c) => c.claimerId === viewer.id)) error(404, 'Gift not found');
 	return {
-		item: toItemView(viewer, owner.id, item, cl),
+		item: withPriceSignals([toItemView(viewer, owner.id, item, cl)])[0],
 		owner: { id: owner.id, displayName: owner.displayName, isManaged: owner.isManaged },
 		canEdit,
 		showClaims: canSeeClaims(viewer, owner.id),
@@ -160,6 +161,7 @@ export function createItem(viewer: User, ownerId: number, input: ItemInput, seas
 		priceCheckedAt: data.priceCents != null && data.scrapeStatus === 'ok' ? new Date() : null,
 		sortOrder: list.customOrder ? topSortOrder(list.id) : Date.now() % 2_000_000_000
 	}).returning().all();
+	if (row.priceCents != null && row.priceCheckedAt) recordPrice(row, row.priceCents, row.priceCheckedAt);
 	return row;
 }
 

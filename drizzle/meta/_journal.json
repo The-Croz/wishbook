@@ -43,6 +43,20 @@
       "when": 1795292944867,
       "tag": "0005_gift_quantity",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1795819937105,
+      "tag": "0006_price_history_index",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1795822151439,
+      "tag": "0007_budget",
+      "breakpoints": true
     }
   ]
 }

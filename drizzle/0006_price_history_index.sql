@@ -1,0 +1,1 @@
+CREATE INDEX `price_history_item` ON `price_history` (`item_id`,`checked_at`);
