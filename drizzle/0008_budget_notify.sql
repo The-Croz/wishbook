@@ -1,0 +1,1 @@
+ALTER TABLE `notify_prefs` ADD `budget` integer DEFAULT true NOT NULL;

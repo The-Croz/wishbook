@@ -15,6 +15,7 @@ import {
 	budgetBooks, budgetGifts, budgetInvites, budgetLimits, budgetMembers, budgetPeople, budgetTotals,
 	claims, items, lists, users, GIFT_STATUSES, type GiftStatus, type User
 } from './db/schema';
+import { notifyBudgetShare } from './notify';
 
 export { GIFT_STATUSES, type GiftStatus };
 
@@ -107,7 +108,8 @@ export function invitePartner(viewer: User, toId: number) {
 		acceptInvite(viewer, toId);
 		return;
 	}
-	db.insert(budgetInvites).values({ fromId: viewer.id, toId }).onConflictDoNothing().run();
+	const added = db.insert(budgetInvites).values({ fromId: viewer.id, toId }).onConflictDoNothing().run();
+	if (added.changes) notifyBudgetShare(toId, 'invite', viewer.displayName);
 }
 
 export function cancelInvite(viewer: User, toId: number) {
@@ -148,6 +150,7 @@ export function acceptInvite(viewer: User, fromId: number) {
 			inArray(budgetInvites.toId, [viewer.id, fromId])
 		)).run();
 	});
+	notifyBudgetShare(fromId, 'accepted', viewer.displayName);
 }
 
 /**
@@ -158,6 +161,7 @@ export function stopSharing(viewer: User) {
 	const db = getDb();
 	const shared = bookOf(viewer.id);
 	if (memberIds(shared).length < 2) return;
+	const partnerId = memberIds(shared).find((id) => id !== viewer.id)!;
 	db.transaction((tx) => {
 		const [b] = tx.insert(budgetBooks).values({}).returning().all();
 		const personMap = new Map<number, number>();
@@ -180,6 +184,7 @@ export function stopSharing(viewer: User) {
 		}
 		tx.update(budgetMembers).set({ bookId: b.id }).where(eq(budgetMembers.userId, viewer.id)).run();
 	});
+	notifyBudgetShare(partnerId, 'stopped', viewer.displayName);
 }
 
 // ---------- reading ----------
@@ -309,6 +314,15 @@ export function getBudget(viewer: User, season: number): BudgetView {
 		people: list,
 		hidden: hiddenCount ? { fromName: [...hiddenFrom.keys()].map(name).join(' & '), count: hiddenCount } : null
 	};
+}
+
+/** My (our) budget for one person on Wishbook, for the strip on their page. */
+export function budgetForUser(viewer: User, userId: number, season: number) {
+	if (userId === viewer.id) return null;
+	const b = getBudget(viewer, season);
+	const p = b.people.find((x) => x.key === `u:${userId}`);
+	if (!p) return null;
+	return { key: p.key, limitCents: p.limitCents, plannedCents: p.plannedCents, spentCents: p.spentCents, giftCount: p.gifts.length, shared: b.partner != null };
 }
 
 // ---------- editing ----------

@@ -5,7 +5,7 @@ import { claims } from '../../src/lib/server/db/schema';
 import { createItem } from '../../src/lib/server/lists';
 import { claimItem, setPurchased } from '../../src/lib/server/claims';
 import {
-	acceptInvite, addGift, addPerson, getBudget, invitePartner, removePerson, setLimit, setTotal, stopSharing, updateClaim, updateGift
+	acceptInvite, addGift, budgetForUser, addPerson, getBudget, invitePartner, removePerson, setLimit, setTotal, stopSharing, updateClaim, updateGift
 } from '../../src/lib/server/budget';
 import { makeUser, makeManager } from './helpers';
 
@@ -140,6 +140,24 @@ describe('sharing with a spouse', () => {
 		expect(j.partner).toBeNull();
 		expect(person(j, 'Neighbor')).toMatchObject({ limitCents: 2000, plannedCents: 1500 });
 		expect(person(k, 'Neighbor')).toMatchObject({ limitCents: 2000, plannedCents: 1800 });
+	});
+});
+
+describe('budget on a person’s page', () => {
+	it('shows my budget and spending for them', () => {
+		setLimit(josh, S, `u:${june.id}`, 10000);
+		claimItem(josh, gift(june, 'Socks', 2400).id);
+		expect(budgetForUser(josh, june.id, S)).toMatchObject({ limitCents: 10000, plannedCents: 2400, spentCents: 0, giftCount: 1, shared: false });
+	});
+	it('is nothing on my own page', () => {
+		expect(budgetForUser(josh, josh.id, S)).toBeNull();
+	});
+	it('on my spouse’s page, shows only what I can see', () => {
+		share();
+		claimItem(kate, gift(josh, 'Watch', 25000).id);
+		claimItem(josh, gift(kate, 'Scarf', 3000).id);
+		expect(budgetForUser(kate, josh.id, S)).toMatchObject({ plannedCents: 25000, giftCount: 1, shared: true });
+		expect(budgetForUser(josh, kate.id, S)).toMatchObject({ plannedCents: 3000, giftCount: 1 });
 	});
 });
 

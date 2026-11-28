@@ -10,6 +10,7 @@ import {
 import { claimItem } from '../../src/lib/server/claims';
 import { createItem, deleteItem, updateItem } from '../../src/lib/server/lists';
 import { refreshItem } from '../../src/lib/server/prices';
+import { acceptInvite, invitePartner, stopSharing } from '../../src/lib/server/budget';
 import { makeManager, makeUser } from './helpers';
 
 const fx = (n: string) => readFileSync(new URL(`../fixtures/${n}`, import.meta.url), 'utf8');
@@ -80,7 +81,7 @@ describe('new gifts', () => {
 		announceNewGifts(new Date(Date.now() + 11 * MIN));
 		await drainNotifications();
 		expect(to(june)).toHaveLength(0);
-		expect(getPrefs(june.id)).toMatchObject({ newGifts: false, claimChanged: true, priceDrop: true, reminders: true });
+		expect(getPrefs(june.id)).toMatchObject({ newGifts: false, claimChanged: true, priceDrop: true, reminders: true, budget: true });
 	});
 });
 
@@ -191,5 +192,39 @@ describe('push API', () => {
 	});
 	it('rejects a bad subscription', async () => {
 		await expect(subscribe({ request: req('POST', { endpoint: 'http://insecure', keys: {} }), locals: { user: kate } } as never)).rejects.toMatchObject({ status: 400 });
+	});
+});
+
+describe('budget sharing', () => {
+	it('tells only the person invited, then the inviter when they accept', async () => {
+		invitePartner(josh, kate.id);
+		await drainNotifications();
+		expect(sent.map((s) => [s.userId, s.payload.title])).toEqual([[kate.id, 'Josh wants to share a budget with you']]);
+		expect(to(kate)[0].payload.url).toBe('/budget');
+		sent = [];
+		acceptInvite(kate, josh.id);
+		await drainNotifications();
+		expect(sent.map((s) => [s.userId, s.payload.title])).toEqual([[josh.id, 'Kate is sharing a budget with you now']]);
+	});
+	it('doesn’t repeat an invite already sent', async () => {
+		invitePartner(josh, kate.id);
+		invitePartner(josh, kate.id);
+		await drainNotifications();
+		expect(to(kate)).toHaveLength(1);
+	});
+	it('tells the partner when someone stops sharing', async () => {
+		invitePartner(josh, kate.id);
+		acceptInvite(kate, josh.id);
+		await drainNotifications();
+		sent = [];
+		stopSharing(josh);
+		await drainNotifications();
+		expect(sent.map((s) => [s.userId, s.payload.title])).toEqual([[kate.id, 'Josh stopped sharing your budget']]);
+	});
+	it('respects the budget setting', async () => {
+		setPrefs(kate.id, { budget: false });
+		invitePartner(josh, kate.id);
+		await drainNotifications();
+		expect(to(kate)).toHaveLength(0);
 	});
 });

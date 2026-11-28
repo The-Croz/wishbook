@@ -125,7 +125,9 @@ export const notifyPrefs = sqliteTable('notify_prefs', {
 	newGifts: integer('new_gifts', { mode: 'boolean' }).notNull().default(true),
 	claimChanged: integer('claim_changed', { mode: 'boolean' }).notNull().default(true),
 	priceDrop: integer('price_drop', { mode: 'boolean' }).notNull().default(true),
-	reminders: integer('reminders', { mode: 'boolean' }).notNull().default(true)
+	reminders: integer('reminders', { mode: 'boolean' }).notNull().default(true),
+	/** Budget sharing: invites, accepts, and a partner stopping. */
+	budget: integer('budget', { mode: 'boolean' }).notNull().default(true)
 });
 
 /**
