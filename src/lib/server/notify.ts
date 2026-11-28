@@ -10,7 +10,7 @@ import { appSettings, claims, items, lists, notifyPrefs, pushSubscriptions, user
 import { formatMoney } from '$lib/money';
 import { currentSeason } from '$lib/season';
 
-export type PrefKey = 'newGifts' | 'claimChanged' | 'priceDrop' | 'reminders';
+export type PrefKey = 'newGifts' | 'claimChanged' | 'priceDrop' | 'reminders' | 'budget';
 export type Prefs = Record<PrefKey, boolean>;
 export type Payload = { title: string; body?: string; url: string; tag?: string };
 export type SentPush = { userId: number; endpoint: string; payload: Payload };
@@ -66,7 +66,7 @@ export function removeSubscription(userId: number, endpoint: string) {
 
 export function getPrefs(userId: number): Prefs {
 	const row = getDb().select().from(notifyPrefs).where(eq(notifyPrefs.userId, userId)).get();
-	return { newGifts: row?.newGifts ?? true, claimChanged: row?.claimChanged ?? true, priceDrop: row?.priceDrop ?? true, reminders: row?.reminders ?? true };
+	return { newGifts: row?.newGifts ?? true, claimChanged: row?.claimChanged ?? true, priceDrop: row?.priceDrop ?? true, reminders: row?.reminders ?? true, budget: row?.budget ?? true };
 }
 
 export function setPrefs(userId: number, patch: Partial<Prefs>) {
@@ -130,6 +130,16 @@ export function notifyClaimChanged(itemId: number, kind: 'changed' | 'removed', 
 		body: kind === 'removed' ? `“${c.title}” was taken off the list. Check before buying.` : `Now: “${c.title}”. Check the details before buying.`,
 		url: `/items/${itemId}`
 	});
+}
+
+/** Budget sharing news, sent only to the one person it's about. */
+export function notifyBudgetShare(toId: number, kind: 'invite' | 'accepted' | 'stopped', fromName: string) {
+	const text = {
+		invite: { title: `${fromName} wants to share a budget with you`, body: 'You’d both see one Christmas plan. Gifts for each other stay hidden.' },
+		accepted: { title: `${fromName} is sharing a budget with you now`, body: 'Your Christmas plan is combined. Gifts for each other stay hidden.' },
+		stopped: { title: `${fromName} stopped sharing your budget`, body: 'You each keep a copy of the plan.' }
+	}[kind];
+	notify([toId], 'budget', { ...text, url: '/budget', tag: `budget-${kind}` });
 }
 
 export function notifyPriceDrop(itemId: number, oldCents: number, newCents: number, currency: string) {

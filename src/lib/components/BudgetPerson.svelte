@@ -6,8 +6,12 @@
 	import { centsToInput, formatMoney } from '$lib/money';
 	import Avatar from './Avatar.svelte';
 	import Icon from './Icon.svelte';
+	import BudgetGiftRow from './BudgetGiftRow.svelte';
+	import type { GiftStatusName } from '$lib/giftStatus';
 
-	let { person, shared, meId }: { person: BudgetPerson; shared: boolean; meId: number } = $props();
+	/** `only` shows just the gifts at that stage (the person's totals stay whole). */
+	let { person, shared, meId, only = null }: { person: BudgetPerson; shared: boolean; meId: number; only?: GiftStatusName | null } = $props();
+	const gifts = $derived(only ? person.gifts.filter((g) => g.status === only) : person.gifts);
 
 	let adding = $state(false);
 	let editing = $state<string | null>(null);
@@ -25,7 +29,7 @@
 	const pct = (part: number) => (person.limitCents ? Math.min(100, (part / person.limitCents) * 100) : 0);
 </script>
 
-<section class="person" class:empty={!person.gifts.length}>
+<section class="person" class:empty={!person.gifts.length} id="person-{person.key.replace(':', '-')}">
 	<header>
 		{#if person.kind === 'user'}
 			<Avatar name={person.name} color={person.avatarColor ?? '#F2B705'} photo={person.avatarPhoto} size={40} />
@@ -40,7 +44,7 @@
 					<button class="mini">Save</button>
 				</form>
 			{:else}
-				<b>{person.name}</b>
+				{#if person.kind === 'user'}<a class="name" href="/people/{person.key.slice(2)}"><b>{person.name}</b></a>{:else}<b>{person.name}</b>{/if}
 				{#if person.kind === 'person'}<button class="mini ghost" type="button" onclick={() => (renaming = true)} aria-label="Rename or remove {person.name}"><Icon name="edit" size={16} /></button>{/if}
 			{/if}
 			<span class="sub num" class:over>
@@ -67,39 +71,9 @@
 		</form>
 	{/if}
 
-	{#each person.gifts as g (g.key)}
-		<div class="g" class:removed={g.removed}>
-			<form method="POST" action="?/status" use:enhance={keep} class="st">
-				<input type="hidden" name="key" value={g.key} />
-				<select name="status" class="chip s-{g.status}" value={g.status} onchange={submit} aria-label="Status of {g.title}">
-					{#each STATUS_ORDER as s}<option value={s}>{STATUS_LABELS[s]}</option>{/each}
-				</select>
-			</form>
-			<div class="gt">
-				{#if g.itemId}<a href="/items/{g.itemId}">{g.title}</a>
-				{:else if g.url}<a href={g.url} target="_blank" rel="noopener noreferrer">{g.title}<Icon name="ext" size={14} /></a>
-				{:else}<span>{g.title}</span>{/if}
-				<span class="meta num">
-					{#if g.quantity > 1}{`${g.quantity} × `}{/if}{g.unitCents != null ? usd(g.unitCents) : 'No price'}
-					{#if g.source === 'wishbook'}{' · '}Wishbook{/if}{#if shared}{' · '}{g.buyerId === meId ? 'You' : g.buyerName}{/if}
-					{#if g.removed}{' · '}<em>Taken off their list</em>{/if}
-					{#if g.url && g.itemId}{' · '}<a href={g.url} target="_blank" rel="noopener noreferrer" class="lnk">Link</a>{/if}
-				</span>
-			</div>
-			<form method="POST" action="?/final" use:enhance={keep} class="paid">
-				<input type="hidden" name="key" value={g.key} />
-				<label>
-					<span>Paid</span>
-					<span class="money"><i>$</i><input class="amt num" name="final" inputmode="decimal" autocomplete="off"
-						value={centsToInput(g.finalCents)}
-						placeholder={g.unitCents != null ? centsToInput(g.unitCents * g.quantity) : '—'}
-						onchange={submit} aria-label="What you paid for {g.title}, with tax and shipping" /></span>
-				</label>
-			</form>
-			{#if g.source === 'own'}
-				<button class="mini ghost ed" type="button" onclick={() => (editing = editing === g.key ? null : g.key)} aria-label="Edit {g.title}" aria-expanded={editing === g.key}><Icon name="edit" size={18} /></button>
-			{:else}<span class="ed"></span>{/if}
-		</div>
+	{#each gifts as g (g.key)}
+		<BudgetGiftRow {g} {shared} {meId} editing={editing === g.key}
+			onedit={g.source === 'own' ? () => (editing = editing === g.key ? null : g.key) : undefined} />
 		{#if editing === g.key}
 			{@render giftForm('editGift', g)}
 		{/if}
@@ -140,6 +114,9 @@
 	header { display: flex; align-items: center; gap: 12px; }
 	.who { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; column-gap: 6px; }
 	.who b { font-family: var(--display); font-weight: 400; font-size: 19px; line-height: 1.15; }
+	.name { color: inherit; text-decoration: none; }
+	.name:hover { text-decoration: underline; }
+	.person { scroll-margin-top: 16px; }
 	.sub { flex-basis: 100%; font-size: 14px; color: var(--muted); font-weight: 700; }
 	.sub.over { color: var(--red); }
 	.bar { flex-basis: 100%; position: relative; height: 6px; border-radius: 3px; background: var(--wash); margin-top: 5px; overflow: hidden; max-width: 280px; }
@@ -160,34 +137,10 @@
 	.limit { flex: none; text-align: right; }
 	.limit label { align-items: flex-end; }
 
-	.g { display: grid; grid-template-columns: minmax(0, 1fr) auto 44px; grid-template-areas: 'title title ed' 'st paid ed'; gap: 6px 12px; align-items: center; padding: 12px 0 10px; border-top: 1px dashed var(--rule); margin-top: 10px; }
-	.st { grid-area: st; }
-	.gt { grid-area: title; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
-	.paid { grid-area: paid; }
-	.paid label { flex-direction: row; align-items: baseline; gap: 8px; }
-	.ed { grid-area: ed; align-self: start; }
-	.gt > a, .gt > span:first-child { font-weight: 700; font-size: 16px; line-height: 1.25; color: var(--ink); text-decoration: none; }
-	.gt > a:hover { text-decoration: underline; }
-	.gt > a :global(svg) { display: inline; vertical-align: -1px; margin-left: 4px; color: var(--muted); }
-	.meta { font-size: 14px; color: var(--muted); }
-	.meta em { font-style: normal; color: var(--red-deep); font-weight: 700; }
-	.lnk { color: var(--muted); }
-	.removed .gt > a { text-decoration: line-through; color: var(--muted); }
-
-	.chip { appearance: none; -webkit-appearance: none; border: 0; border-radius: 999px; padding: 6px 28px 6px 12px; font-weight: 700; font-size: 14px; min-height: 36px; cursor: pointer;
-		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-		background-repeat: no-repeat; background-position: right 10px center; }
-	.s-claimed { background-color: var(--wash); }
-	.s-purchased { background-color: #fdeeb5; }
-	.s-shipped { background-color: #dbe8f6; }
-	.s-arrived { background-color: #dcefe5; }
-	.s-wrapped { background-color: var(--pine); color: #fff; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); }
-
 	.mini { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 36px; min-width: 36px; border-radius: 8px; border: 0; background: var(--ink); color: #fff; font-weight: 700; font-size: 14px; padding: 0 10px; }
 	.mini.ghost { background: transparent; color: var(--muted); }
 	.mini.ghost:hover { background: var(--wash); color: var(--ink); }
 	.mini.danger { background: transparent; color: var(--red); padding: 0 4px; }
-	.ed { width: 44px; height: 44px; }
 	.remove { display: flex; gap: 8px; margin: 8px 0 0 52px; }
 
 	.add { display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; color: var(--red); font-weight: 700; font-size: 15px; padding: 10px 0; min-height: 44px; margin-top: 4px; }
@@ -201,11 +154,6 @@
 	.acts .btn { min-height: 48px; font-size: 16px; }
 
 	@media (min-width: 900px) {
-		.g { grid-template-columns: 140px minmax(0, 1fr) 150px 44px; grid-template-areas: 'st title paid ed'; padding: 10px 6px; margin-top: 0; border-top: 0; border-radius: 10px; }
-		.g:first-of-type { margin-top: 8px; }
-		.g:hover { background: var(--wash); }
-		.paid { justify-self: end; }
-		.paid label > span:first-child { display: none; }
 		.gform { grid-template-columns: 2fr 2fr 1fr 1fr 1.4fr 1.2fr; max-width: 980px; }
 		.gform .wide:not(.acts):not(.mini) { grid-column: span 2; }
 		.gform .acts { grid-column: 1 / -1; max-width: 360px; }

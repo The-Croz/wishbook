@@ -6,6 +6,8 @@
 	import ArrangeList from '$lib/components/ArrangeList.svelte';
 	import ProfilePicker from '$lib/components/ProfilePicker.svelte';
 	import { defaultSort, sortGifts, type SortMode } from '$lib/sortGifts';
+	import { enhance } from '$app/forms';
+	import { centsToInput, formatMoney } from '$lib/money';
 	let { data } = $props();
 	let filter = $state<'all' | 'open' | 'under50'>('all');
 	// Follows the list's default until the viewer picks another order.
@@ -30,6 +32,26 @@
 </header>
 
 <main class="pg">
+	{#if data.budget}
+		{@const b = data.budget}
+		{@const over = b.limitCents != null && b.plannedCents > b.limitCents}
+		<div class="budget">
+			<form method="POST" action="?/budget" use:enhance={() => async ({ update }) => update({ reset: false })}>
+				<label>
+					<span class="cap">{b.shared ? 'Our' : 'Your'} budget for {name}</span>
+					<span class="amt"><i>$</i><input class="num" name="cents" inputmode="decimal" autocomplete="off" value={centsToInput(b.limitCents)} placeholder="Set one" onchange={(e) => e.currentTarget.form?.requestSubmit()} /></span>
+				</label>
+			</form>
+			<div class="bsum num" class:over>
+				{#if b.giftCount}{b.giftCount} {b.giftCount === 1 ? 'gift' : 'gifts'} · {formatMoney(b.plannedCents, 'USD')} planned · {formatMoney(b.spentCents, 'USD')} spent{:else}Nothing planned for {name} yet{/if}
+				{#if over}<b>{' · '}over by {formatMoney(b.plannedCents - b.limitCents!, 'USD')}</b>{:else if b.limitCents != null && b.giftCount}{' · '}{formatMoney(b.limitCents - b.plannedCents, 'USD')} left{/if}
+			</div>
+			{#if b.limitCents}
+				<span class="meter" aria-hidden="true"><i class="plan" style:width="{Math.min(100, (b.plannedCents / b.limitCents) * 100)}%"></i><i class="spent" style:width="{Math.min(100, (b.spentCents / b.limitCents) * 100)}%"></i></span>
+			{/if}
+			<a class="see" href="/budget#person-{b.key.replace(':', '-')}">See in Budget<Icon name="chev" size={16} /></a>
+		</div>
+	{/if}
 	{#if data.canEdit && data.owner.isManaged}
 		<p class="note">You manage {name}’s list and shop for {name}, so you see claims here. {name} never logs in.</p>
 		{#if picking}
@@ -60,6 +82,25 @@
 {#if data.canEdit}<a class="fab mob" href="/add?for={data.owner.id}"><Icon name="plus" size={20} />Add for {name}</a>{/if}
 
 <style>
+	.budget { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: 'form sum see' 'form meter see'; align-items: center; gap: 4px 18px; background: var(--wash); border-radius: 14px; padding: 12px 16px; margin-bottom: 16px; }
+	.budget form { grid-area: form; }
+	.budget label { display: flex; flex-direction: column; }
+	.cap { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+	.amt { display: flex; align-items: baseline; font-family: var(--display); font-size: 26px; }
+	.amt i { font-style: normal; color: var(--muted); font-size: 20px; }
+	.amt input { font: inherit; width: 130px; border: 0; border-bottom: 2px dashed #cfcbc3; background: transparent; min-height: 40px; padding: 0; }
+	.amt input::placeholder { color: #a9a6a0; font-size: 20px; }
+	.amt input:focus { outline: none; border-bottom: 2px solid var(--red); }
+	.bsum { grid-area: sum; font-size: 14px; font-weight: 700; color: var(--muted); }
+	.bsum.over b { color: var(--red); }
+	.meter { grid-area: meter; position: relative; height: 8px; border-radius: 4px; background: #e4e1da; overflow: hidden; }
+	.meter i { position: absolute; inset: 0 auto 0 0; border-radius: 4px; }
+	.meter .plan { background: #f3b6c0; }
+	.meter .spent { background: var(--red); }
+	.see { grid-area: see; display: inline-flex; align-items: center; gap: 2px; font-weight: 700; color: var(--red); text-decoration: none; min-height: 44px; font-size: 15px; }
+	@media (max-width: 599px) {
+		.budget { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 'form see' 'sum sum' 'meter meter'; }
+	}
 	.pick { margin-bottom: 18px; }
 	.pickbtn { margin-bottom: 14px; }
 	.done { margin-top: 14px; }

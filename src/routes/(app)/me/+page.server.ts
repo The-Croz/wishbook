@@ -13,7 +13,7 @@ export const load: PageServerLoad = ({ locals }) => ({
 export const actions: Actions = {
 	prefs: async ({ locals, request }) => {
 		const f = await request.formData();
-		setPrefs(locals.user!.id, { newGifts: f.has('newGifts'), claimChanged: f.has('claimChanged'), priceDrop: f.has('priceDrop'), reminders: f.has('reminders') });
+		setPrefs(locals.user!.id, { newGifts: f.has('newGifts'), claimChanged: f.has('claimChanged'), priceDrop: f.has('priceDrop'), reminders: f.has('reminders'), budget: f.has('budget') });
 		return { prefsSaved: true };
 	},
 	password: async ({ locals, request, cookies, url }) => {

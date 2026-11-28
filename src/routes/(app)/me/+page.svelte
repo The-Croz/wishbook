@@ -36,7 +36,7 @@
 	<PushToggle vapidKey={data.vapidKey} />
 	<form method="POST" action="?/prefs" use:enhance class="prefs">
 		<p class="lbl">Tell me when…</p>
-		{#each [['newGifts', 'Someone adds gifts to their list'], ['claimChanged', 'A gift I’m buying is changed or removed'], ['priceDrop', 'A gift I’m buying drops in price'], ['reminders', 'Christmas reminders (Dec 1 and Dec 27)']] as [k, label]}
+		{#each [['newGifts', 'Someone adds gifts to their list'], ['claimChanged', 'A gift I’m buying is changed or removed'], ['priceDrop', 'A gift I’m buying drops in price'], ['reminders', 'Christmas reminders (Dec 1 and Dec 27)'], ['budget', 'Someone wants to share a budget with me']] as [k, label]}
 			<label class="check"><input type="checkbox" name={k} checked={data.prefs[k as keyof typeof data.prefs]} onchange={(e) => e.currentTarget.form?.requestSubmit()} />{label}</label>
 		{/each}
 		<p class="hint">You’re never told anything about who’s getting gifts on your own list.</p>
